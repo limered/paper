@@ -1,12 +1,18 @@
+using System.Collections.Generic;
 using Godot;
 
 namespace valleyfold.Models;
 
 public class PaperFace
 {
-	private Vector3 _aVertex;
-	private Vector3 _bVertex;
-	private Vector3 _cVertex;
-	
+	private List<Vector3> _corners;
 	private bool _isTopFaced;
+
+	public PaperFace(
+		List<Vector3> corners, 
+		bool isTopFaced)
+	{
+		_corners = corners;
+		_isTopFaced = isTopFaced;
+	}
 }
