@@ -23,6 +23,6 @@ public class PaperFace
 
 	public int[] Triangulate()
 	{
-		return Geometry2D.TriangulatePolygon(Corners.Select(c => new Vector2(c.X, c.Y)).ToArray());
+		return Geometry2D.TriangulatePolygon(Corners.Select(c => new Vector2(c.X, c.Z)).ToArray());
 	}
 }
