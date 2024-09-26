@@ -4,11 +4,12 @@ namespace valleyfold.Models;
 
 public class PaperModel
 {
-    private List<PaperFace> _faces;
     private List<PaperCrease> _edges;
+    public List<PaperFace> Faces;
 
     public void AddFace(PaperFace face)
     {
-        _faces.Add(face);
+        Faces ??= new List<PaperFace>();
+        Faces.Add(face);
     }
 }
