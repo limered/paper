@@ -9,10 +9,10 @@ public static class Statics
 {
     public static PaperFace StartingPaper =>
         new(new List<Corner>
-            {
-                new() {Position = new Vector3(-1, 0, -1)},
-                new() {Position = new Vector3(-1, 0, 1)},
-                new() {Position = new Vector3(1, 0, 1)},
-                new() {Position = new Vector3(1, 0, -1)},
-            }, true);
+        {
+            new() { Position = new Vector3(-1, 0, -1) },
+            new() { Position = new Vector3(-1, 0, 1) },
+            new() { Position = new Vector3(1, 0, 1) },
+            new() { Position = new Vector3(1, 0, -1) }
+        }, true);
 }
