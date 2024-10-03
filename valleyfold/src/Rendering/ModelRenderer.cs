@@ -1,3 +1,4 @@
+using System.Linq;
 using Godot;
 using Godot.Collections;
 using valleyfold.Models;
@@ -33,7 +34,7 @@ public partial class ModelRenderer : MeshInstance3D
         var surfaceArray = new Array();
         surfaceArray.Resize((int)Mesh.ArrayType.Max);
         
-        surfaceArray[(int)Mesh.ArrayType.Vertex] = faceVerts.ToArray();
+        surfaceArray[(int)Mesh.ArrayType.Vertex] = faceVerts.Select(corner => corner.Position).ToArray();
         surfaceArray[(int)Mesh.ArrayType.Normal] = faceNormals;
         surfaceArray[(int)Mesh.ArrayType.Index] = faceIndices;
 
@@ -45,7 +46,7 @@ public partial class ModelRenderer : MeshInstance3D
         foreach (var corner in faceVerts)
         {
             var handle = (Node3D)_cornerHandleScene.Instantiate();
-            handle.Position = corner;
+            handle.Position = corner.Position;
             AddChild(handle);
         }
     }

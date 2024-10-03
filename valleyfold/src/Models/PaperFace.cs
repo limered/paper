@@ -6,11 +6,12 @@ namespace valleyfold.Models;
 
 public class PaperFace
 {
-	public readonly List<Vector3> Corners;
+	public readonly List<Corner> Corners;
+	
 	private bool _isTopFaced;
 
 	public PaperFace(
-		List<Vector3> corners, 
+		List<Corner> corners, 
 		bool isTopFaced)
 	{
 		Corners = corners;
@@ -23,6 +24,6 @@ public class PaperFace
 
 	public int[] Triangulate()
 	{
-		return Geometry2D.TriangulatePolygon(Corners.Select(c => new Vector2(c.X, c.Z)).ToArray());
+		return Geometry2D.TriangulatePolygon(Corners.Select(c => new Vector2(c.Position.X, c.Position.Z)).ToArray());
 	}
 }
