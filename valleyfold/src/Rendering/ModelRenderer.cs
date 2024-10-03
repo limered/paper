@@ -7,9 +7,12 @@ namespace valleyfold.Rendering;
 public partial class ModelRenderer : MeshInstance3D
 {
     private PaperModel _paperModel;
+    private PackedScene _cornerHandleScene;
 
     public override void _Ready()
     {
+        _cornerHandleScene = GD.Load<PackedScene>("res://scenes/CornerHandle.tscn");
+        
         _paperModel = new PaperModel();
         _paperModel.AddFace(Statics.StartingPaper);
 
@@ -37,5 +40,13 @@ public partial class ModelRenderer : MeshInstance3D
         var mesh = new ArrayMesh();
         mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, surfaceArray);
         Mesh = mesh;
+        
+        // Add Handles per corner
+        foreach (var corner in faceVerts)
+        {
+            var handle = (Node3D)_cornerHandleScene.Instantiate();
+            handle.Position = corner;
+            AddChild(handle);
+        }
     }
 }
