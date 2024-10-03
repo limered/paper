@@ -1,28 +1,17 @@
-using System.Collections.Generic;
 using Godot;
 using Godot.Collections;
 using valleyfold.Models;
 
 namespace valleyfold.Rendering;
 
-[Tool]
 public partial class ModelRenderer : MeshInstance3D
 {
     private PaperModel _paperModel;
 
     public override void _Ready()
     {
-        var startPaper = new List<Vector3>
-        {
-            new(-1, 0, -1),
-            new(-1, 0, 1),
-            new(1, 0, 1),
-            new(1, 0, -0.25f),
-            new(0.25f, 0, -0.75f),
-        };
-
         _paperModel = new PaperModel();
-        _paperModel.AddFace(new PaperFace(startPaper, true));
+        _paperModel.AddFace(Statics.StartingPaper);
 
         RenderPaper();
     }
