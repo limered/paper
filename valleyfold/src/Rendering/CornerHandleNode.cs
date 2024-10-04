@@ -16,6 +16,7 @@ public partial class CornerHandleNode : Node3D
         area.InputEvent += AreaOnInputEvent;
 
         _mesh = GetNodeOrNull<MeshInstance3D>("MeshInstance3D");
+        _mesh.SetVisible(false);
         _camera = GetViewport().GetCamera3D();
     }
 
@@ -41,11 +42,11 @@ public partial class CornerHandleNode : Node3D
 
     private void AreaOnMouseExited()
     {
-        _mesh.Scale *= 1.0f / 1.1f;
+        _mesh.SetVisible(false);
     }
 
     private void AreaOnMouseEntered()
     {
-        _mesh.Scale *= 1.1f;
+        _mesh.SetVisible(true);
     }
 }
