@@ -1,5 +1,4 @@
 using Godot;
-using Corner = valleyfold.Models.Corner;
 
 namespace valleyfold.Rendering;
 
@@ -8,8 +7,6 @@ public partial class CornerHandleNode : Node3D
     private Camera3D _camera;
     private bool _isGrabbed;
     private MeshInstance3D _mesh;
-    
-    public Corner Corner { get; set; }
 
     public override void _Ready()
     {

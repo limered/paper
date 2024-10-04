@@ -10,6 +10,7 @@ public partial class PaperFaceMeshComponent : MeshInstance3D
     public void Apply(Vector3[] vertices, Vector3[] normals, int[] indices)
     {
         _surfaceArray.Clear();
+        _surfaceArray.Resize((int)Mesh.ArrayType.Max);
         _surfaceArray[(int)Mesh.ArrayType.Vertex] = vertices;
         _surfaceArray[(int)Mesh.ArrayType.Normal] = normals;
         _surfaceArray[(int)Mesh.ArrayType.Index] = indices;

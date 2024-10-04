@@ -1,26 +1,14 @@
-[gd_scene load_steps=3 format=3 uid="uid://c428s44dslmnn"]
+[gd_scene load_steps=2 format=3 uid="uid://c428s44dslmnn"]
 
-[ext_resource type="Script" path="res://src/Rendering/ModelRenderer.cs" id="1_3tuqv"]
+[ext_resource type="Script" path="res://src/Game.cs" id="1_km5vh"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_tpl02"]
-size = Vector3(1.35742, 0.0359802, 0.810791)
-
-[node name="Game" type="Node3D"]
+[node name="Game" type="Node"]
+script = ExtResource("1_km5vh")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
 shadow_enabled = true
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-script = ExtResource("1_3tuqv")
-
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 1.90739, 0)
-
-[node name="Table" type="Node3D" parent="."]
-
-[node name="Area3D" type="Area3D" parent="Table"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Table/Area3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00123596, -0.0181732, 0)
-shape = SubResource("BoxShape3D_tpl02")
+current = true

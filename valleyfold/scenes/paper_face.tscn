@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://d1c87h8i6e5ds"]
+[gd_scene load_steps=3 format=3 uid="uid://cs3e4y48soy0m"]
 
 [ext_resource type="Script" path="res://src/Interaction/PaperFaceMeshComponent.cs" id="1_u177c"]
 

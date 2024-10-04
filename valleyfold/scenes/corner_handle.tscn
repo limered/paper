@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://d3bmqchvkp8uk"]
 
-[ext_resource type="Script" path="res://src/Rendering/CornerHandleNode.cs" id="1_yht4j"]
+[ext_resource type="Script" path="res://src/Rendering/CornerHandleNode.cs" id="1_tgcpn"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_om5m3"]
 
@@ -11,7 +11,7 @@ albedo_color = Color(0, 1, 1, 1)
 
 [node name="CornerHandle" type="Node3D"]
 transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
-script = ExtResource("1_yht4j")
+script = ExtResource("1_tgcpn")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("SphereMesh_om5m3")

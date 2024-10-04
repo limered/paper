@@ -30,7 +30,6 @@ public class PaperFaceRenderer
         foreach (var corner in faceVerts)
         {
             var handle = (CornerHandleNode)_cornerHandleScene.Instantiate();
-            handle.Corner = corner;
             handle.Position = corner.Position;
             parent.AddChild(handle);
         }
