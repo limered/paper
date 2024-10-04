@@ -39,6 +39,7 @@ public partial class CornerHandleNode : Node3D
         if (@event is not InputEventMouseButton inputEvent) return;
         if (inputEvent.ButtonIndex != MouseButton.Left) return;
         _isGrabbed = inputEvent.Pressed;
+        
     }
 
     private void AreaOnMouseExited()
