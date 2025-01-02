@@ -7,7 +7,6 @@ namespace valleyfold.Models;
 public class PaperFace
 {
 	public readonly List<Corner> Corners;
-	
 	private bool _isTopFaced;
 
 	public PaperFace(
