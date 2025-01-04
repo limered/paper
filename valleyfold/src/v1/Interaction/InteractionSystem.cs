@@ -4,7 +4,7 @@ using Godot;
 using valleyfold.Models;
 using valleyfold.Rendering;
 
-namespace valleyfold.Interaction;
+namespace valleyfold.v1.Interaction;
 
 public class InteractionSystem
 {

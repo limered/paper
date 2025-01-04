@@ -1,7 +1,7 @@
 using Godot;
 using Godot.Collections;
 
-namespace valleyfold.Interaction;
+namespace valleyfold.v1.Interaction;
 
 public partial class PaperFaceMeshComponent : MeshInstance3D
 {

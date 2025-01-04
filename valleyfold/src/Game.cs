@@ -1,5 +1,5 @@
 using Godot;
-using valleyfold.Interaction;
+using valleyfold.v1.Interaction;
 using valleyfold.Models;
 
 namespace valleyfold;
