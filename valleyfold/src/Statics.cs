@@ -15,4 +15,4 @@ public static class Statics
             new() { Position = new Vector3(1, 0, 1) },
             new() { Position = new Vector3(1, 0, -1) }
         }, true);
-}
+} 

@@ -5,6 +5,6 @@ namespace valleyfold.Models;
 public class ModelVertex
 {
     public Vector2 Point;
-    public ModelHalfEdge ModelHalfEdge;
+    public ModelHalfEdge HalfEdge;
     public uint Index;
 }
