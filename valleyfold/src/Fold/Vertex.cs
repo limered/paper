@@ -5,8 +5,7 @@ namespace valleyfold.Fold;
 
 public class Vertex
 {
-    public uint Index;
-    public Vector2 Coord;
-    public List<Edge> Edges = new();
-    public List<Face> Faces = new();
+    public Vector3 Coord;
+    public List<Id> Edges = new();
+    public List<Id> Faces = new();
 }

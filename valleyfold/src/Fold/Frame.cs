@@ -15,9 +15,8 @@ public enum Assignment
 
 public class Frame
 {
-    public List<Face> Faces = new();
     public List<Vertex> Vertices = new();
     public List<Edge> Edges = new();
+    public List<Face> Faces = new();
     public List<Assignment> Assignments = new();
-    public List<Edge> TriangulatedEdges = new();
 }
