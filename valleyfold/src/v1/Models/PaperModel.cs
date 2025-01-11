@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace valleyfold.Models;
+namespace valleyfold.v1.Models;
 
 public class PaperModel
 {

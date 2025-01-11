@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using valleyfold.Models;
-using valleyfold.Rendering;
+using valleyfold.v1.Models;
+using CornerHandleNode = valleyfold.v1.Rendering.CornerHandleNode;
 
 namespace valleyfold.v1.Interaction;
 

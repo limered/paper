@@ -11,7 +11,7 @@ public enum Assignment
     F, // Unfolded ( M/V than open)
     U, // Unspecified Fold
     C, // Cut Fold
-    J // Join (Flat triangulated polygon edge)
+    J  // Join (Flat triangulated polygon edge)
 }
 
 public class Frame

@@ -1,6 +1,6 @@
 using Godot;
 
-namespace valleyfold.Rendering;
+namespace valleyfold.v1.Rendering;
 
 public partial class CornerHandleNode : Node3D
 {

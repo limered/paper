@@ -1,9 +1,7 @@
-using System.Linq;
 using Godot;
-using Godot.Collections;
-using valleyfold.Models;
+using valleyfold.v1.Models;
 
-namespace valleyfold.Rendering;
+namespace valleyfold.v1.Rendering;
 
 public partial class ModelRenderer : MeshInstance3D
 {

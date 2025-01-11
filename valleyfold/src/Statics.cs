@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Godot;
-using valleyfold.Models;
-using Corner = valleyfold.Models.Corner;
+using valleyfold.v1.Models;
+using Corner = valleyfold.v1.Models.Corner;
 
 namespace valleyfold;
 
