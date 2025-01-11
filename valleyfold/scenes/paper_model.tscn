@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://32ltd2kiv74e"]
+
+[ext_resource type="Script" path="res://src/Render/ModelRenderer.cs" id="1_ieugo"]
+
+[node name="Node3D" type="Node3D"]
+script = ExtResource("1_ieugo")
