@@ -4,7 +4,7 @@ namespace valleyfold.Fold;
 
 public class Face
 {
-    public List<Id> Vertices = new();
+    public Id[] Vertices;
     public List<Id> Edges = new();
     public List<Id> Faces = new();
 }
