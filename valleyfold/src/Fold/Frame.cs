@@ -11,7 +11,7 @@ public enum Assignment
     F, // Unfolded ( M/V than open)
     U, // Unspecified Fold
     C, // Cut Fold
-    J  // Join (Flat triangulated polygon edge)
+    J // Join (Flat triangulated polygon edge)
 }
 
 public class Frame
@@ -68,4 +68,7 @@ public class Frame
     public void AddCrease(Id start, Id end, Assignment assignment)
     {
     }
+
+    public IEnumerable<Face> Faces => _faces;
+    public List<Vertex> Vertices => _vertices;
 }
