@@ -16,14 +16,15 @@ public enum Assignment
 
 public class Frame
 {
-    private readonly List<Assignment> _assignments = new();
     private readonly List<Edge> _edges = new();
     private readonly List<Face> _faces = new();
-    private readonly List<Vertex> _vertices = new();
+
+    public IEnumerable<Face> Faces => _faces;
+    public List<Vertex> Vertices { get; } = new();
 
     public void InitializePaper()
     {
-        _vertices.AddRange(new[]
+        Vertices.AddRange(new[]
         {
             new Vertex { Coord = new Vector3(0, 0, 0), Edges = new List<Id> { 0, 3 } },
             new Vertex { Coord = new Vector3(1, 0, 0), Edges = new List<Id> { 1, 0 } },
@@ -68,7 +69,4 @@ public class Frame
     public void AddCrease(Id start, Id end, Assignment assignment)
     {
     }
-
-    public IEnumerable<Face> Faces => _faces;
-    public List<Vertex> Vertices => _vertices;
 }
