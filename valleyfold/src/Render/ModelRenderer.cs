@@ -9,8 +9,13 @@ public partial class ModelRenderer : MeshInstance3D
     private Frame _frame;
     private readonly FrameRendererSystem _frameRendererSystem = new();
 
+    [Export]
+    public MeshInstance3D LineRenderer;
+
     public override void _Ready()
     {
+        LineRenderer.Mesh = new ImmediateMesh();
+        
         _frame = new Frame();
         _frame.InitializePaper();
     }

@@ -8,7 +8,31 @@ namespace valleyfold.Render.FrameRenderer;
 
 public class FrameRendererSystem
 {
-    public void Render(Frame frame, MeshInstance3D parent)
+    public void Render(Frame frame, ModelRenderer parent)
+    {
+        RenderFaces(frame, parent);
+        RenderEdges(frame, parent);
+    }
+
+    private static void RenderEdges(Frame frame, ModelRenderer parent)
+    {
+        var lineMesh = (ImmediateMesh)parent.LineRenderer.Mesh;
+        lineMesh.ClearSurfaces();
+        lineMesh.SurfaceBegin(Mesh.PrimitiveType.Lines);
+
+        foreach (var edge in frame.Edges)
+        {
+            var start = frame.Vertices[edge.Vertices[0]];
+            var end = frame.Vertices[edge.Vertices[1]];
+
+            lineMesh.SurfaceAddVertex(start.Coord);
+            lineMesh.SurfaceAddVertex(end.Coord);
+        }
+
+        lineMesh.SurfaceEnd();
+    }
+
+    private static void RenderFaces(Frame frame, ModelRenderer parent)
     {
         foreach (var face in frame.Faces)
         {

@@ -20,6 +20,7 @@ public class Frame
     private readonly List<Face> _faces = new();
 
     public IEnumerable<Face> Faces => _faces;
+    public IEnumerable<Edge> Edges => _edges;
     public List<Vertex> Vertices { get; } = new();
 
     public void InitializePaper()
@@ -64,9 +65,5 @@ public class Frame
         {
             new Face { Vertices = new Id[] { 0, 1, 2, 3 }, Edges = new List<Id> { 0, 1, 2, 3 } }
         });
-    }
-
-    public void AddCrease(Id start, Id end, Assignment assignment)
-    {
     }
 }
