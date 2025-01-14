@@ -15,6 +15,7 @@ public partial class ModelRenderer : MeshInstance3D
     public override void _Ready()
     {
         LineRenderer.Mesh = new ImmediateMesh();
+        Mesh = new ArrayMesh();
         
         _frame = new Frame();
         _frame.InitializePaper();

@@ -34,15 +34,25 @@ public class FrameRendererSystem
 
     private static void RenderFaces(Frame frame, ModelRenderer parent)
     {
+        var mesh = (ArrayMesh)parent.Mesh;
+        mesh.ClearSurfaces();
+
         foreach (var face in frame.Faces)
         {
             var faceVertexes = new List<Vector3>();
             faceVertexes.AddRange(face.Vertices.Select(i => frame.Vertices[i].Coord));
 
-            var faceNormals = faceVertexes.Select(_ => Vector3.Up).ToArray();
-            var faceIndices = Geometry2D
-                .TriangulatePolygon(faceVertexes.Select(c => new Vector2(c.X, c.Z))
-                    .ToArray());
+            var faceNormals = faceVertexes
+                .Select(_ => Vector3.Up)
+                .ToArray();
+
+            int[] faceIndices;
+            if (faceVertexes.Count > 3)
+                faceIndices = Geometry2D
+                    .TriangulatePolygon(faceVertexes.Select(c => new Vector2(c.X, c.Z))
+                        .ToArray());
+            else
+                faceIndices = new[] { 0, 1, 2 };
 
             var surfaceArray = new Array();
             surfaceArray.Resize((int)Mesh.ArrayType.Max);
@@ -51,9 +61,7 @@ public class FrameRendererSystem
             surfaceArray[(int)Mesh.ArrayType.Normal] = faceNormals;
             surfaceArray[(int)Mesh.ArrayType.Index] = faceIndices;
 
-            var mesh = new ArrayMesh();
             mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, surfaceArray);
-            parent.Mesh = mesh;
         }
     }
 }
