@@ -15,3 +15,7 @@ data_*/
 mono_crash.*.json
 
 valleyfold/.idea/.idea.valleyfold/.idea/libraries/GdSdk_Master.xml
+
+Testing/obj/
+
+Testing/bin/

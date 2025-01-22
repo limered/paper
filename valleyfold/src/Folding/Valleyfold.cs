@@ -14,6 +14,14 @@ public class Valleyfold : IFold
         var startVertex = frame.Vertices[Vertices[0]];
         var endVertex = frame.Vertices[Vertices[1]];
 
+        if (frame
+            .Edges
+            .Any(edge => edge.Vertices.Contains(Vertices[0]) && edge.Vertices.Contains(Vertices[1])))
+        {
+            // Edge exists already can't add new one
+            return;
+        }
+        
         var edge = new Edge
         {
             Assignment = Assignment.V,
@@ -24,7 +32,7 @@ public class Valleyfold : IFold
 
         var facesToSplit = frame
             .Faces
-            .Where(f => f.Vertices.Contains(Vertices[0]) || f.Vertices.Contains(Vertices[1]))
+            .Where(f => f.Vertices.Contains(Vertices[0]) && f.Vertices.Contains(Vertices[1]))
             .ToList();
 
         foreach (var face in facesToSplit)
@@ -57,6 +65,8 @@ public class Valleyfold : IFold
             rightVertices.Add(otherIndex);
         }
 
-        return (new Face { Vertices = leftVertices.ToArray() }, new Face { Vertices = rightVertices.ToArray() });
+        return (
+            new Face { Vertices = leftVertices.ToArray() },
+            new Face { Vertices = rightVertices.ToArray() });
     }
 }

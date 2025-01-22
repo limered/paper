@@ -3,6 +3,7 @@ using System.Linq;
 using Godot;
 using Godot.Collections;
 using valleyfold.Fold;
+using Array = Godot.Collections.Array;
 
 namespace valleyfold.Render.FrameRenderer;
 
