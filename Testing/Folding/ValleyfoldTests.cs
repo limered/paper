@@ -29,4 +29,12 @@ public class ValleyfoldTests
         Assert.Equivalent(new Id[]{2, 3, 0}, _testingFrame.Faces.ElementAt(0).Vertices);
         Assert.Equivalent(new Id[]{0, 1, 2}, _testingFrame.Faces.ElementAt(1).Vertices);
     }
+
+    [Fact]
+    public void NewEdgeIsAValleyfold() 
+    {
+        new Valleyfold { Vertices = { 0, 2 } }.Apply(_testingFrame);
+        
+        Assert.Equivalent(Assignment.V, _testingFrame.Edges.Last().Assignment);
+    } 
 }
