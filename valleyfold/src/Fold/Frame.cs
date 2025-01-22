@@ -27,10 +27,10 @@ public class Frame
     {
         Vertices.AddRange(new[]
         {
-            new Vertex { Coord = new Vector3(0, 0, 0), Edges = new List<Id> { 0, 3 } },
-            new Vertex { Coord = new Vector3(1, 0, 0), Edges = new List<Id> { 1, 0 } },
-            new Vertex { Coord = new Vector3(1, 0, 1), Edges = new List<Id> { 1, 2 } },
-            new Vertex { Coord = new Vector3(0, 0, 1), Edges = new List<Id> { 3, 2 } }
+            new Vertex { Coord = new Vector3(0, 0, 0) },
+            new Vertex { Coord = new Vector3(1, 0, 0) },
+            new Vertex { Coord = new Vector3(1, 0, 1) },
+            new Vertex { Coord = new Vector3(0, 0, 1) }
         });
 
         _edges.AddRange(new[]
@@ -63,7 +63,20 @@ public class Frame
 
         _faces.AddRange(new[]
         {
-            new Face { Vertices = new Id[] { 0, 1, 2, 3 }, Edges = new List<Id> { 0, 1, 2, 3 } }
+            new Face { Vertices = new Id[] { 0, 1, 2, 3 } }
         });
+    }
+
+    public void SplitFace(Face face, Face faceL, Face faceR)
+    {
+        _faces.Remove(face);
+        _faces.Add(faceL);
+        _faces.Add(faceR);
+    }
+
+    public void AddEdge(Edge edge)
+    {
+        if (_edges.Contains(edge)) return;
+        _edges.Add(edge);
     }
 }
