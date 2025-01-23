@@ -5,12 +5,12 @@
     &lt;TestId&gt;xUnit::0A938AC8-7E60-4B0E-BF0B-6C2BD709EBDA::net8.0::Testing.Folding.ValleyfoldTests.IfEdgeAlreadyExists_DoNotChangeFrame&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=95c22854_002D5212_002D4174_002D94bf_002Dc014aab6b1b6/@EntryIndexedValue">&lt;SessionState ContinuousTestingIsOn="True" ContinuousTestingMode="2" IsActive="True" Name="ValleyfoldTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=95c22854_002D5212_002D4174_002D94bf_002Dc014aab6b1b6/@EntryIndexedValue">&lt;SessionState ContinuousTestingIsOn="True" ContinuousTestingMode="2" Name="ValleyfoldTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::0A938AC8-7E60-4B0E-BF0B-6C2BD709EBDA::net8.0::Testing.Folding.ValleyfoldTests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=bb69afd2_002De062_002D4dc7_002Db247_002D711a628a59ca/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="SplitPolygonsClockwise" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=bb69afd2_002De062_002D4dc7_002Db247_002D711a628a59ca/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="SplitPolygonsClockwise" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::0A938AC8-7E60-4B0E-BF0B-6C2BD709EBDA::net8.0::Testing.Folding.ValleyfoldTests.SplitPolygonsClockwise&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;

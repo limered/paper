@@ -1,7 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://c428s44dslmnn"]
+[gd_scene load_steps=5 format=3 uid="uid://c428s44dslmnn"]
 
 [ext_resource type="Script" path="res://src/Game.cs" id="1_km5vh"]
 [ext_resource type="PackedScene" uid="uid://32ltd2kiv74e" path="res://scenes/paper_model.tscn" id="2_vgd34"]
+[ext_resource type="Script" path="res://src/Interaction/PaperInteractions/ClickSystem.cs" id="3_gm42t"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rmvhn"]
+size = Vector3(2, 0.1, 2)
 
 [node name="Game" type="Node"]
 script = ExtResource("1_km5vh")
@@ -11,8 +15,17 @@ transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75
 shadow_enabled = true
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.795743, 0)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0.5, 0.796, 0.5)
 current = true
 
 [node name="Model" parent="." instance=ExtResource("2_vgd34")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, -0.5)
+
+[node name="Node" type="Node3D" parent="." node_paths=PackedStringArray("MouseCollision")]
+script = ExtResource("3_gm42t")
+MouseCollision = NodePath("Area3D")
+
+[node name="Area3D" type="Area3D" parent="Node"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Node/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.516602, -0.0501204, 0.5)
+shape = SubResource("BoxShape3D_rmvhn")
