@@ -47,12 +47,12 @@ public class Valleyfold : IFold
 
     private (Face faceL, Face faceR) SplitFace(Face face, Frame frame)
     {
-        var endVertexIndex = Array.IndexOf(face.Vertices, Vertices[1]);
+        var endVertexIndex = face.Vertices.IndexOf(Vertices[1]);
         var otherIndex = endVertexIndex;
         var leftVertices = new List<Id> { Vertices[1] };
         while (frame.Vertices[otherIndex] != frame.Vertices[Vertices[0]])
         {
-            otherIndex = (otherIndex + 1) % face.Vertices.Length;
+            otherIndex = (otherIndex + 1) % face.Vertices.Count;
 
             leftVertices.Add(otherIndex);
         }
@@ -60,13 +60,13 @@ public class Valleyfold : IFold
         var rightVertices = new List<Id> { Vertices[0] };
         while (frame.Vertices[otherIndex] != frame.Vertices[Vertices[1]])
         {
-            otherIndex = (otherIndex + 1) % face.Vertices.Length;
+            otherIndex = (otherIndex + 1) % face.Vertices.Count;
 
             rightVertices.Add(otherIndex);
         }
 
         return (
-            new Face { Vertices = leftVertices.ToArray() },
-            new Face { Vertices = rightVertices.ToArray() });
+            new Face { Vertices = leftVertices },
+            new Face { Vertices = rightVertices });
     }
 }

@@ -64,7 +64,7 @@ public class Frame
 
         _faces.AddRange(new[]
         {
-            new Face { Vertices = new Id[] { 0, 1, 2, 3 } }
+            new Face { Vertices = new List<Id> { 0, 1, 2, 3 } }
         });
     }
 
@@ -135,8 +135,8 @@ public class Frame
         }
 
         return nearest;
-    } 
-    
+    }
+
     public Vector3 NearestPointOnEdgeTo(Vector3 point, Edge edge)
     {
         var start = Vertices[edge.Vertices[0]].Coord;
@@ -144,5 +144,41 @@ public class Frame
         var startToPoint = point - start;
         var startToEnd = end - start;
         return startToPoint.Project(startToEnd) + start;
-    } 
+    }
+
+    public Id AddVertexOnEdge(Vector3 point, Edge edge)
+    {
+        var id = Vertices.Count;
+        Vertices.Add(new Vertex
+        {
+            Coord = point
+        });
+
+        var edgeAdjacentFaces = EdgeAdjacentFaces(edge);
+        foreach (var edgeAdjacentFace in edgeAdjacentFaces)
+        {
+            var startVertexId = edgeAdjacentFace.Vertices.IndexOf(edge.Vertices[0]);
+            var endVertexId = edgeAdjacentFace.Vertices.IndexOf(edge.Vertices[1]);
+            edgeAdjacentFace.Vertices
+                .Insert(startVertexId < endVertexId ? endVertexId : startVertexId, id);
+        }
+
+        var secondEdge = new Edge
+        {
+            Vertices = new Id[] { id, edge.Vertices[1] },
+            Assignment = edge.Assignment,
+            FoldAngle = edge.FoldAngle
+        };
+        edge.Vertices[1] = id;
+        AddEdge(secondEdge);
+
+        return id;
+    }
+
+    public Face[] EdgeAdjacentFaces(Edge edge)
+    {
+        return _faces.Where(face =>
+                face.Vertices.Contains(edge.Vertices[0]) && face.Vertices.Contains(edge.Vertices[1]))
+            .ToArray();
+    }
 }

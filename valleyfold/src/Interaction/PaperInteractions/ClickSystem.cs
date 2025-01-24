@@ -4,12 +4,20 @@ using valleyfold.Fold;
 
 namespace valleyfold.Interaction.PaperInteractions;
 
+public class WorldNewPointData
+{
+    public Vector3 Coord;
+    public bool IsOnEdge;
+    public Id ExistingVertex;
+}
+
 public partial class ClickSystem : Node3D
 {
     [Export] public Node3D GhostClickPosition;
     [Export] public Area3D MouseCollision;
 
     private Vector3 _mouseWorldPosition;
+    private WorldNewPointData _newPointData;
 
     public override void _Ready()
     {
@@ -40,16 +48,20 @@ public partial class ClickSystem : Node3D
         if (Statics.Frame == null) return;
 
         var nearestEdges = Statics.Frame.NearestEdgesTo(_mouseWorldPosition);
-        var vertexId = Statics.Frame.NearestVertexIdTo(_mouseWorldPosition);
-        var pointCoordinate = Statics.Frame.Vertices[vertexId].Coord;
+        _newPointData.ExistingVertex = Statics.Frame.NearestVertexIdTo(_mouseWorldPosition);
+        _newPointData.Coord = Statics.Frame.Vertices[_newPointData.ExistingVertex].Coord;
+        _newPointData.IsOnEdge = false;
         if (nearestEdges.Any())
         {
             var pointOnEdge = Statics.Frame.NearestPointOnEdgeTo(_mouseWorldPosition, nearestEdges);
             if (pointOnEdge.DistanceSquaredTo(_mouseWorldPosition) <
-                pointCoordinate.DistanceSquaredTo(_mouseWorldPosition))
-                pointCoordinate = pointOnEdge;
+                _newPointData.Coord.DistanceSquaredTo(_mouseWorldPosition))
+            {
+                _newPointData.Coord = pointOnEdge;
+                _newPointData.IsOnEdge = true;
+            }
         }
 
-        GhostClickPosition.Position = pointCoordinate;
+        GhostClickPosition.Position = _newPointData.Coord;
     }
 }
