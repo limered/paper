@@ -7,7 +7,6 @@ namespace valleyfold.Interaction.PaperInteractions;
 public partial class ClickSystem : Node3D
 {
     [Export] public Node3D GhostClickPosition;
-
     [Export] public Area3D MouseCollision;
 
     private Vector3 _mouseWorldPosition;
@@ -38,19 +37,19 @@ public partial class ClickSystem : Node3D
 
     public override void _Process(double delta)
     {
-        if(Statics.Frame == null)
-        {
-            return;
-        }
+        if (Statics.Frame == null) return;
 
         var nearestEdges = Statics.Frame.NearestEdgesTo(_mouseWorldPosition);
+        var vertexId = Statics.Frame.NearestVertexIdTo(_mouseWorldPosition);
+        var pointCoordinate = Statics.Frame.Vertices[vertexId].Coord;
         if (nearestEdges.Any())
         {
-            // Get point on edge
+            var pointOnEdge = Statics.Frame.NearestPointOnEdgeTo(_mouseWorldPosition, nearestEdges);
+            if (pointOnEdge.DistanceSquaredTo(_mouseWorldPosition) <
+                pointCoordinate.DistanceSquaredTo(_mouseWorldPosition))
+                pointCoordinate = pointOnEdge;
         }
-        else
-        {
-            // get nearest Vertex
-        }
+
+        GhostClickPosition.Position = pointCoordinate;
     }
 }

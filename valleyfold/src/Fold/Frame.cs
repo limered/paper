@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 
 namespace valleyfold.Fold;
@@ -91,10 +92,57 @@ public class Frame
             var backward = start - end;
             if (forward.Dot(point - start) <= 0) continue;
             if (backward.Dot(point - end) <= 0) continue;
-            
+
             nearestEdges.Add(edge);
         }
-        
+
         return nearestEdges;
     }
+
+    public Id NearestVertexIdTo(Vector3 point)
+    {
+        var nearest = 0;
+        var minDist = point.DistanceSquaredTo(Vertices[nearest].Coord);
+        for (var i = 1; i < Vertices.Count; i++)
+        {
+            var dist = point.DistanceSquaredTo(Vertices[i].Coord);
+            if (dist < minDist)
+            {
+                nearest = i;
+                minDist = dist;
+            }
+        }
+
+        return nearest;
+    }
+
+    public Vector3 NearestPointOnEdgeTo(Vector3 point, List<Edge> edges)
+    {
+        var points = edges
+            .Select(edge => NearestPointOnEdgeTo(point, edge))
+            .ToList();
+
+        var nearest = points[0];
+        var nearestDist = nearest.DistanceSquaredTo(point);
+        foreach (var edgePoint in points)
+        {
+            var dist = edgePoint.DistanceSquaredTo(point);
+            if (dist < nearestDist)
+            {
+                nearest = edgePoint;
+                nearestDist = dist;
+            }
+        }
+
+        return nearest;
+    } 
+    
+    public Vector3 NearestPointOnEdgeTo(Vector3 point, Edge edge)
+    {
+        var start = Vertices[edge.Vertices[0]].Coord;
+        var end = Vertices[edge.Vertices[1]].Coord;
+        var startToPoint = point - start;
+        var startToEnd = end - start;
+        return startToPoint.Project(startToEnd) + start;
+    } 
 }

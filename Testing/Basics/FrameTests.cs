@@ -36,4 +36,67 @@ public class FrameTests
             Assert.Equivalent(_frame.Edges, edges);
         }
     }
+    
+    public class NearestVertexIdTo : FrameTests
+    {
+        [Fact]
+        public void ReturnsNearestVertexToPoint()
+        {
+            var point = new Vector3(1.5f, 0, 1.5f);
+
+            var result = _frame.NearestVertexIdTo(point);
+            
+            Assert.Equivalent((Id)2, result);
+        }
+    }
+
+    public class NearestPointOnEdgeTo : FrameTests
+    {
+        [Fact]
+        public void CalculateNearestPointOnEdge()
+        {
+            var point = new Vector3(-0.5f, 0, 0.5f);
+            var edge = _frame.Edges.ElementAt(3);
+
+            var result = _frame.NearestPointOnEdgeTo(point, edge);
+            
+            Assert.Equivalent(new Vector3(0, 0, 0.5f), result);
+        }
+
+        [Fact]
+        public void CalculateCorrectlyForDiagonalEdge()
+        {
+            var point = new Vector3(0.5f, 0, 0.5f);
+            var edge = new Edge()
+            {
+                Vertices = [0, 2],
+                Assignment = Assignment.V
+            };
+            
+            var result = _frame.NearestPointOnEdgeTo(point, edge);
+            Assert.Equivalent(new Vector3(0.5f, 0, 0.5f), result);
+        }
+
+        [Fact]
+        public void CalculateNearestPointOnEdges()
+        {
+            var point = new Vector3(-0.5f, 0, 0.5f);
+            var edges = new List<Edge>() { _frame.Edges.ElementAt(3), _frame.Edges.ElementAt(1) };
+            
+            var result = _frame.NearestPointOnEdgeTo(point, edges);
+            
+            Assert.Equivalent(new Vector3(0, 0, 0.5f), result);
+        }
+        
+        [Fact]
+        public void CalculateNearestPointOnEdgesRight()
+        {
+            var point = new Vector3(1.5f, 0, 0.5f);
+            var edges = new List<Edge>() { _frame.Edges.ElementAt(3), _frame.Edges.ElementAt(1) };
+            
+            var result = _frame.NearestPointOnEdgeTo(point, edges);
+            
+            Assert.Equivalent(new Vector3(1f, 0, 0.5f), result);
+        }
+    }
 }
