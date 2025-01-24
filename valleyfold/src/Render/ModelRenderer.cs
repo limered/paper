@@ -20,6 +20,7 @@ public partial class ModelRenderer : MeshInstance3D
 
         _frame = new Frame();
         _frame.InitializePaper();
+        Statics.Frame = _frame;
     }
 
     public override void _Input(InputEvent @event)

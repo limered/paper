@@ -79,4 +79,22 @@ public class Frame
         if (_edges.Contains(edge)) return;
         _edges.Add(edge);
     }
+
+    public List<Edge> NearestEdgesTo(Vector3 point)
+    {
+        var nearestEdges = new List<Edge>();
+        foreach (var edge in _edges)
+        {
+            var start = Vertices[edge.Vertices[0]].Coord;
+            var end = Vertices[edge.Vertices[1]].Coord;
+            var forward = end - start;
+            var backward = start - end;
+            if (forward.Dot(point - start) <= 0) continue;
+            if (backward.Dot(point - end) <= 0) continue;
+            
+            nearestEdges.Add(edge);
+        }
+        
+        return nearestEdges;
+    }
 }
