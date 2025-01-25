@@ -7,21 +7,31 @@ namespace valleyfold.Interaction.PaperInteractions;
 public class WorldNewPointData
 {
     public Vector3 Coord;
-    public bool IsOnEdge;
     public Id ExistingVertex;
+    public bool IsOnEdge;
+
+    public WorldNewPointData Copy()
+    {
+        return new WorldNewPointData
+        {
+            Coord = Coord,
+            ExistingVertex = ExistingVertex,
+            IsOnEdge = IsOnEdge
+        };
+    }
 }
 
 public partial class ClickSystem : Node3D
 {
-    [Export] public Node3D GhostClickPosition;
-    [Export] public Node3D FirstNewVertex;
-    [Export] public Node3D SecondNewVertex;
-    [Export] public Area3D MouseCollision;
-
-    private Vector3 _mouseWorldPosition;
     private readonly WorldNewPointData _tempPointData = new();
     private WorldNewPointData _firstPoint;
+
+    private Vector3 _mouseWorldPosition;
     private WorldNewPointData _secondPoint;
+    [Export] public Node3D FirstNewVertex;
+    [Export] public Node3D GhostClickPosition;
+    [Export] public Area3D MouseCollision;
+    [Export] public Node3D SecondNewVertex;
 
     public override void _Ready()
     {
@@ -31,43 +41,31 @@ public partial class ClickSystem : Node3D
     private void MouseCollisionOnInputEvent(
         Node camera,
         InputEvent @event,
-        Vector3 eventposition,
+        Vector3 eventPosition,
         Vector3 normal,
-        long shapeidx)
+        long shapeIdx)
     {
-        _mouseWorldPosition = eventposition;
+        _mouseWorldPosition = eventPosition;
     }
 
     public override void _Input(InputEvent @event)
     {
         if (@event is not InputEventMouseButton mouseEvent) return;
-        if (mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
+        if (mouseEvent.ButtonIndex != MouseButton.Left || !mouseEvent.Pressed) return;
+
+        if (_firstPoint == null)
         {
-            if (_firstPoint == null)
-            {
-                _firstPoint = new WorldNewPointData()
-                {
-                    Coord = _tempPointData.Coord,
-                    ExistingVertex = _tempPointData.ExistingVertex,
-                    IsOnEdge = _tempPointData.IsOnEdge
-                };
-            }
-            else if (_secondPoint == null)
-            {
-                _secondPoint = new WorldNewPointData()
-                {
-                    Coord = _tempPointData.Coord,
-                    ExistingVertex = _tempPointData.ExistingVertex,
-                    IsOnEdge = _tempPointData.IsOnEdge
-                };
-                
-                // accept cut
-            }
-            else
-            {
-                _firstPoint = null;
-                _secondPoint = null;
-            }
+            _firstPoint = _tempPointData.Copy();
+        }
+        else if (_secondPoint == null)
+        {
+            _secondPoint = _tempPointData.Copy();
+        }
+        else
+        {
+            // accept cut
+            _firstPoint = null;
+            _secondPoint = null;
         }
     }
 

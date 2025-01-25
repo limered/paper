@@ -84,8 +84,9 @@ public class Frame
     public List<Edge> NearestEdgesTo(Vector3 point)
     {
         var nearestEdges = new List<Edge>();
-        foreach (var edge in _edges)
+        for (var i = 0; i < _edges.Count; i++)
         {
+            var edge = _edges[i];
             var start = Vertices[edge.Vertices[0]].Coord;
             var end = Vertices[edge.Vertices[1]].Coord;
             var forward = end - start;
