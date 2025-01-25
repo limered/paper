@@ -1,22 +1,12 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AEquivalenceAsserts_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003F_002E_002E_003F_002E_002E_003FUsers_003Femil_002Ebohleber_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003Ff31923fd508f1924405dace869215209fea7f7a0ecbf11291034a9b22b8_003FEquivalenceAsserts_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=5e11aca0_002D9377_002D454b_002D80f9_002D2734f234cb24/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Testing&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Project Location="H:\source\paper\Testing" Presentation="&amp;lt;Testing&amp;gt;" /&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
 	
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=4faea595_002Dd628_002D485a_002D8bcb_002D72e249ebf7e5/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="IfEdgeAlreadyExists_DoNotChangeFrame" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::0A938AC8-7E60-4B0E-BF0B-6C2BD709EBDA::net8.0::Testing.Folding.ValleyfoldTests.IfEdgeAlreadyExists_DoNotChangeFrame&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=95c22854_002D5212_002D4174_002D94bf_002Dc014aab6b1b6/@EntryIndexedValue">&lt;SessionState ContinuousTestingIsOn="True" ContinuousTestingMode="2" Name="ValleyfoldTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::0A938AC8-7E60-4B0E-BF0B-6C2BD709EBDA::net8.0::Testing.Folding.ValleyfoldTests&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=bb69afd2_002De062_002D4dc7_002Db247_002D711a628a59ca/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="SplitPolygonsClockwise" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::0A938AC8-7E60-4B0E-BF0B-6C2BD709EBDA::net8.0::Testing.Folding.ValleyfoldTests.SplitPolygonsClockwise&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::0A938AC8-7E60-4B0E-BF0B-6C2BD709EBDA::net8.0::Testing.Basics.FrameTests+NearestEdgeTo.PointIsOutside_ReturnsSomeEdges&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String>
+	
+	
+	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ebb7989f_002D8074_002D4706_002Da0d8_002D6d98f85b0eed/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="PointIsInside_ReturnAllPolygonEdges" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::0A938AC8-7E60-4B0E-BF0B-6C2BD709EBDA::net8.0::Testing.Basics.FrameTests+NearestEdgeTo.PointIsInside_ReturnAllPolygonEdges&lt;/TestId&gt;&#xD;

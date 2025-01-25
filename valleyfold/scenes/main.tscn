@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://c428s44dslmnn"]
+[gd_scene load_steps=10 format=3 uid="uid://c428s44dslmnn"]
 
 [ext_resource type="Script" path="res://src/Game.cs" id="1_km5vh"]
 [ext_resource type="PackedScene" uid="uid://32ltd2kiv74e" path="res://scenes/paper_model.tscn" id="2_vgd34"]
@@ -8,6 +8,22 @@
 size = Vector3(2, 0.1, 2)
 
 [sub_resource type="SphereMesh" id="SphereMesh_juy70"]
+radius = 0.01
+height = 0.02
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vpbyi"]
+albedo_color = Color(1, 0, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_u5yjp"]
+material = SubResource("StandardMaterial3D_vpbyi")
+radius = 0.01
+height = 0.02
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ylrfg"]
+albedo_color = Color(0, 1, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_t2bpj"]
+material = SubResource("StandardMaterial3D_ylrfg")
 radius = 0.01
 height = 0.02
 
@@ -24,9 +40,11 @@ current = true
 
 [node name="Model" parent="." instance=ExtResource("2_vgd34")]
 
-[node name="Node" type="Node3D" parent="." node_paths=PackedStringArray("GhostClickPosition", "MouseCollision")]
+[node name="Node" type="Node3D" parent="." node_paths=PackedStringArray("GhostClickPosition", "FirstNewVertex", "SecondNewVertex", "MouseCollision")]
 script = ExtResource("3_gm42t")
-GhostClickPosition = NodePath("Node3D")
+GhostClickPosition = NodePath("GhostVertex")
+FirstNewVertex = NodePath("FirstNewVertex")
+SecondNewVertex = NodePath("SecondNewVertex")
 MouseCollision = NodePath("Area3D")
 
 [node name="Area3D" type="Area3D" parent="Node"]
@@ -35,7 +53,17 @@ MouseCollision = NodePath("Area3D")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.516602, -0.0501204, 0.5)
 shape = SubResource("BoxShape3D_rmvhn")
 
-[node name="Node3D" type="Node3D" parent="Node"]
+[node name="GhostVertex" type="Node3D" parent="Node"]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Node/Node3D"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node/GhostVertex"]
 mesh = SubResource("SphereMesh_juy70")
+
+[node name="FirstNewVertex" type="Node3D" parent="Node"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node/FirstNewVertex"]
+mesh = SubResource("SphereMesh_u5yjp")
+
+[node name="SecondNewVertex" type="Node3D" parent="Node"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Node/SecondNewVertex"]
+mesh = SubResource("SphereMesh_t2bpj")
