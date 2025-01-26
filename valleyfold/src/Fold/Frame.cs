@@ -117,25 +117,24 @@ public class Frame
         return nearest;
     }
 
-    public Vector3 NearestPointOnEdgeTo(Vector3 point, List<Edge> edges)
+    public (Vector3, Edge) NearestPointOnEdgeTo(Vector3 point, List<Edge> edges)
     {
-        var points = edges
-            .Select(edge => NearestPointOnEdgeTo(point, edge))
-            .ToList();
 
-        var nearest = points[0];
-        var nearestDist = nearest.DistanceSquaredTo(point);
-        foreach (var edgePoint in points)
+        var nearestDistance = float.MaxValue;
+        (Vector3, Edge) result = (Vector3.Zero, null);
+        for (var i = 0; i < edges.Count; i++)
         {
+            var edge = edges[i];
+            var edgePoint = NearestPointOnEdgeTo(point, edge);
             var dist = edgePoint.DistanceSquaredTo(point);
-            if (dist < nearestDist)
-            {
-                nearest = edgePoint;
-                nearestDist = dist;
-            }
+            if (dist >= nearestDistance) continue;
+            
+            nearestDistance = dist;
+            result.Item1 = edgePoint;
+            result.Item2 = edge;
         }
-
-        return nearest;
+        
+        return result;
     }
 
     public Vector3 NearestPointOnEdgeTo(Vector3 point, Edge edge)

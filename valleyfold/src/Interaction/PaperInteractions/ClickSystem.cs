@@ -1,12 +1,15 @@
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using valleyfold.Fold;
+using valleyfold.Folding;
 
 namespace valleyfold.Interaction.PaperInteractions;
 
 public class WorldNewPointData
 {
     public Vector3 Coord;
+    public Edge Edge;
     public Id ExistingVertex;
     public bool IsOnEdge;
 
@@ -16,7 +19,8 @@ public class WorldNewPointData
         {
             Coord = Coord,
             ExistingVertex = ExistingVertex,
-            IsOnEdge = IsOnEdge
+            IsOnEdge = IsOnEdge,
+            Edge = Edge
         };
     }
 }
@@ -63,7 +67,20 @@ public partial class ClickSystem : Node3D
         }
         else
         {
-            // accept cut
+            var firstId = _firstPoint.ExistingVertex;
+            if (_firstPoint.IsOnEdge)
+            {
+                firstId = Statics.Frame.AddVertexOnEdge(_firstPoint.Coord, _firstPoint.Edge);
+            }
+
+            var secondId = _secondPoint.ExistingVertex;
+            if (_secondPoint.IsOnEdge)
+            {
+                secondId = Statics.Frame.AddVertexOnEdge(_secondPoint.Coord, _secondPoint.Edge);
+            }
+
+            new Valleyfold { Vertices = new List<Id> { firstId, secondId } }.Apply(Statics.Frame);
+            
             _firstPoint = null;
             _secondPoint = null;
         }
@@ -77,13 +94,15 @@ public partial class ClickSystem : Node3D
         _tempPointData.ExistingVertex = Statics.Frame.NearestVertexIdTo(_mouseWorldPosition);
         _tempPointData.Coord = Statics.Frame.Vertices[_tempPointData.ExistingVertex].Coord;
         _tempPointData.IsOnEdge = false;
+        _tempPointData.Edge = null;
         if (nearestEdges.Any())
         {
-            var pointOnEdge = Statics.Frame.NearestPointOnEdgeTo(_mouseWorldPosition, nearestEdges);
-            if (pointOnEdge.DistanceSquaredTo(_mouseWorldPosition) <
+            var pointAndEdge = Statics.Frame.NearestPointOnEdgeTo(_mouseWorldPosition, nearestEdges);
+            if (pointAndEdge.Item1.DistanceSquaredTo(_mouseWorldPosition) <
                 _tempPointData.Coord.DistanceSquaredTo(_mouseWorldPosition))
             {
-                _tempPointData.Coord = pointOnEdge;
+                _tempPointData.Coord = pointAndEdge.Item1;
+                _tempPointData.Edge = pointAndEdge.Item2;
                 _tempPointData.IsOnEdge = true;
             }
         }

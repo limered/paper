@@ -40,12 +40,12 @@ current = true
 
 [node name="Model" parent="." instance=ExtResource("2_vgd34")]
 
-[node name="Node" type="Node3D" parent="." node_paths=PackedStringArray("GhostClickPosition", "FirstNewVertex", "SecondNewVertex", "MouseCollision")]
+[node name="Node" type="Node3D" parent="." node_paths=PackedStringArray("FirstNewVertex", "GhostClickPosition", "MouseCollision", "SecondNewVertex")]
 script = ExtResource("3_gm42t")
-GhostClickPosition = NodePath("GhostVertex")
 FirstNewVertex = NodePath("FirstNewVertex")
-SecondNewVertex = NodePath("SecondNewVertex")
+GhostClickPosition = NodePath("GhostVertex")
 MouseCollision = NodePath("Area3D")
+SecondNewVertex = NodePath("SecondNewVertex")
 
 [node name="Area3D" type="Area3D" parent="Node"]
 
