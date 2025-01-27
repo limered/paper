@@ -151,5 +151,18 @@ public class FrameTests
             Assert.Equivalent((Id)2, edgeAdjacentFace.Vertices[3]);
             Assert.Equivalent((Id)3, edgeAdjacentFace.Vertices[4]);
         }
+
+        [Fact]
+        public void EdgeIstLastEdge_AddsVertexAtEndpoint()
+        {
+            var point = new Vector3(0, 0, 0.5f);
+            var edge = _frame.Edges.Last();
+            var edgeAdjacentFace = _frame.Faces.First();
+
+            _ = _frame.AddVertexOnEdge(point, edge);
+            
+            Assert.Equivalent((Id)4, edgeAdjacentFace.Vertices[4]);
+            Assert.Equivalent((Id)3, edgeAdjacentFace.Vertices[3]);
+        }
     }
 }

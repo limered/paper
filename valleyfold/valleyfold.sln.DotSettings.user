@@ -16,6 +16,7 @@
     &lt;TestId&gt;xUnit::0A938AC8-7E60-4B0E-BF0B-6C2BD709EBDA::net8.0::Testing.Basics.FrameTests+NearestPointOnEdgeTo&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::0A938AC8-7E60-4B0E-BF0B-6C2BD709EBDA::net8.0::Testing.Basics.FrameTests+AddVertexOnEdge.AddsTheVertexToFrame&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::0A938AC8-7E60-4B0E-BF0B-6C2BD709EBDA::net8.0::Testing.Basics.FrameTests+AddVertexOnBorderEdge&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::0A938AC8-7E60-4B0E-BF0B-6C2BD709EBDA::net8.0::Testing.Folding.ValleyfoldTests.SplitTheInitialPaperCorrectly&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=valleyfold/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

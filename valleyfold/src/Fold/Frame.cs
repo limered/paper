@@ -159,8 +159,16 @@ public class Frame
         {
             var startVertexId = edgeAdjacentFace.Vertices.IndexOf(edge.Vertices[0]);
             var endVertexId = edgeAdjacentFace.Vertices.IndexOf(edge.Vertices[1]);
-            edgeAdjacentFace.Vertices
-                .Insert(startVertexId < endVertexId ? endVertexId : startVertexId, id);
+            if (endVertexId == 0 && startVertexId == edgeAdjacentFace.Vertices.Count - 1)
+            {
+                // case for last edge
+                edgeAdjacentFace.Vertices.Add(id);
+            }
+            else
+            {
+                edgeAdjacentFace.Vertices
+                    .Insert(startVertexId < endVertexId ? endVertexId : startVertexId, id);
+            }
         }
 
         var secondEdge = new Edge

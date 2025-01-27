@@ -50,19 +50,19 @@ public class Valleyfold : IFold
         var endVertexIndex = face.Vertices.IndexOf(Vertices[1]);
         var otherIndex = endVertexIndex;
         var leftVertices = new List<Id> { Vertices[1] };
-        while (frame.Vertices[otherIndex] != frame.Vertices[Vertices[0]])
+        while (frame.Vertices[face.Vertices[otherIndex]] != frame.Vertices[Vertices[0]])
         {
             otherIndex = (otherIndex + 1) % face.Vertices.Count;
 
-            leftVertices.Add(otherIndex);
+            leftVertices.Add(face.Vertices[otherIndex]);
         }
 
         var rightVertices = new List<Id> { Vertices[0] };
-        while (frame.Vertices[otherIndex] != frame.Vertices[Vertices[1]])
+        while (frame.Vertices[face.Vertices[otherIndex]] != frame.Vertices[Vertices[1]])
         {
             otherIndex = (otherIndex + 1) % face.Vertices.Count;
 
-            rightVertices.Add(otherIndex);
+            rightVertices.Add(face.Vertices[otherIndex]);
         }
 
         return (
