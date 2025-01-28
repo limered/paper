@@ -1,20 +1,21 @@
+using System.Collections.Generic;
 using Godot;
+using valleyfold.Fold;
 
 namespace valleyfold.Render.Vertices;
 
-public partial class VertexRendering : MeshInstance3D
+public partial class VertexRendering : Node3D
 {
-    private ArrayMesh _mesh;
+    private readonly List<MeshInstance3D> _vertexMeshes = new();
     private ShaderMaterial _shader;
-    
+    private PackedScene _vertexMesh;
+
     public override void _Ready()
     {
-        _mesh = new ArrayMesh();
-        Mesh = _mesh;
+        _vertexMesh = ResourceLoader.Load<PackedScene>("res://scenes/vertex.tscn");
 
         _shader = new ShaderMaterial();
         _shader.Shader = ResourceLoader.Load<Shader>("res://src/Render/Vertices/vertex.gdshader");
-        MaterialOverride = _shader;
     }
 
     public override void _Process(double delta)
@@ -22,44 +23,39 @@ public partial class VertexRendering : MeshInstance3D
         if (Statics.Frame == null) return;
         var frame = Statics.Frame;
 
-        _mesh.ClearSurfaces();
-        var st = new SurfaceTool();
-        st.Begin(Mesh.PrimitiveType.Triangles);
-        st.SetCustomFormat(0, SurfaceTool.CustomFormat.Max); // ToDo add custom attributes for size
-        
+        if (_vertexMeshes.Count <= frame.Vertices.Count) AddOrShowVertices(frame);
+        else if (_vertexMeshes.Count >= frame.Vertices.Count) HideVertices(frame);
+
         for (var i = 0; i < frame.Vertices.Count; i++)
         {
-            AddQuad(st, frame.Vertices[i].Coord, i);
+            var child = _vertexMeshes[i];
+            child.Position = frame.Vertices[i].Coord;
         }
-
-        st.Commit(_mesh);
     }
 
-    private static void AddQuad(SurfaceTool st, Vector3 offset, int index)
+    private void HideVertices(Frame frame)
     {
-        const float size = 0.02f;
-        
-        st.SetUV(new Vector2(0, 0));
-        st.AddVertex(new Vector3(-size, 0, -size) + offset);
-        
-        st.SetUV(new Vector2(1, 0));
-        st.AddVertex(new Vector3(size, 0, -size) + offset);
-        
-        st.SetUV(new Vector2(1, 1));
-        st.AddVertex(new Vector3(size, 0, size) + offset);
-        
-        st.SetUV(new Vector2(0, 1));
-        
-        st.AddVertex(new Vector3(-size, 0, size) + offset);
+        for (var i = frame.Vertices.Count - 1; i < _vertexMeshes.Count; i++)
+        {
+            var child = GetChild<MeshInstance3D>(i);
+            child.Hide();
+        }
+    }
 
-        // Add custom attribute for circle properties
-        // st.AddCustom(new Vector2((float)index / quadCount, GD.Randf()));
-
-        st.AddIndex(index * 4 + 0);
-        st.AddIndex(index * 4 + 1);
-        st.AddIndex(index * 4 + 2);
-        st.AddIndex(index * 4 + 0);
-        st.AddIndex(index * 4 + 2);
-        st.AddIndex(index * 4 + 3);
+    private void AddOrShowVertices(Frame frame)
+    {
+        for (var i = frame.Vertices.Count - 1; i >= _vertexMeshes.Count - 1; i--)
+        {
+            if (GetChildOrNull<MeshInstance3D>(i) == null)
+            {
+                var instance = (MeshInstance3D)_vertexMesh.Instantiate();
+                AddChild(instance);
+                _vertexMeshes.Add(instance);
+            }
+            else
+            {
+                ((MeshInstance3D)GetChild(i)).Show();
+            }
+        }
     }
 }

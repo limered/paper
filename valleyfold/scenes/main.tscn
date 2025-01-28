@@ -43,7 +43,7 @@ fov = 81.3906
 
 [node name="Model" parent="." instance=ExtResource("2_vgd34")]
 
-[node name="VertexRendering" type="MeshInstance3D" parent="."]
+[node name="VertexRendering" type="Node3D" parent="."]
 script = ExtResource("3_0tnsl")
 
 [node name="EdgeRendering" type="MeshInstance3D" parent="."]

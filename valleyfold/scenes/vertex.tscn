@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://bwpllawuru4bx"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_w3uep"]
+billboard_mode = 1
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_d01kd"]
+material = SubResource("StandardMaterial3D_w3uep")
+size = Vector2(0.02, 0.02)
+
+[node name="Vertex" type="MeshInstance3D"]
+mesh = SubResource("QuadMesh_d01kd")
