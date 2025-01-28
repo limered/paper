@@ -6,10 +6,9 @@
 
 [sub_resource type="ImmediateMesh" id="ImmediateMesh_6p08b"]
 
-[node name="Model" type="MeshInstance3D" node_paths=PackedStringArray("LineRenderer")]
+[node name="Model" type="MeshInstance3D"]
 mesh = SubResource("ArrayMesh_5t68a")
 script = ExtResource("1_ieugo")
-LineRenderer = NodePath("Lines")
 
 [node name="Lines" type="MeshInstance3D" parent="."]
 mesh = SubResource("ImmediateMesh_6p08b")

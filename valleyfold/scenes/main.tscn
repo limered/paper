@@ -1,8 +1,13 @@
-[gd_scene load_steps=10 format=3 uid="uid://c428s44dslmnn"]
+[gd_scene load_steps=13 format=3 uid="uid://c428s44dslmnn"]
 
 [ext_resource type="Script" path="res://src/Game.cs" id="1_km5vh"]
 [ext_resource type="PackedScene" uid="uid://32ltd2kiv74e" path="res://scenes/paper_model.tscn" id="2_vgd34"]
+[ext_resource type="Script" path="res://src/Render/Vertices/VertexRendering.cs" id="3_0tnsl"]
 [ext_resource type="Script" path="res://src/Interaction/PaperInteractions/ClickSystem.cs" id="3_gm42t"]
+[ext_resource type="Script" path="res://src/Render/Edges/EdgeRendering.cs" id="4_u6g2v"]
+
+[sub_resource type="MultiMesh" id="MultiMesh_guy2n"]
+transform_format = 1
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_rmvhn"]
 size = Vector3(2, 0.1, 2)
@@ -35,10 +40,18 @@ transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75
 shadow_enabled = true
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0.5, 0.796, 0.5)
+transform = Transform3D(0.974769, 0.0835857, 0.206976, -0.223216, 0.365013, 0.903847, 0, -0.927243, 0.374461, 0.816099, 0.796, 0.96049)
 current = true
+fov = 81.3906
 
 [node name="Model" parent="." instance=ExtResource("2_vgd34")]
+
+[node name="VertexRendering" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("MultiMesh_guy2n")
+script = ExtResource("3_0tnsl")
+
+[node name="EdgeRendering" type="MeshInstance3D" parent="."]
+script = ExtResource("4_u6g2v")
 
 [node name="Node" type="Node3D" parent="." node_paths=PackedStringArray("FirstNewVertex", "GhostClickPosition", "MouseCollision", "SecondNewVertex")]
 script = ExtResource("3_gm42t")

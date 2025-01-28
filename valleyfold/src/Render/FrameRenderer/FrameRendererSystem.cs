@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using Godot.Collections;
 using valleyfold.Fold;
 using Array = Godot.Collections.Array;
 
@@ -11,26 +10,7 @@ public class FrameRendererSystem
 {
     public void Render(Frame frame, ModelRenderer parent)
     {
-        RenderFaces(frame, parent);
-        RenderEdges(frame, parent);
-    }
-
-    private static void RenderEdges(Frame frame, ModelRenderer parent)
-    {
-        var lineMesh = (ImmediateMesh)parent.LineRenderer.Mesh;
-        lineMesh.ClearSurfaces();
-        lineMesh.SurfaceBegin(Mesh.PrimitiveType.Lines);
-
-        foreach (var edge in frame.Edges)
-        {
-            var start = frame.Vertices[edge.Vertices[0]];
-            var end = frame.Vertices[edge.Vertices[1]];
-
-            lineMesh.SurfaceAddVertex(start.Coord);
-            lineMesh.SurfaceAddVertex(end.Coord);
-        }
-
-        lineMesh.SurfaceEnd();
+        // RenderFaces(frame, parent);
     }
 
     private static void RenderFaces(Frame frame, ModelRenderer parent)
