@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace valleyfold.Fold;
 
 public class Edge
