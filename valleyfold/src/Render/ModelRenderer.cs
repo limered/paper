@@ -2,14 +2,12 @@ using System.Collections.Generic;
 using Godot;
 using valleyfold.Fold;
 using valleyfold.Folding;
-using valleyfold.Render.FrameRenderer;
 
 namespace valleyfold.Render;
 
 public partial class ModelRenderer : MeshInstance3D
 {
     private Frame _frame;
-    private readonly FrameRendererSystem _frameRendererSystem = new();
 
     public override void _Ready()
     {
@@ -28,10 +26,5 @@ public partial class ModelRenderer : MeshInstance3D
                 {
                     Vertices = new List<Id> { 0, 2 }
                 }.Apply(_frame);
-    }
-
-    public override void _Process(double delta)
-    {
-        _frameRendererSystem.Render(_frame, this);
     }
 }

@@ -1,21 +1,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using valleyfold.Fold;
-using Array = Godot.Collections.Array;
+using Godot.Collections;
 
-namespace valleyfold.Render.FrameRenderer;
+namespace valleyfold.Render.Faces;
 
-public class FrameRendererSystem
+public partial class FaceRendering : MeshInstance3D
 {
-    public void Render(Frame frame, ModelRenderer parent)
+    public override void _Ready()
     {
-        // RenderFaces(frame, parent);
+        Mesh = new ArrayMesh();
     }
 
-    private static void RenderFaces(Frame frame, ModelRenderer parent)
+    public override void _Process(double delta)
     {
-        var mesh = (ArrayMesh)parent.Mesh;
+        if (Statics.Frame == null) return;
+        var frame = Statics.Frame;
+
+        var mesh = (ArrayMesh)Mesh;
         mesh.ClearSurfaces();
 
         foreach (var face in frame.Faces)
