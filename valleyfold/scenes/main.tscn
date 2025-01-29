@@ -1,7 +1,6 @@
-[gd_scene load_steps=13 format=3 uid="uid://c428s44dslmnn"]
+[gd_scene load_steps=12 format=3 uid="uid://c428s44dslmnn"]
 
 [ext_resource type="Script" path="res://src/Game.cs" id="1_km5vh"]
-[ext_resource type="PackedScene" uid="uid://32ltd2kiv74e" path="res://scenes/paper_model.tscn" id="2_vgd34"]
 [ext_resource type="Script" path="res://src/Render/Vertices/VertexRendering.cs" id="3_0tnsl"]
 [ext_resource type="Script" path="res://src/Interaction/PaperInteractions/ClickSystem.cs" id="3_gm42t"]
 [ext_resource type="Script" path="res://src/Render/Edges/EdgeRendering.cs" id="4_u6g2v"]
@@ -41,8 +40,6 @@ shadow_enabled = true
 transform = Transform3D(0.974769, 0.0835857, 0.206976, -0.223216, 0.365013, 0.903847, 0, -0.927243, 0.374461, 0.816099, 0.796, 0.96049)
 current = true
 fov = 81.3906
-
-[node name="Model" parent="." instance=ExtResource("2_vgd34")]
 
 [node name="VertexRendering" type="Node3D" parent="."]
 script = ExtResource("3_0tnsl")
