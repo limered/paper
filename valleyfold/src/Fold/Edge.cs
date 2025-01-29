@@ -15,6 +15,7 @@ public class Edge
     public Assignment Assignment;
     public float FoldAngle;
     public float Length;
+    public bool IsSelected;
 
     public override string ToString()
     {

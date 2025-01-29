@@ -37,14 +37,14 @@ transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75
 shadow_enabled = true
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.974769, 0.0835857, 0.206976, -0.223216, 0.365013, 0.903847, 0, -0.927243, 0.374461, 0.816099, 0.796, 0.96049)
+transform = Transform3D(0.974769, 0.0835857, 0.206975, -0.192369, 0.784903, 0.589001, -0.113224, -0.613955, 0.781178, 0.901768, 0.742967, 1.3154)
 current = true
-fov = 81.3906
+fov = 70.9638
 
 [node name="VertexRendering" type="Node3D" parent="."]
 script = ExtResource("3_0tnsl")
 
-[node name="EdgeRendering" type="MeshInstance3D" parent="."]
+[node name="EdgeRendering" type="Node3D" parent="."]
 script = ExtResource("4_u6g2v")
 
 [node name="FaceRendering" type="MeshInstance3D" parent="."]

@@ -94,7 +94,11 @@ public partial class ClickSystem : Node3D
         _tempPointData.ExistingVertex = Statics.Frame.NearestVertexIdTo(_mouseWorldPosition);
         _tempPointData.Coord = Statics.Frame.Vertices[_tempPointData.ExistingVertex].Coord;
         _tempPointData.IsOnEdge = false;
-        _tempPointData.Edge = null;
+        if (_tempPointData.Edge != null)
+        {
+            _tempPointData.Edge.IsSelected = false;
+            _tempPointData.Edge = null;
+        }
         if (nearestEdges.Any())
         {
             var pointAndEdge = Statics.Frame.NearestPointOnEdgeTo(_mouseWorldPosition, nearestEdges);
@@ -103,6 +107,7 @@ public partial class ClickSystem : Node3D
             {
                 _tempPointData.Coord = pointAndEdge.Item1;
                 _tempPointData.Edge = pointAndEdge.Item2;
+                _tempPointData.Edge.IsSelected = true;
                 _tempPointData.IsOnEdge = true;
             }
         }
