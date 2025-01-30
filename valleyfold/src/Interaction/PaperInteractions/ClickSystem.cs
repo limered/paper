@@ -36,6 +36,7 @@ public partial class ClickSystem : Node3D
     [Export] public Node3D GhostClickPosition;
     [Export] public Area3D MouseCollision;
     [Export] public Node3D SecondNewVertex;
+    [Export] public float VertexPickThreshold = 0.1f;
 
     public override void _Ready()
     {
@@ -89,27 +90,57 @@ public partial class ClickSystem : Node3D
     public override void _Process(double delta)
     {
         if (Statics.Frame == null) return;
-
-        var nearestEdges = Statics.Frame.NearestEdgesTo(_mouseWorldPosition);
-        _tempPointData.ExistingVertex = Statics.Frame.NearestVertexIdTo(_mouseWorldPosition);
-        _tempPointData.Coord = Statics.Frame.Vertices[_tempPointData.ExistingVertex].Coord;
-        _tempPointData.IsOnEdge = false;
-        if (_tempPointData.Edge != null)
-        {
-            _tempPointData.Edge.IsSelected = false;
-            _tempPointData.Edge = null;
-        }
+        var frame = Statics.Frame;
+        
+        var nearestVertexId = frame.NearestVertexIdTo(_mouseWorldPosition);
+        var nearestVertexCoord = frame.Vertices[nearestVertexId].Coord;
+        
+        var nearestEdges = frame.NearestEdgesTo(_mouseWorldPosition);
         if (nearestEdges.Any())
         {
-            var pointAndEdge = Statics.Frame.NearestPointOnEdgeTo(_mouseWorldPosition, nearestEdges);
-            if (pointAndEdge.Item1.DistanceSquaredTo(_mouseWorldPosition) <
-                _tempPointData.Coord.DistanceSquaredTo(_mouseWorldPosition))
+            var pointAndEdge = frame.NearestPointOnEdgeTo(_mouseWorldPosition, nearestEdges);
+            if (nearestVertexId > -1)
             {
-                _tempPointData.Coord = pointAndEdge.Item1;
-                _tempPointData.Edge = pointAndEdge.Item2;
-                _tempPointData.Edge.IsSelected = true;
-                _tempPointData.IsOnEdge = true;
+                var movedNearestVertex = nearestVertexCoord + 
+                                         nearestVertexCoord.DirectionTo(_mouseWorldPosition) * VertexPickThreshold;
+                if (movedNearestVertex.DistanceSquaredTo(_mouseWorldPosition) <
+                    pointAndEdge.Item1.DistanceSquaredTo(_mouseWorldPosition))
+                {
+                    // choose point
+                    _tempPointData.IsOnEdge = false;
+                    if (_tempPointData.Edge != null)
+                    {
+                        _tempPointData.Edge.IsSelected = false;
+                        _tempPointData.Edge = null;
+                    }
+                    _tempPointData.ExistingVertex = nearestVertexId;
+                    _tempPointData.Coord = nearestVertexCoord;
+                }
+                else
+                {
+                    // choose edge
+                    if (_tempPointData.Edge != null && pointAndEdge.Item2 != _tempPointData.Edge)
+                    {
+                        _tempPointData.Edge.IsSelected = false;
+                    }
+                    _tempPointData.Coord = pointAndEdge.Item1;
+                    _tempPointData.Edge = pointAndEdge.Item2;
+                    _tempPointData.Edge.IsSelected = true;
+                    _tempPointData.IsOnEdge = true;
+                }
             }
+        }
+        else
+        {
+            // choose point
+            _tempPointData.IsOnEdge = false;
+            if (_tempPointData.Edge != null)
+            {
+                _tempPointData.Edge.IsSelected = false;
+                _tempPointData.Edge = null;
+            }
+            _tempPointData.ExistingVertex = nearestVertexId;
+            _tempPointData.Coord = nearestVertexCoord;
         }
 
         GhostClickPosition.Position = _tempPointData.Coord;

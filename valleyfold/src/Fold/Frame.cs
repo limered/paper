@@ -104,7 +104,7 @@ public class Frame
     {
         var nearest = -1;
         var minDist = float.MaxValue;
-        for (var i = 1; i < Vertices.Count; i++)
+        for (var i = 0; i < Vertices.Count; i++)
         {
             var dist = point.DistanceSquaredTo(Vertices[i].Coord);
             if( dist > threshold * threshold || dist >= minDist ) continue;
