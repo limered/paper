@@ -8,7 +8,7 @@ public class FrameTests
 {
     private readonly Frame _frame;
 
-    public FrameTests()
+    protected FrameTests()
     {
         _frame = new Frame();
         _frame.InitializePaper();
@@ -48,6 +48,26 @@ public class FrameTests
             
             Assert.Equivalent((Id)2, result);
         }
+
+        [Fact]
+        public void IfThresholdIsGivenOnlyPointInsideThreshold()
+        {
+            var point = new Vector3(1.1f, 0, 1.1f);
+
+            var result = _frame.NearestVertexIdTo(point, 0.2f);
+            
+            Assert.Equivalent((Id)2, result);
+        }
+        
+        [Fact]
+        public void IfThresholdIsGivenAndPointsOutside_ReturnNegativeOne()
+        {
+            var point = new Vector3(1.3f, 0, 1.3f);
+
+            var result = _frame.NearestVertexIdTo(point, 0.2f);
+            
+            Assert.Equivalent(new Id{Value = -1}, result);
+        }
     }
 
     public class NearestPointOnEdgeTo : FrameTests
@@ -85,7 +105,7 @@ public class FrameTests
             
             var result = _frame.NearestPointOnEdgeTo(point, edges);
             
-            Assert.Equivalent(new Vector3(0, 0, 0.5f), result);
+            Assert.Equivalent(new Vector3(0, 0, 0.5f), result.Item1);
         }
         
         [Fact]
@@ -96,7 +116,18 @@ public class FrameTests
             
             var result = _frame.NearestPointOnEdgeTo(point, edges);
             
-            Assert.Equivalent(new Vector3(1f, 0, 0.5f), result);
+            Assert.Equivalent(new Vector3(1f, 0, 0.5f), result.Item1);
+        }
+
+        [Fact]
+        public void ReturnsEdgeContainingPoint()
+        {
+            var point = new Vector3(1.5f, 0, 0.5f);
+            var edges = new List<Edge>() { _frame.Edges.ElementAt(3), _frame.Edges.ElementAt(1) };
+            
+            var result = _frame.NearestPointOnEdgeTo(point, edges);
+            
+            Assert.Equivalent(_frame.Edges.ElementAt(1), result.Item2);
         }
     }
     

@@ -100,18 +100,16 @@ public class Frame
         return nearestEdges;
     }
 
-    public Id NearestVertexIdTo(Vector3 point)
+    public Id NearestVertexIdTo(Vector3 point, float threshold = float.MaxValue)
     {
-        var nearest = 0;
-        var minDist = point.DistanceSquaredTo(Vertices[nearest].Coord);
+        var nearest = -1;
+        var minDist = float.MaxValue;
         for (var i = 1; i < Vertices.Count; i++)
         {
             var dist = point.DistanceSquaredTo(Vertices[i].Coord);
-            if (dist < minDist)
-            {
-                nearest = i;
-                minDist = dist;
-            }
+            if( dist > threshold * threshold || dist >= minDist ) continue;
+            nearest = i;
+            minDist = dist;
         }
 
         return nearest;
