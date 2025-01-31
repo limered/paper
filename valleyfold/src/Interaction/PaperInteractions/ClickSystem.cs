@@ -36,7 +36,7 @@ public partial class ClickSystem : Node3D
     [Export] public Node3D GhostClickPosition;
     [Export] public Area3D MouseCollision;
     [Export] public Node3D SecondNewVertex;
-    [Export] public float VertexPickThreshold = 0.1f;
+    [Export] public float VertexPickThreshold = 0.05f;
 
     public override void _Ready()
     {
@@ -135,7 +135,7 @@ public partial class ClickSystem : Node3D
 
         GhostClickPosition.Position = _tempPointData.Coord;
 
-        FirstNewVertex.Position = _firstPoint?.Coord ?? new Vector3(-100, 0, -100);
-        SecondNewVertex.Position = _secondPoint?.Coord ?? new Vector3(-100, 0, -100);
+        FirstNewVertex.Position = _firstPoint?.Coord ?? Vector3.Inf;
+        SecondNewVertex.Position = _secondPoint?.Coord ?? Vector3.Inf;
     }
 }
