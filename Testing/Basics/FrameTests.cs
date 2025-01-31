@@ -2,6 +2,7 @@ using Godot;
 using valleyfold;
 using valleyfold.Fold;
 using valleyfold.Folding;
+using valleyfold.FrameModifications;
 
 namespace Testing.Basics;
 
@@ -22,7 +23,7 @@ public class FrameTests
         {
             var point = new Vector3(-0.5f, 0, 0.5f);
 
-            var edges = _frame.NearestEdgesTo(point);
+            var edges = EdgeQueries.NearestEdgesToPoint(_frame, point);
 
             Assert.Equivalent(new[] { _frame.Edges[1], _frame.Edges[3] }, edges);
         }
@@ -32,7 +33,7 @@ public class FrameTests
         {
             var point = new Vector3(0.5f, 0, 0.5f);
 
-            var edges = _frame.NearestEdgesTo(point);
+            var edges = EdgeQueries.NearestEdgesToPoint(_frame, point);
 
             Assert.Equivalent(_frame.Edges, edges);
         }
@@ -45,7 +46,7 @@ public class FrameTests
         {
             var point = new Vector3(1.5f, 0, 1.5f);
 
-            var result = _frame.NearestVertexIdTo(point);
+            var result = VertexQueries.NearestVertexIdTo(_frame, point);
             
             Assert.Equivalent((Id)2, result);
         }
@@ -55,7 +56,7 @@ public class FrameTests
         {
             var point = new Vector3(1.1f, 0, 1.1f);
 
-            var result = _frame.NearestVertexIdTo(point, 0.2f);
+            var result = VertexQueries.NearestVertexIdTo(_frame, point, 0.2f);
             
             Assert.Equivalent((Id)2, result);
         }
@@ -65,7 +66,7 @@ public class FrameTests
         {
             var point = new Vector3(1.3f, 0, 1.3f);
 
-            var result = _frame.NearestVertexIdTo(point, 0.2f);
+            var result = VertexQueries.NearestVertexIdTo(_frame, point, 0.2f);
             
             Assert.Equivalent(new Id{Value = -1}, result);
         }
@@ -79,7 +80,7 @@ public class FrameTests
             var point = new Vector3(-0.5f, 0, 0.5f);
             var edge = _frame.Edges.ElementAt(3);
 
-            var result = _frame.NearestPointOnEdgeTo(point, edge);
+            var result = EdgeQueries.NearestPointOnEdgeTo(_frame, point, edge);
             
             Assert.Equivalent(new Vector3(0, 0, 0.5f), result);
         }
@@ -94,7 +95,7 @@ public class FrameTests
                 Assignment = Assignment.V
             };
             
-            var result = _frame.NearestPointOnEdgeTo(point, edge);
+            var result = EdgeQueries.NearestPointOnEdgeTo(_frame, point, edge);
             Assert.Equivalent(new Vector3(0.5f, 0, 0.5f), result);
         }
 
@@ -104,7 +105,7 @@ public class FrameTests
             var point = new Vector3(-0.5f, 0, 0.5f);
             var edges = new List<Edge>() { _frame.Edges.ElementAt(3), _frame.Edges.ElementAt(1) };
             
-            var result = _frame.NearestPointOnEdgeTo(point, edges);
+            var result = EdgeQueries.NearestPointOnEdgeToPoint(_frame, point, edges);
             
             Assert.Equivalent(new Vector3(0, 0, 0.5f), result.Item1);
         }
@@ -115,7 +116,7 @@ public class FrameTests
             var point = new Vector3(1.5f, 0, 0.5f);
             var edges = new List<Edge>() { _frame.Edges.ElementAt(3), _frame.Edges.ElementAt(1) };
             
-            var result = _frame.NearestPointOnEdgeTo(point, edges);
+            var result = EdgeQueries.NearestPointOnEdgeToPoint(_frame, point, edges);
             
             Assert.Equivalent(new Vector3(1f, 0, 0.5f), result.Item1);
         }
@@ -126,7 +127,7 @@ public class FrameTests
             var point = new Vector3(1.5f, 0, 0.5f);
             var edges = new List<Edge>() { _frame.Edges.ElementAt(3), _frame.Edges.ElementAt(1) };
             
-            var result = _frame.NearestPointOnEdgeTo(point, edges);
+            var result = EdgeQueries.NearestPointOnEdgeToPoint(_frame, point, edges);
             
             Assert.Equivalent(_frame.Edges.ElementAt(1), result.Item2);
         }
@@ -140,7 +141,7 @@ public class FrameTests
             var point = new Vector3(1f, 0, 0.5f);
             var edge = _frame.Edges.ElementAt(1);
 
-            var id = _frame.AddVertexOnEdge(point, edge);
+            var id = EdgeCommands.AddVertexToEdge(_frame, point, edge);
 
             Assert.Equivalent(new Vertex { Coord = point }, _frame.Vertices[id]);
         }
@@ -152,7 +153,7 @@ public class FrameTests
             var edge = _frame.Edges.ElementAt(1);
             var oldEdgeEndId = edge.Vertices[1];
             
-            var id = _frame.AddVertexOnEdge(point, edge);
+            var id = EdgeCommands.AddVertexToEdge(_frame, point, edge);
             
             Assert.Equivalent(id, edge.Vertices[1]);
             Assert.Equivalent(id, _frame.Edges.Last().Vertices[0]);
@@ -166,7 +167,7 @@ public class FrameTests
             var edge = _frame.Edges.ElementAt(1);
             var edgeAdjacentFace = _frame.Faces.First();
             
-            var id = _frame.AddVertexOnEdge(point, edge);
+            var id = EdgeCommands.AddVertexToEdge(_frame, point, edge);
             
             Assert.Equivalent(id, edgeAdjacentFace.Vertices[2]);
         }
@@ -178,7 +179,7 @@ public class FrameTests
             var edge = _frame.Edges.ElementAt(1);
             var edgeAdjacentFace = _frame.Faces.First();
             
-            _ = _frame.AddVertexOnEdge(point, edge);
+            _ = EdgeCommands.AddVertexToEdge(_frame, point, edge);
             
             Assert.Equivalent((Id)2, edgeAdjacentFace.Vertices[3]);
             Assert.Equivalent((Id)3, edgeAdjacentFace.Vertices[4]);
@@ -191,7 +192,7 @@ public class FrameTests
             var edge = _frame.Edges.Last();
             var edgeAdjacentFace = _frame.Faces.First();
 
-            _ = _frame.AddVertexOnEdge(point, edge);
+            _ = EdgeCommands.AddVertexToEdge(_frame, point, edge);
             
             Assert.Equivalent((Id)4, edgeAdjacentFace.Vertices[4]);
             Assert.Equivalent((Id)3, edgeAdjacentFace.Vertices[3]);
@@ -206,8 +207,8 @@ public class FrameTests
             var pointB = new Vector3(1f, 0, 0.5f);
             var edgeToSplitB = _frame.Edges.ElementAt(1);
 
-            var idA = _frame.AddVertexOnEdge(pointA, edgeToSplitA);
-            var idB = _frame.AddVertexOnEdge(pointB, edgeToSplitB);
+            var idA = EdgeCommands.AddVertexToEdge(_frame, pointA, edgeToSplitA);
+            var idB = EdgeCommands.AddVertexToEdge(_frame, pointB, edgeToSplitB);
             
             new Valleyfold { Vertices = [idA, idB] }.Apply(_frame);
             
@@ -215,7 +216,7 @@ public class FrameTests
             var centerLinePoint = new Vector3(0.5f, 0, 0.5f);
             var centerEdge = _frame.Edges.Last();
 
-            _ = _frame.AddVertexOnEdge(centerLinePoint, centerEdge);
+            _ = EdgeCommands.AddVertexToEdge(_frame, centerLinePoint, centerEdge);
             
             Assert.Equivalent(new Id[]{4, 0, 1, 5, 6}, _frame.Faces.ElementAt(1).Vertices);
             Assert.Equivalent(new Id[]{5, 2, 3, 4, 6}, _frame.Faces.ElementAt(0).Vertices);

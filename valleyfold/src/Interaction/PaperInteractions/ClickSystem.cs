@@ -3,6 +3,7 @@ using System.Linq;
 using Godot;
 using valleyfold.Fold;
 using valleyfold.Folding;
+using valleyfold.FrameModifications;
 
 namespace valleyfold.Interaction.PaperInteractions;
 
@@ -69,10 +70,10 @@ public partial class ClickSystem : Node3D
         else
         {
             var firstId = _firstPoint.ExistingVertex;
-            if (_firstPoint.IsOnEdge) firstId = Statics.Frame.AddVertexOnEdge(_firstPoint.Coord, _firstPoint.Edge);
+            if (_firstPoint.IsOnEdge) firstId = EdgeCommands.AddVertexToEdge(Statics.Frame, _firstPoint.Coord, _firstPoint.Edge);
 
             var secondId = _secondPoint.ExistingVertex;
-            if (_secondPoint.IsOnEdge) secondId = Statics.Frame.AddVertexOnEdge(_secondPoint.Coord, _secondPoint.Edge);
+            if (_secondPoint.IsOnEdge) secondId = EdgeCommands.AddVertexToEdge(Statics.Frame, _secondPoint.Coord, _secondPoint.Edge);
 
             new Valleyfold { Vertices = new List<Id> { firstId, secondId } }.Apply(Statics.Frame);
 
@@ -84,7 +85,7 @@ public partial class ClickSystem : Node3D
     private WorldNewPointData NearestPointToPoint(Frame frame, Vector3 point)
     {
         var result = new WorldNewPointData();
-        var nearestVertexId = frame.NearestVertexIdTo(point, VertexPickThreshold);
+        var nearestVertexId = VertexQueries.NearestVertexIdTo(frame, point, VertexPickThreshold);
         if (nearestVertexId > -1)
         {
             result.ExistingVertex = nearestVertexId;
@@ -92,10 +93,10 @@ public partial class ClickSystem : Node3D
             return result;
         }
 
-        var nearestEdges = frame.NearestEdgesTo(point);
+        var nearestEdges = EdgeQueries.NearestEdgesToPoint(frame, point);
         if (nearestEdges.Any())
         {
-            var pointAndEdge = frame.NearestPointOnEdgeTo(point, nearestEdges);
+            var pointAndEdge = EdgeQueries.NearestPointOnEdgeToPoint(frame, point, nearestEdges);
             result.Coord = pointAndEdge.Item1;
             result.Edge = pointAndEdge.Item2;
             result.Edge.IsSelected = true;
@@ -103,7 +104,7 @@ public partial class ClickSystem : Node3D
             return result;
         }
 
-        result.ExistingVertex = frame.NearestVertexIdTo(point);
+        result.ExistingVertex = VertexQueries.NearestVertexIdTo(frame, point);
         result.Coord = frame.Vertices[result.ExistingVertex].Coord;
         return result;
     }

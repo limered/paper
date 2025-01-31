@@ -1,6 +1,7 @@
 using Godot;
 using valleyfold.Fold;
 using valleyfold.Folding;
+using valleyfold.FrameModifications;
 
 namespace Testing.Folding;
 
@@ -42,8 +43,8 @@ public class ValleyfoldTests
     [Fact]
     public void SplitTheInitialPaperCorrectly()
     {
-        _testingFrame.AddVertexOnEdge(new Vector3(0, 0, 0.5f), _testingFrame.Edges.ElementAt(3));
-        _testingFrame.AddVertexOnEdge(new Vector3(1f, 0, 0.5f), _testingFrame.Edges.ElementAt(1));
+        EdgeCommands.AddVertexToEdge(_testingFrame, new Vector3(0, 0, 0.5f), _testingFrame.Edges.ElementAt(3));
+        EdgeCommands.AddVertexToEdge(_testingFrame, new Vector3(1f, 0, 0.5f), _testingFrame.Edges.ElementAt(1));
         
         new Valleyfold{Vertices = {4, 5}}.Apply(_testingFrame);
         

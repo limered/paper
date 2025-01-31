@@ -79,31 +79,6 @@ public class Frame
         Edges.Add(edge);
     }
 
-    public List<Edge> NearestEdgesTo(Vector3 point)
-    {
-        return EdgeQueries.NearestEdgesToPoint(this, point);
-    }
-
-    public Id NearestVertexIdTo(Vector3 point, float threshold = float.MaxValue)
-    {
-        return VertexQueries.NearestVertexIdTo(this, point, threshold);
-    }
-
-    public (Vector3, Edge) NearestPointOnEdgeTo(Vector3 point, List<Edge> edges)
-    {
-        return EdgeQueries.NearestPointOnEdgeToPoint(this, point, edges);
-    }
-
-    public Vector3 NearestPointOnEdgeTo(Vector3 point, Edge edge)
-    {
-        return EdgeQueries.NearestPointOnEdgeTo(this, point, edge);
-    }
-
-    public Id AddVertexOnEdge(Vector3 point, Edge edge)
-    {
-        return EdgeCommands.AddVertexToEdge(this, point, edge);
-    }
-
     public void UnmarkEdges()
     {
         for (var i = 0; i < Edges.Count; i++) Edges[i].IsSelected = false;
