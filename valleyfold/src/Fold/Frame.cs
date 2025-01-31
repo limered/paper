@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using valleyfold.FrameModifications;
 
 namespace valleyfold.Fold;
 
@@ -83,105 +84,27 @@ public class Frame
 
     public List<Edge> NearestEdgesTo(Vector3 point)
     {
-        var nearestEdges = new List<Edge>();
-        for (var i = 0; i < _edges.Count; i++)
-        {
-            var edge = _edges[i];
-            var start = Vertices[edge.Vertices[0]].Coord;
-            var end = Vertices[edge.Vertices[1]].Coord;
-            var forward = end - start;
-            var backward = start - end;
-            if (forward.Dot(point - start) <= 0) continue;
-            if (backward.Dot(point - end) <= 0) continue;
-
-            nearestEdges.Add(edge);
-        }
-
-        return nearestEdges;
+        return EdgeQueries.NearestEdgesToPoint(this, point);
     }
 
     public Id NearestVertexIdTo(Vector3 point, float threshold = float.MaxValue)
     {
-        var nearest = -1;
-        var minDist = float.MaxValue;
-        for (var i = 0; i < Vertices.Count; i++)
-        {
-            var dist = point.DistanceSquaredTo(Vertices[i].Coord);
-            if (dist > threshold * threshold || dist >= minDist) continue;
-            nearest = i;
-            minDist = dist;
-        }
-
-        return nearest;
+        return VertexQueries.NearestVertexIdTo(this, point, threshold);
     }
 
     public (Vector3, Edge) NearestPointOnEdgeTo(Vector3 point, List<Edge> edges)
     {
-        var nearestDistance = float.MaxValue;
-        (Vector3, Edge) result = (Vector3.Zero, null);
-        for (var i = 0; i < edges.Count; i++)
-        {
-            var edge = edges[i];
-            var edgePoint = NearestPointOnEdgeTo(point, edge);
-            var dist = edgePoint.DistanceSquaredTo(point);
-            if (dist >= nearestDistance) continue;
-
-            nearestDistance = dist;
-            result.Item1 = edgePoint;
-            result.Item2 = edge;
-        }
-
-        return result;
+        return EdgeQueries.NearestPointOnEdgeToPoint(this, point, edges);
     }
 
     public Vector3 NearestPointOnEdgeTo(Vector3 point, Edge edge)
     {
-        var start = Vertices[edge.Vertices[0]].Coord;
-        var end = Vertices[edge.Vertices[1]].Coord;
-        var startToPoint = point - start;
-        var startToEnd = end - start;
-        return startToPoint.Project(startToEnd) + start;
+        return EdgeQueries.NearestPointOnEdgeTo(this, point, edge);
     }
 
     public Id AddVertexOnEdge(Vector3 point, Edge edge)
     {
-        var id = Vertices.Count;
-        Vertices.Add(new Vertex
-        {
-            Coord = point
-        });
-
-        var edgeAdjacentFaces = EdgeAdjacentFaces(edge);
-        foreach (var edgeAdjacentFace in edgeAdjacentFaces)
-        {
-            var startVertexId = edgeAdjacentFace.Vertices.IndexOf(edge.Vertices[0]);
-            var endVertexId = edgeAdjacentFace.Vertices.IndexOf(edge.Vertices[1]);
-            if ((endVertexId == 0 && startVertexId == edgeAdjacentFace.Vertices.Count - 1) ||
-                (startVertexId == 0 && endVertexId == edgeAdjacentFace.Vertices.Count - 1))
-                // case for last edge
-                edgeAdjacentFace.Vertices.Add(id);
-            else
-                edgeAdjacentFace.Vertices
-                    .Insert(startVertexId < endVertexId ? endVertexId : startVertexId, id);
-        }
-
-        var secondEdge = new Edge
-        {
-            Vertices = new Id[] { id, edge.Vertices[1] },
-            Assignment = edge.Assignment,
-            FoldAngle = edge.FoldAngle
-        };
-        edge.Vertices[1] = id;
-        AddEdge(secondEdge);
-
-        return id;
-    }
-
-    public Face[] EdgeAdjacentFaces(Edge edge)
-    {
-        return _faces.Where(face =>
-                face.Vertices.Contains(edge.Vertices[0]) && face.Vertices.Contains(edge.Vertices[1]))
-            .ToArray();
+        return EdgeCommands.AddVertexToEdge(this, point, edge);
     }
 
     public void UnmarkEdges()
