@@ -113,6 +113,9 @@ public partial class ClickSystem : Node3D
         if (Statics.Frame == null) return;
         var frame = Statics.Frame;
 
+        frame.UnmarkEdges();
+        frame.UnmarkVertices();
+        
         _tempPointData = NearestPointToPoint(frame, _mouseWorldPosition);
 
         GhostClickPosition.Position = _tempPointData.Coord;

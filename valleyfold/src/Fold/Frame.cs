@@ -107,7 +107,7 @@ public class Frame
         for (var i = 0; i < Vertices.Count; i++)
         {
             var dist = point.DistanceSquaredTo(Vertices[i].Coord);
-            if( dist > threshold * threshold || dist >= minDist ) continue;
+            if (dist > threshold * threshold || dist >= minDist) continue;
             nearest = i;
             minDist = dist;
         }
@@ -117,7 +117,6 @@ public class Frame
 
     public (Vector3, Edge) NearestPointOnEdgeTo(Vector3 point, List<Edge> edges)
     {
-
         var nearestDistance = float.MaxValue;
         (Vector3, Edge) result = (Vector3.Zero, null);
         for (var i = 0; i < edges.Count; i++)
@@ -126,12 +125,12 @@ public class Frame
             var edgePoint = NearestPointOnEdgeTo(point, edge);
             var dist = edgePoint.DistanceSquaredTo(point);
             if (dist >= nearestDistance) continue;
-            
+
             nearestDistance = dist;
             result.Item1 = edgePoint;
             result.Item2 = edge;
         }
-        
+
         return result;
     }
 
@@ -157,16 +156,13 @@ public class Frame
         {
             var startVertexId = edgeAdjacentFace.Vertices.IndexOf(edge.Vertices[0]);
             var endVertexId = edgeAdjacentFace.Vertices.IndexOf(edge.Vertices[1]);
-            if (endVertexId == 0 && startVertexId == edgeAdjacentFace.Vertices.Count - 1)
-            {
+            if ((endVertexId == 0 && startVertexId == edgeAdjacentFace.Vertices.Count - 1) ||
+                (startVertexId == 0 && endVertexId == edgeAdjacentFace.Vertices.Count - 1))
                 // case for last edge
                 edgeAdjacentFace.Vertices.Add(id);
-            }
             else
-            {
                 edgeAdjacentFace.Vertices
                     .Insert(startVertexId < endVertexId ? endVertexId : startVertexId, id);
-            }
         }
 
         var secondEdge = new Edge
@@ -186,5 +182,15 @@ public class Frame
         return _faces.Where(face =>
                 face.Vertices.Contains(edge.Vertices[0]) && face.Vertices.Contains(edge.Vertices[1]))
             .ToArray();
+    }
+
+    public void UnmarkEdges()
+    {
+        for (var i = 0; i < _edges.Count; i++) _edges[i].IsSelected = false;
+    }
+
+    public void UnmarkVertices()
+    {
+        for (var i = 0; i < Vertices.Count; i++) Vertices[i].IsSelected = false;
     }
 }
