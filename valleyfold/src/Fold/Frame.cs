@@ -18,11 +18,8 @@ public enum Assignment
 
 public class Frame
 {
-    private readonly List<Edge> _edges = new();
-    private readonly List<Face> _faces = new();
-
-    public IEnumerable<Face> Faces => _faces;
-    public IEnumerable<Edge> Edges => _edges;
+    public List<Face> Faces { get; } = new();
+    public List<Edge> Edges { get; } = new();
     public List<Vertex> Vertices { get; } = new();
 
     public void InitializePaper()
@@ -35,7 +32,7 @@ public class Frame
             new Vertex { Coord = new Vector3(0, 0, 1) }
         });
 
-        _edges.AddRange(new[]
+        Edges.AddRange(new[]
         {
             new Edge
             {
@@ -63,7 +60,7 @@ public class Frame
             }
         });
 
-        _faces.AddRange(new[]
+        Faces.AddRange(new[]
         {
             new Face { Vertices = new List<Id> { 0, 1, 2, 3 } }
         });
@@ -71,15 +68,15 @@ public class Frame
 
     public void SplitFace(Face face, Face faceL, Face faceR)
     {
-        _faces.Remove(face);
-        _faces.Add(faceL);
-        _faces.Add(faceR);
+        Faces.Remove(face);
+        Faces.Add(faceL);
+        Faces.Add(faceR);
     }
 
     public void AddEdge(Edge edge)
     {
-        if (_edges.Contains(edge)) return;
-        _edges.Add(edge);
+        if (Edges.Contains(edge)) return;
+        Edges.Add(edge);
     }
 
     public List<Edge> NearestEdgesTo(Vector3 point)
@@ -109,7 +106,7 @@ public class Frame
 
     public void UnmarkEdges()
     {
-        for (var i = 0; i < _edges.Count; i++) _edges[i].IsSelected = false;
+        for (var i = 0; i < Edges.Count; i++) Edges[i].IsSelected = false;
     }
 
     public void UnmarkVertices()

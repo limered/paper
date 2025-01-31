@@ -17,13 +17,13 @@ public partial class EdgeRendering : Node3D
         if (Statics.Frame == null) return;
         var frame = Statics.Frame;
 
-        var edgeCount = frame.Edges.Count();
+        var edgeCount = frame.Edges.Count;
         if(GetChildCount() < edgeCount) AddOrShowLines(frame);
         else if(GetChildCount() > edgeCount) HideLines(frame);
         
         for (var i = 0; i < edgeCount; i++)
         {
-            var edge = frame.Edges.ElementAt(i);
+            var edge = frame.Edges[i];
             var start = frame.Vertices[edge.Vertices[0]];
             var end = frame.Vertices[edge.Vertices[1]];
 
@@ -36,7 +36,7 @@ public partial class EdgeRendering : Node3D
 
     private void AddOrShowLines(Frame frame)
     {
-        var edgeCount = frame.Edges.Count();
+        var edgeCount = frame.Edges.Count;
         for (var i = GetChildCount() - 1; i < edgeCount; i++)
         {
             var child = GetChildOrNull<MeshInstance3D>(i);
@@ -54,7 +54,7 @@ public partial class EdgeRendering : Node3D
 
     private void HideLines(Frame frame)
     {
-        var edgeCount = frame.Edges.Count();
+        var edgeCount = frame.Edges.Count;
         for (var i = edgeCount - 1; i < GetChildCount(); i++) GetChild<MeshInstance3D>(i).Hide();
     }
 }

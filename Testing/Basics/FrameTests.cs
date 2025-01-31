@@ -24,7 +24,7 @@ public class FrameTests
 
             var edges = _frame.NearestEdgesTo(point);
 
-            Assert.Equivalent(new[] { _frame.Edges.ElementAt(1), _frame.Edges.ElementAt(3) }, edges);
+            Assert.Equivalent(new[] { _frame.Edges[1], _frame.Edges[3] }, edges);
         }
 
         [Fact]

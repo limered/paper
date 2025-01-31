@@ -10,9 +10,9 @@ public static class EdgeQueries
     public static List<Edge> NearestEdgesToPoint(Frame frame, Vector3 point)
     {
         var nearestEdges = new List<Edge>();
-        for (var i = 0; i < frame.Edges.Count(); i++)
+        for (var i = 0; i < frame.Edges.Count; i++)
         {
-            var edge = frame.Edges.ElementAt(i);
+            var edge = frame.Edges[i];
             var start = frame.Vertices[edge.Vertices[0]].Coord;
             var end = frame.Vertices[edge.Vertices[1]].Coord;
             var forward = end - start;
