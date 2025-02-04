@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using valleyfold.Fold;
@@ -28,11 +27,11 @@ public class WorldNewPointData
 
 public partial class ClickSystem : Node3D
 {
-    private WorldNewPointData _tempPointData = new();
     private WorldNewPointData _firstPoint;
 
     private Vector3 _mouseWorldPosition;
     private WorldNewPointData _secondPoint;
+    private WorldNewPointData _tempPointData = new();
     [Export] public Node3D FirstNewVertex;
     [Export] public Node3D GhostClickPosition;
     [Export] public Area3D MouseCollision;
@@ -69,13 +68,30 @@ public partial class ClickSystem : Node3D
         }
         else
         {
-            var firstId = _firstPoint.ExistingVertex;
-            if (_firstPoint.IsOnEdge) firstId = EdgeCommands.AddVertexToEdge(Statics.Frame, _firstPoint.Coord, _firstPoint.Edge);
-
-            var secondId = _secondPoint.ExistingVertex;
-            if (_secondPoint.IsOnEdge) secondId = EdgeCommands.AddVertexToEdge(Statics.Frame, _secondPoint.Coord, _secondPoint.Edge);
-
-            new Valleyfold { Vertices = new List<Id> { firstId, secondId } }.Apply(Statics.Frame);
+            var fold = new UnspecifiedFold
+            {
+                VertexIds =
+                {
+                    [0] = _firstPoint.ExistingVertex,
+                    [1] = _secondPoint.ExistingVertex
+                },
+                VertexExists =
+                {
+                    [0] = !_firstPoint.IsOnEdge,
+                    [1] = !_secondPoint.IsOnEdge
+                },
+                Vertices =
+                {
+                    [0] = new Vertex { Coord = _firstPoint.Coord },
+                    [1] = new Vertex { Coord = _secondPoint.Coord }
+                },
+                VertexEdges =
+                {
+                    [0] = _firstPoint.IsOnEdge ? _firstPoint.Edge : null,
+                    [1] = _secondPoint.IsOnEdge ? _secondPoint.Edge : null
+                }
+            };
+            fold.Apply(Statics.Frame);
 
             _firstPoint = null;
             _secondPoint = null;
@@ -116,7 +132,7 @@ public partial class ClickSystem : Node3D
 
         frame.UnmarkEdges();
         frame.UnmarkVertices();
-        
+
         _tempPointData = NearestPointToPoint(frame, _mouseWorldPosition);
 
         GhostClickPosition.Position = _tempPointData.Coord;

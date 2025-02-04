@@ -5,13 +5,10 @@ namespace valleyfold.FrameModifications;
 
 public static class EdgeCommands
 {
-    public static Id AddVertexToEdge(Frame frame, Vector3 point, Edge edge)
+    public static Id AddVertexToEdge(Frame frame, Vertex newVertex, Edge edge)
     {
         var id = frame.Vertices.Count;
-        frame.Vertices.Add(new Vertex
-        {
-            Coord = point
-        });
+        frame.Vertices.Add(newVertex);
 
         var edgeAdjacentFaces = FaceQueries.FacesAdjacentToEdge(frame, edge);
         foreach (var edgeAdjacentFace in edgeAdjacentFaces)
