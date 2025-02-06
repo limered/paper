@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Godot;
 using valleyfold.Fold;
 using valleyfold.FrameModifications;
 
@@ -9,7 +10,7 @@ public class UnspecifiedFold : IFold
 {
     public readonly Edge[] VertexEdges = new Edge[2];
     public readonly bool[] VertexExists = new bool[2];
-    public readonly Id[] VertexIds = new Id[2];
+    public readonly Id[] VertexIds = { -1, -1 };
     public readonly Vertex[] Vertices = new Vertex[2];
 
     public void Apply(Frame frame)
@@ -29,11 +30,19 @@ public class UnspecifiedFold : IFold
         var crossedEdges = EdgeQueries.EdgesCrossingEdge(frame, edge);
         if (crossedEdges.Any())
         {
-            // Collect Vertices for edges crossed
-            // Work out edge crossings
-            // split faces
+            var crossedEdgesWithVerticesIds = new List<(Edge, Id)>();
+            for (var i = 0; i < crossedEdges.Count; i++)
+            {
+                var crossedEdge = crossedEdges[i];
+                var intersectionPoint = EdgeQueries.EdgeToEdgeIntersectionPoint(frame, edge, crossedEdge);
+                var intersectionVertex = new Vertex
+                    { Coord = new Vector3(intersectionPoint.X, 0, intersectionPoint.Y) };
+                var intersectionVertexId = EdgeCommands.AddVertexToEdge(frame, intersectionVertex, crossedEdge);
+                crossedEdgesWithVerticesIds.Add((crossedEdge, intersectionVertexId));
+            }
+            // ToDo sort and iterate through edges to split polys 
+            
         }
-
         var facesToSplit = frame
             .Faces
             .Where(f => f.Vertices.Contains(VertexIds[0]) && f.Vertices.Contains(VertexIds[1]))
@@ -48,6 +57,7 @@ public class UnspecifiedFold : IFold
 
         frame.AddEdge(edge);
     }
+
 
     private void AddNewVerticesIfNeeded(Frame frame)
     {
@@ -70,7 +80,7 @@ public class UnspecifiedFold : IFold
             if (existingEdge != null && existingEdge == VertexEdges[1]) return true;
         }
 
-        if (frame.Edges.Any(e => e.Vertices.Contains(VertexIds[0]) && e.Vertices.Contains(VertexIds[1]))) return true;
+        if (frame.Edges.Any(e => VertexIds.Contains(e.Vertices[0]) && VertexIds.Contains(e.Vertices[1]))) return true;
 
         return false;
     }

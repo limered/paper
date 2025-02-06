@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using Godot;
 using valleyfold.Fold;
 
@@ -83,12 +83,37 @@ public static class EdgeQueries
 
         var denominator = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
 
-        if (denominator == 0)
+        if (Math.Abs(denominator) < 1e-10)
             return false; // Lines are parallel
 
         var ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denominator;
         var ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denominator;
 
         return ua is >= 0 and <= 1 && ub is >= 0 and <= 1;
+    }
+
+    public static Vector2 EdgeToEdgeIntersectionPoint(Frame frame, Edge a, Edge b)
+    {
+        var (x1, _, y1) = frame.Vertices[a.Vertices[0]].Coord;
+        var (x2, _, y2) = frame.Vertices[a.Vertices[1]].Coord;
+        var (x3, _, y3) = frame.Vertices[b.Vertices[0]].Coord;
+        var (x4, _, y4) = frame.Vertices[b.Vertices[1]].Coord;
+
+        var denominator = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+
+        if (Math.Abs(denominator) < 1e-10)
+            throw new ArgumentException("Lines cant be parallel");
+
+        var ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denominator;
+        var ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denominator;
+
+        if (ua is < 0 or > 1 || ub is < 0 or > 1)
+            throw new ArgumentException(
+                $"No Intersection Point, CheckInput Edges beforehand using {nameof(EdgesIntersect)}");
+        
+        var x0 = x1 + ua * (x2 - x1);
+        var y0 = y1 + ua * (y2 - y1);
+        return new Vector2(x0, y0);
+
     }
 }
