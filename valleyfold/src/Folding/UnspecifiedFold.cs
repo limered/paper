@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using Godot.NativeInterop;
 using valleyfold.Fold;
 using valleyfold.FrameModifications;
 
@@ -13,40 +14,69 @@ public class UnspecifiedFold : IFold
     public readonly Id[] VertexIds = { -1, -1 };
     public readonly Vertex[] Vertices = new Vertex[2];
 
+    private List<Id> GenerateCrossVertices(Frame frame, List<Edge> crossedEdges)
+    {
+        var crossedEdgesWithVerticesIds = new List<(Edge, Id)>();
+        for (var i = 0; i < crossedEdges.Count; i++)
+        {
+            var crossedEdge = crossedEdges[i];
+            var intersectionPoint = EdgeQueries.EdgeToEdgeIntersectionPoint(
+                Vertices[0], 
+                Vertices[1], 
+                frame.Vertices[crossedEdge.Vertices[0]], 
+                frame.Vertices[crossedEdge.Vertices[1]]);
+            
+            var intersectionVertex = new Vertex
+                { Coord = new Vector3(intersectionPoint.X, 0, intersectionPoint.Y) };
+            var intersectionVertexId = EdgeCommands.AddVertexToEdge(frame, intersectionVertex, crossedEdge);
+            crossedEdgesWithVerticesIds.Add((crossedEdge, intersectionVertexId));
+        }
+
+        return crossedEdgesWithVerticesIds.Select(tuple => tuple.Item2).OrderBy(v =>
+                frame.Vertices[v].Coord.DistanceSquaredTo(Vertices[0].Coord))
+            .Prepend(VertexIds[0])
+            .Append(VertexIds[1])
+            .ToList();
+    }
+    
     public void Apply(Frame frame)
     {
         if (FoldAlreadyExists(frame)) return;
 
         AddNewVerticesIfNeeded(frame);
 
-        var edge = new Edge
-        {
-            Assignment = Assignment.U,
-            Vertices = VertexIds.ToArray(),
-            FoldAngle = 0,
-            Length = (Vertices[1].Coord - Vertices[0].Coord).Length()
-        };
-
-        var crossedEdges = EdgeQueries.EdgesCrossingEdge(frame, edge);
+        var facesToSplit = new List<Face>();
+        List<Id> sortedVertexIds;
+        
+        var crossedEdges = EdgeQueries.EdgesCrossingEdge(frame, VertexIds[0], VertexIds[1]);
         if (crossedEdges.Any())
         {
-            var crossedEdgesWithVerticesIds = new List<(Edge, Id)>();
-            for (var i = 0; i < crossedEdges.Count; i++)
-            {
-                var crossedEdge = crossedEdges[i];
-                var intersectionPoint = EdgeQueries.EdgeToEdgeIntersectionPoint(frame, edge, crossedEdge);
-                var intersectionVertex = new Vertex
-                    { Coord = new Vector3(intersectionPoint.X, 0, intersectionPoint.Y) };
-                var intersectionVertexId = EdgeCommands.AddVertexToEdge(frame, intersectionVertex, crossedEdge);
-                crossedEdgesWithVerticesIds.Add((crossedEdge, intersectionVertexId));
-            }
-            // ToDo sort and iterate through edges to split polys 
-            
+            sortedVertexIds = GenerateCrossVertices(frame, crossedEdges);
         }
-        var facesToSplit = frame
-            .Faces
-            .Where(f => f.Vertices.Contains(VertexIds[0]) && f.Vertices.Contains(VertexIds[1]))
-            .ToList();
+        else
+        {
+            sortedVertexIds = VertexIds.ToList();
+        }
+
+        var edgesToAdd = new List<Edge>();
+        var last = sortedVertexIds[0];
+        for (var i = 1; i < sortedVertexIds.Count; i++)
+        {
+            var current = sortedVertexIds[i];
+
+            facesToSplit.Add(frame
+                .Faces
+                .First(f => f.Vertices.Contains(last) && f.Vertices.Contains(current)));
+                
+            edgesToAdd.Add(new Edge
+            {
+                Assignment = Assignment.U,
+                FoldAngle = 0,
+                Vertices = new []{last, current}
+            });
+            
+            last = current;
+        }
 
         foreach (var face in facesToSplit)
         {
@@ -55,7 +85,10 @@ public class UnspecifiedFold : IFold
             frame.SplitFace(face, faceL, faceR);
         }
 
-        frame.AddEdge(edge);
+        foreach (var edgeToAdd in edgesToAdd)
+        {
+            frame.AddEdge(edgeToAdd);
+        }
     }
 
 
