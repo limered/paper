@@ -54,26 +54,29 @@ public static class EdgeQueries
         return startToPoint.Project(startToEnd) + start;
     }
 
-    public static List<Edge> EdgesCrossingEdge(Frame frame, Edge edge)
+
+    public static List<Edge> EdgesCrossingEdge(Frame frame, Id startVertex, Id endVertex)
     {
         var crossedEdges = new List<Edge>();
         foreach (var frameEdge in frame.Edges)
         {
-            if (frameEdge == edge) continue;
-            if (edge.Vertices[0] == frameEdge.Vertices[0] || edge.Vertices[0] == frameEdge.Vertices[1] ||
-                edge.Vertices[1] == frameEdge.Vertices[0] || edge.Vertices[1] == frameEdge.Vertices[1]) continue;
-
+            if (frameEdge.Vertices[0] == startVertex && frameEdge.Vertices[1] == endVertex ||
+                frameEdge.Vertices[0] == endVertex && frameEdge.Vertices[1] == startVertex) continue;
+            
+            if (startVertex == frameEdge.Vertices[0] || startVertex == frameEdge.Vertices[1] ||
+                endVertex == frameEdge.Vertices[0] || endVertex == frameEdge.Vertices[1]) continue;
+            
             if (EdgesIntersect(
-                    frame.Vertices[edge.Vertices[0]].Coord,
-                    frame.Vertices[edge.Vertices[1]].Coord,
+                    frame.Vertices[startVertex].Coord,
+                    frame.Vertices[endVertex].Coord,
                     frame.Vertices[frameEdge.Vertices[0]].Coord,
                     frame.Vertices[frameEdge.Vertices[1]].Coord))
                 crossedEdges.Add(frameEdge);
         }
-
+        
         return crossedEdges;
     }
-
+    
     private static bool EdgesIntersect(Vector3 start1, Vector3 end1, Vector3 start2, Vector3 end2)
     {
         float x1 = start1.X, y1 = start1.Z;
@@ -114,6 +117,29 @@ public static class EdgeQueries
         var x0 = x1 + ua * (x2 - x1);
         var y0 = y1 + ua * (y2 - y1);
         return new Vector2(x0, y0);
+    }
+    
+    public static Vector2 EdgeToEdgeIntersectionPoint(Vertex startA, Vertex endA, Vertex startB, Vertex endB)
+    {
+        var (x1, _, y1) = startA.Coord;
+        var (x2, _, y2) = endA.Coord;
+        var (x3, _, y3) = startB.Coord;
+        var (x4, _, y4) = endB.Coord;
 
+        var denominator = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+
+        if (Math.Abs(denominator) < 1e-10)
+            throw new ArgumentException("Lines cant be parallel");
+
+        var ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denominator;
+        var ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denominator;
+
+        if (ua is < 0 or > 1 || ub is < 0 or > 1)
+            throw new ArgumentException(
+                $"No Intersection Point, CheckInput Edges beforehand using {nameof(EdgesIntersect)}");
+        
+        var x0 = x1 + ua * (x2 - x1);
+        var y0 = y1 + ua * (y2 - y1);
+        return new Vector2(x0, y0);
     }
 }
