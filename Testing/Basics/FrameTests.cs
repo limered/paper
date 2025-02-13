@@ -206,10 +206,25 @@ public class FrameTests
             var pointB = new Vector3(1f, 0, 0.5f);
             var edgeToSplitB = _frame.Edges.ElementAt(1);
 
-            var idA = EdgeCommands.AddVertexToEdge(_frame, new Vertex { Coord = pointA }, edgeToSplitA);
-            var idB = EdgeCommands.AddVertexToEdge(_frame, new Vertex { Coord = pointB }, edgeToSplitB);
-
-            new UnspecifiedFold { VertexIds = {[0] = idA, [1] = idB} }.Apply(_frame);
+            var fold = new UnspecifiedFold
+            {
+                Vertices =
+                {
+                    [0] = new Vertex { Coord = pointA },
+                    [1] = new Vertex { Coord = pointB }
+                },
+                VertexEdges =
+                {
+                    [0] = edgeToSplitA,
+                    [1] = edgeToSplitB
+                },
+                VertexExists =
+                {
+                    [0] = false,
+                    [1] = false
+                }
+            };
+            fold.Apply(_frame);
 
             // add vertex on center line
             var centerLinePoint = new Vector3(0.5f, 0, 0.5f);
