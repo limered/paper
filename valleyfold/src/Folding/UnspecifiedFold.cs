@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using Godot.NativeInterop;
 using valleyfold.Fold;
 using valleyfold.FrameModifications;
 
@@ -58,17 +57,19 @@ public class UnspecifiedFold : IFold
             sortedVertexIds = VertexIds.ToList();
         }
 
-        var edgesToAdd = new List<Edge>();
         var last = sortedVertexIds[0];
         for (var i = 1; i < sortedVertexIds.Count; i++)
         {
             var current = sortedVertexIds[i];
 
-            facesToSplit.Add(frame
+            var face = frame
                 .Faces
-                .First(f => f.Vertices.Contains(last) && f.Vertices.Contains(current)));
-                
-            edgesToAdd.Add(new Edge
+                .First(f => f.Vertices.Contains(last) && f.Vertices.Contains(current));
+            
+            var (faceL, faceR) = SplitFace(face, frame, last, current);
+            frame.SplitFace(face, faceL, faceR);
+            
+            frame.AddEdge(new Edge
             {
                 Assignment = Assignment.U,
                 FoldAngle = 0,
@@ -76,18 +77,6 @@ public class UnspecifiedFold : IFold
             });
             
             last = current;
-        }
-
-        foreach (var face in facesToSplit)
-        {
-            var (faceL, faceR) = SplitFace(face, frame);
-
-            frame.SplitFace(face, faceL, faceR);
-        }
-
-        foreach (var edgeToAdd in edgesToAdd)
-        {
-            frame.AddEdge(edgeToAdd);
         }
     }
 
@@ -118,20 +107,20 @@ public class UnspecifiedFold : IFold
         return false;
     }
 
-    private (Face faceL, Face faceR) SplitFace(Face face, Frame frame)
+    private static (Face faceL, Face faceR) SplitFace(Face face, Frame frame, Id start, Id end)
     {
-        var endVertexIndex = face.Vertices.IndexOf(VertexIds[1]);
+        var endVertexIndex = face.Vertices.IndexOf(end);
         var otherIndex = endVertexIndex;
-        var leftVertices = new List<Id> { VertexIds[1] };
-        while (frame.Vertices[face.Vertices[otherIndex]] != frame.Vertices[VertexIds[0]])
+        var leftVertices = new List<Id> { end };
+        while (frame.Vertices[face.Vertices[otherIndex]] != frame.Vertices[start])
         {
             otherIndex = (otherIndex + 1) % face.Vertices.Count;
 
             leftVertices.Add(face.Vertices[otherIndex]);
         }
 
-        var rightVertices = new List<Id> { VertexIds[0] };
-        while (frame.Vertices[face.Vertices[otherIndex]] != frame.Vertices[VertexIds[1]])
+        var rightVertices = new List<Id> { start };
+        while (frame.Vertices[face.Vertices[otherIndex]] != frame.Vertices[end])
         {
             otherIndex = (otherIndex + 1) % face.Vertices.Count;
 
