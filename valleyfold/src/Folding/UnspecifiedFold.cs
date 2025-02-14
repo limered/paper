@@ -44,7 +44,6 @@ public class UnspecifiedFold : IFold
 
         AddNewVerticesIfNeeded(frame);
 
-        var facesToSplit = new List<Face>();
         List<Id> sortedVertexIds;
         
         var crossedEdges = EdgeQueries.EdgesCrossingEdge(frame, VertexIds[0], VertexIds[1]);

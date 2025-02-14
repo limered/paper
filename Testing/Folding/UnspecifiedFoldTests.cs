@@ -107,8 +107,26 @@ public class UnspecifiedFoldTests
         Assert.Equivalent(4, _testingFrame.Faces.Count);
     }
     
-    // todo: split on vertex crossing
-    
+    [Fact]
+    public void SplitCorrectlyWhenCrossingVertex()
+    {
+        SplitHorizontally();
+        SplitVertically();
+
+        var startVertex = _testingFrame.Vertices[0];
+        var endVertex = _testingFrame.Vertices[2];
+
+        var fold = new UnspecifiedFold
+        {
+            Vertices = { [0] = startVertex, [1] = endVertex },
+            VertexEdges = { [0] = null, [1] = null },
+            VertexExists = { [0] = true, [1] = true }
+        };
+        fold.Apply(_testingFrame);
+        
+        Assert.Equivalent(6, _testingFrame.Faces.Count);
+    }
+
     // todo: split vertex to edge
     
     // todo: fix split vertex to edge 0 bug
@@ -119,6 +137,21 @@ public class UnspecifiedFoldTests
         var vertexB = new Vertex { Coord = new Vector3(1f, 0, 0.5f) };
         var edgeA = _testingFrame.Edges.ElementAt(3);
         var edgeB = _testingFrame.Edges.ElementAt(1); 
+
+        new UnspecifiedFold
+        {
+            Vertices = { [0] = vertexA, [1] = vertexB },
+            VertexEdges = { [0] = edgeA, [1] = edgeB },
+            VertexExists = { [0] = false, [1] = false }
+        }.Apply(_testingFrame);
+    }
+    
+    private void SplitVertically()
+    {
+        var vertexA = new Vertex { Coord = new Vector3(0.5f, 0, 0) };
+        var vertexB = new Vertex { Coord = new Vector3(0.5f, 0, 1f) };
+        var edgeA = _testingFrame.Edges.ElementAt(0);
+        var edgeB = _testingFrame.Edges.ElementAt(2); 
 
         new UnspecifiedFold
         {
