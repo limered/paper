@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using valleyfold.Fold;
 
@@ -141,5 +142,11 @@ public static class EdgeQueries
         var x0 = x1 + ua * (x2 - x1);
         var y0 = y1 + ua * (y2 - y1);
         return new Vector2(x0, y0);
+    }
+
+    public static Edge EdgeContainingVertices(Frame frame, Id vertexIdA, Id vertexIdB)
+    {
+        return frame.Edges.FirstOrDefault(edge =>
+            edge.Vertices.Contains(vertexIdA) && edge.Vertices.Contains(vertexIdB));
     }
 }

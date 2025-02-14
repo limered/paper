@@ -1,3 +1,4 @@
+using System.Linq;
 using Godot;
 using valleyfold.Fold;
 using valleyfold.FrameModifications;
@@ -19,8 +20,15 @@ public class VertexToEdgeFold : IFold
 
     public void Apply(Frame frame)
     {
+        if (AreOnSameEdge()) return;
+
         var newVertexId = EdgeCommands.AddVertexToEdge(frame, new Vertex { Coord = _point }, _edge);
 
         new VertexToVertexFold(_vertexId, newVertexId).Apply(frame);
+    }
+
+    private bool AreOnSameEdge()
+    {
+        return _edge.Vertices.Contains(_vertexId);
     }
 }

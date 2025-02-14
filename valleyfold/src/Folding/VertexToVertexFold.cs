@@ -17,6 +17,8 @@ public class VertexToVertexFold : IFold
 
     public void Apply(Frame frame)
     {
+        if(VerticesAreTheSame() || VerticesLieOnTheSameEdge(frame)) return;
+        
         var faceToSplit = FaceQueries.FacesContainingVertexIds(frame, new List<Id> { _vertexIdA, _vertexIdB });
         if (faceToSplit == null) return;
 
@@ -28,5 +30,15 @@ public class VertexToVertexFold : IFold
             FoldAngle = 0,
             Vertices = new[] { _vertexIdA, _vertexIdB }
         });
+    }
+
+    private bool VerticesLieOnTheSameEdge(Frame frame)
+    {
+        return EdgeQueries.EdgeContainingVertices(frame, _vertexIdA, _vertexIdB) != null;
+    }
+
+    private bool VerticesAreTheSame()
+    {
+        return _vertexIdA == _vertexIdB;
     }
 }
