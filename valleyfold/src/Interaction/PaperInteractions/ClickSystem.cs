@@ -68,30 +68,30 @@ public partial class ClickSystem : Node3D
         }
         else
         {
-            var fold = new UnspecifiedFold
-            {
-                VertexIds =
-                {
-                    [0] = _firstPoint.ExistingVertex,
-                    [1] = _secondPoint.ExistingVertex
-                },
-                VertexExists =
-                {
-                    [0] = !_firstPoint.IsOnEdge,
-                    [1] = !_secondPoint.IsOnEdge
-                },
-                Vertices =
-                {
-                    [0] = new Vertex { Coord = _firstPoint.Coord },
-                    [1] = new Vertex { Coord = _secondPoint.Coord }
-                },
-                VertexEdges =
-                {
-                    [0] = _firstPoint.IsOnEdge ? _firstPoint.Edge : null,
-                    [1] = _secondPoint.IsOnEdge ? _secondPoint.Edge : null
-                }
-            };
-            fold.Apply(Statics.Frame);
+            if (_firstPoint.IsOnEdge && _secondPoint.IsOnEdge)
+                new EdgeToEdgeFold(
+                        _firstPoint.Edge,
+                        _secondPoint.Edge,
+                        _firstPoint.Coord,
+                        _secondPoint.Coord)
+                    .Apply(Statics.Frame);
+            else if (_firstPoint.IsOnEdge)
+                new VertexToEdgeFold(
+                        _firstPoint.Edge,
+                        _secondPoint.Coord,
+                        _secondPoint.ExistingVertex)
+                    .Apply(Statics.Frame);
+            else if (_secondPoint.IsOnEdge)
+                new VertexToEdgeFold(
+                        _secondPoint.Edge,
+                        _firstPoint.Coord,
+                        _firstPoint.ExistingVertex)
+                    .Apply(Statics.Frame);
+            else
+                new VertexToVertexFold(
+                        _firstPoint.ExistingVertex,
+                        _secondPoint.ExistingVertex)
+                    .Apply(Statics.Frame);
 
             _firstPoint = null;
             _secondPoint = null;

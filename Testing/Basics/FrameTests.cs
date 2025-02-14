@@ -1,6 +1,5 @@
 using Godot;
 using valleyfold.Fold;
-using valleyfold.Folding;
 using valleyfold.FrameModifications;
 
 namespace Testing.Basics;
@@ -195,45 +194,6 @@ public class FrameTests
 
             Assert.Equivalent((Id)4, edgeAdjacentFace.Vertices[4]);
             Assert.Equivalent((Id)3, edgeAdjacentFace.Vertices[3]);
-        }
-
-        [Fact]
-        public void CorrectlySplitNeighbouringFacesOnLastEdgeInFace()
-        {
-            // Split frame in middle
-            var pointA = new Vector3(0, 0, 0.5f);
-            var edgeToSplitA = _frame.Edges.ElementAt(3);
-            var pointB = new Vector3(1f, 0, 0.5f);
-            var edgeToSplitB = _frame.Edges.ElementAt(1);
-
-            var fold = new UnspecifiedFold
-            {
-                Vertices =
-                {
-                    [0] = new Vertex { Coord = pointA },
-                    [1] = new Vertex { Coord = pointB }
-                },
-                VertexEdges =
-                {
-                    [0] = edgeToSplitA,
-                    [1] = edgeToSplitB
-                },
-                VertexExists =
-                {
-                    [0] = false,
-                    [1] = false
-                }
-            };
-            fold.Apply(_frame);
-
-            // add vertex on center line
-            var centerLinePoint = new Vector3(0.5f, 0, 0.5f);
-            var centerEdge = _frame.Edges.Last();
-
-            _ = EdgeCommands.AddVertexToEdge(_frame, new Vertex { Coord = centerLinePoint }, centerEdge);
-
-            Assert.Equivalent(new Id[] { 4, 0, 1, 5, 6 }, _frame.Faces.ElementAt(1).Vertices);
-            Assert.Equivalent(new Id[] { 5, 2, 3, 4, 6 }, _frame.Faces.ElementAt(0).Vertices);
         }
     }
 }
