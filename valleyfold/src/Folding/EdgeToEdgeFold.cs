@@ -30,17 +30,7 @@ public class EdgeToEdgeFold : IFold
             EdgeCommands.AddVertexToEdge(frame, new Vertex { Coord = _pointB }, _edgeB)
         };
 
-        var faceToSplit = FaceQueries.FacesContainingVertexIds(frame, vertexIds);
-        if (faceToSplit == null) return;
-
-        FaceCommands.SplitFace(frame, faceToSplit, vertexIds[0], vertexIds[1]);
-
-        frame.AddEdge(new Edge
-        {
-            Assignment = Assignment.U,
-            FoldAngle = 0,
-            Vertices = new[] { vertexIds[0], vertexIds[1] }
-        });
+        new VertexToVertexFold(vertexIds[0], vertexIds[1]).Apply(frame);
     }
 
     private bool NewFoldOnSameEdge()
