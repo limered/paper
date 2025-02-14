@@ -78,13 +78,13 @@ public partial class ClickSystem : Node3D
             else if (_firstPoint.IsOnEdge)
                 new VertexToEdgeFold(
                         _firstPoint.Edge,
-                        _secondPoint.Coord,
+                        _firstPoint.Coord,
                         _secondPoint.ExistingVertex)
                     .Apply(Statics.Frame);
             else if (_secondPoint.IsOnEdge)
                 new VertexToEdgeFold(
                         _secondPoint.Edge,
-                        _firstPoint.Coord,
+                        _secondPoint.Coord,
                         _firstPoint.ExistingVertex)
                     .Apply(Statics.Frame);
             else

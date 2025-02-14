@@ -42,4 +42,17 @@ public class VertexToEdgeFoldTests
 
         Assert.Equivalent(expectedEdge, _testingFrame.Edges[5]);
     }
+    
+    [Fact]
+    public void CreateTwoNewFaces()
+    {
+        var point = new Vector3(0, 0, 0.5f);
+        var edge = _testingFrame.Edges.ElementAt(3);
+
+        new VertexToEdgeFold(edge, point, 1)
+            .Apply(_testingFrame);
+
+        Assert.Equivalent(new Id[] { 4, 0, 1 }, _testingFrame.Faces.ElementAt(0).Vertices);
+        Assert.Equivalent(new Id[] { 1, 2, 3, 4 }, _testingFrame.Faces.ElementAt(1).Vertices);
+    }
 }
