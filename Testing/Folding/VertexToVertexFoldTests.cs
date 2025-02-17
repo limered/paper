@@ -80,7 +80,7 @@ public class VertexToVertexFoldTests
             new VertexToVertexFold(0, 2).Apply(_testingFrame);
 
             Assert.Equivalent(6, _testingFrame.Faces.Count);
-            Assert.Equal(1, _testingFrame.Vertices.Count(v => v == new Vertex { Coord = new Vector3(0.5f, 0, 0.5f) }));
+            Assert.Equal(1, _testingFrame.Vertices.Count(v => v.Coord == new Vector3(0.5f, 0, 0.5f)));
         }
 
         private void SplitHorizontally()

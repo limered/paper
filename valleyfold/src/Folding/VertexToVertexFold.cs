@@ -17,19 +17,31 @@ public class VertexToVertexFold : IFold
         _vertexIdB = vertexIdB;
     }
 
+
     public void Apply(Frame frame)
     {
         if (VerticesAreTheSame() || VerticesLieOnTheSameEdge(frame)) return;
 
-        var crossedEdges = EdgeQueries.EdgesCrossingEdge(frame, _vertexIdA, _vertexIdB);
-        var sortedVertexIds = crossedEdges.Any()
-            ? GenerateCrossVertices(frame, crossedEdges)
-            : new List<Id> { _vertexIdA, _vertexIdB };
+        var crossedVertices = VertexQueries.VerticesCrossedByEdge(frame, _vertexIdA, _vertexIdB);
+        var crossedEdges = EdgeQueries.EdgesCrossedByEdge(frame, _vertexIdA, _vertexIdB);
+        if (crossedVertices.Any() && crossedEdges.Any())
+            crossedEdges = FilterEdgesCrossedByStartOrEnd(crossedVertices, crossedEdges);
 
-        var last = sortedVertexIds[0];
-        for (var i = 1; i < sortedVertexIds.Count; i++)
+        var crossedEdgeVertexIds = crossedEdges.Any() ? 
+                GenerateCrossVerticesOnEdges(frame, crossedEdges) : 
+                new List<Id>();
+        crossedEdgeVertexIds = OrderCrossedVerticesByDistanceToStart(
+                frame, crossedEdgeVertexIds.Concat(crossedVertices));
+
+        SplitFacesAndGenerateEdges(frame, crossedEdgeVertexIds);
+    }
+
+    private static void SplitFacesAndGenerateEdges(Frame frame, List<Id> crossedEdgeVertexIds)
+    {
+        var last = crossedEdgeVertexIds[0];
+        for (var i = 1; i < crossedEdgeVertexIds.Count; i++)
         {
-            var current = sortedVertexIds[i];
+            var current = crossedEdgeVertexIds[i];
             var faceToSplit = FaceQueries.FacesContainingVertexIds(frame, new List<Id> { last, current });
 
             FaceCommands.SplitFace(frame, faceToSplit, last, current);
@@ -40,12 +52,31 @@ public class VertexToVertexFold : IFold
                 FoldAngle = 0,
                 Vertices = new[] { last, current }
             });
-            
+
             last = current;
         }
     }
 
-    private List<Id> GenerateCrossVertices(Frame frame, List<Edge> crossedEdges)
+    private List<Id> OrderCrossedVerticesByDistanceToStart(Frame frame, IEnumerable<Id> crossedVertexIds)
+    {
+        return crossedVertexIds.OrderBy(v =>
+                frame.Vertices[v].Coord.DistanceSquaredTo(frame.Vertices[_vertexIdA].Coord))
+            .Prepend(_vertexIdA)
+            .Append(_vertexIdB)
+            .ToList();
+    }
+
+    private static List<Edge> FilterEdgesCrossedByStartOrEnd(List<Id> crossedVertices, List<Edge> crossedEdges)
+    {
+        return crossedVertices
+            .SelectMany(_ => crossedEdges,
+                (crossedVertex, crossedEdge) => new { crossedVertex, crossedEdge })
+            .Where(t => !t.crossedEdge.Vertices.Contains(t.crossedVertex))
+            .Select(t => t.crossedEdge)
+            .ToList();
+    }
+
+    private List<Id> GenerateCrossVerticesOnEdges(Frame frame, List<Edge> crossedEdges)
     {
         var crossedEdgesWithVerticesIds = new List<(Edge, Id)>();
         for (var i = 0; i < crossedEdges.Count; i++)
@@ -63,11 +94,7 @@ public class VertexToVertexFold : IFold
             crossedEdgesWithVerticesIds.Add((crossedEdge, intersectionVertexId));
         }
 
-        return crossedEdgesWithVerticesIds.Select(tuple => tuple.Item2).OrderBy(v =>
-                frame.Vertices[v].Coord.DistanceSquaredTo(frame.Vertices[_vertexIdA].Coord))
-            .Prepend(_vertexIdA)
-            .Append(_vertexIdB)
-            .ToList();
+        return crossedEdgesWithVerticesIds.Select(tuple => tuple.Item2).ToList();
     }
 
     private bool VerticesLieOnTheSameEdge(Frame frame)

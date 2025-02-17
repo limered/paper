@@ -56,7 +56,7 @@ public static class EdgeQueries
     }
 
 
-    public static List<Edge> EdgesCrossingEdge(Frame frame, Id startVertex, Id endVertex)
+    public static List<Edge> EdgesCrossedByEdge(Frame frame, Id startVertex, Id endVertex)
     {
         var crossedEdges = new List<Edge>();
         foreach (var frameEdge in frame.Edges)

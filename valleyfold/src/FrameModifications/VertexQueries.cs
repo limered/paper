@@ -1,4 +1,4 @@
-
+using System.Collections.Generic;
 using Godot;
 using valleyfold.Fold;
 
@@ -19,5 +19,38 @@ public static class VertexQueries
         }
 
         return nearest;
+    }
+
+    public static List<Id> VerticesCrossedByEdge(Frame frame, Id vertexIdA, Id vertexIdB)
+    {
+        var crossed = new List<Id>();
+        for (var i = 0; i < frame.Vertices.Count; i++)
+        {
+            if (i == vertexIdA || i == vertexIdB) continue;
+
+            var potentiallyCrossed = frame.Vertices[i];
+            var isCrossed = IsPointOnSegment(potentiallyCrossed.Coord, frame.Vertices[vertexIdA].Coord,
+                frame.Vertices[vertexIdB].Coord);
+            if (isCrossed) crossed.Add(i);
+        }
+
+        return crossed;
+    }
+
+
+    private static bool IsPointOnSegment(Vector3 point, Vector3 segmentStart, Vector3 segmentEnd)
+    {
+        var crossProduct = (point.Z - segmentStart.Z) * (segmentEnd.X - segmentStart.X) -
+                           (point.X - segmentStart.X) * (segmentEnd.Z - segmentStart.Z);
+
+        if (Mathf.Abs(crossProduct) > Mathf.Epsilon)
+            return false;
+
+        var minX = Mathf.Min(segmentStart.X, segmentEnd.X);
+        var maxX = Mathf.Max(segmentStart.X, segmentEnd.X);
+        var minY = Mathf.Min(segmentStart.Z, segmentEnd.Z);
+        var maxY = Mathf.Max(segmentStart.Z, segmentEnd.Z);
+
+        return point.X >= minX && point.X <= maxX && point.Z >= minY && point.Z <= maxY;
     }
 }
