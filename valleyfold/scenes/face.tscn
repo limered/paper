@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://b3b3of4x60p3p"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_s2ujq"]
+
+[node name="Face" type="Node3D"]
+
+[node name="FaceBody" type="RigidBody3D" parent="."]
+transform = Transform3D(0.965736, -0.259527, 0, 0.259527, 0.965736, 0, 0, 0, 1, 2.11194, 0, 0)
+disable_mode = 2
+
+[node name="FaceMesh" type="MeshInstance3D" parent="FaceBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0197206, 0.278598, 0)
+mesh = SubResource("PlaneMesh_s2ujq")
+skeleton = NodePath("")
