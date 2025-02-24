@@ -47,7 +47,7 @@ script = ExtResource("3_0tnsl")
 [node name="EdgeRendering" type="Node3D" parent="."]
 script = ExtResource("4_u6g2v")
 
-[node name="FaceRendering" type="MeshInstance3D" parent="."]
+[node name="FaceRendering" type="Node3D" parent="."]
 script = ExtResource("5_dvbkm")
 
 [node name="Node" type="Node3D" parent="." node_paths=PackedStringArray("FirstNewVertex", "GhostClickPosition", "MouseCollision", "SecondNewVertex")]

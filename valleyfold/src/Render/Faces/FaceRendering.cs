@@ -2,26 +2,27 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Godot.Collections;
+using valleyfold.Fold;
 
 namespace valleyfold.Render.Faces;
 
-public partial class FaceRendering : MeshInstance3D
+public partial class FaceRendering : Node3D
 {
-    public override void _Ready()
-    {
-        Mesh = new ArrayMesh();
-    }
+    private PackedScene _faceScene = ResourceLoader.Load<PackedScene>("res://scenes/face.tscn");
 
     public override void _Process(double delta)
     {
         if (Statics.Frame == null) return;
         var frame = Statics.Frame;
 
-        var mesh = (ArrayMesh)Mesh;
-        mesh.ClearSurfaces();
+        var faceCount = frame.Faces.Count;
+        if (GetChildCount() < faceCount) AddOrShowFaces(frame);
+        else if (GetChildCount() > faceCount) HideFaces(frame);
 
-        foreach (var face in frame.Faces)
+        for (var i = 0; i < faceCount; i++)
         {
+            var face = frame.Faces[i];
+
             var faceVertexes = new List<Vector3>();
             faceVertexes.AddRange(face.Vertices.Select(i => frame.Vertices[i].Coord));
 
@@ -44,7 +45,34 @@ public partial class FaceRendering : MeshInstance3D
             surfaceArray[(int)Mesh.ArrayType.Normal] = faceNormals;
             surfaceArray[(int)Mesh.ArrayType.Index] = faceIndices;
 
-            mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, surfaceArray);
+            var child = GetChild<FaceNode>(i);
+            child.SetMesh(surfaceArray);
+        }
+    }
+
+    private void HideFaces(Frame frame)
+    {
+        for (var i = frame.Faces.Count - 1; i < GetChildCount(); i++)
+        {
+            var child = GetChild<FaceNode>(i);
+            child.Hide();
+        }
+    }
+
+    private void AddOrShowFaces(Frame frame)
+    {
+        for (var i = GetChildCount() - 1; i < frame.Faces.Count; i++)
+        {
+            var child = GetChildOrNull<FaceNode>(i);
+            if (child == null)
+            {
+                var instance = (FaceNode)_faceScene.Instantiate();
+                AddChild(instance);
+            }
+            else
+            {
+                child.Show();
+            }
         }
     }
 }
