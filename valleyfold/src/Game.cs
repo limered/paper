@@ -7,6 +7,7 @@ public partial class Game : Node
 {
     public override void _Ready()
     {
+        Statics.Game = this;
         Statics.Frame = new Frame();
         Statics.Frame.InitializePaper();
     }

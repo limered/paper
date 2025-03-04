@@ -6,7 +6,6 @@
 script = ExtResource("1_m85yg")
 
 [node name="FaceBody" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 disable_mode = 2
 gravity_scale = 0.0
 
