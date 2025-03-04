@@ -1,4 +1,5 @@
 using Godot;
+using valleyfold.Fold;
 using valleyfold.Utils;
 
 namespace valleyfold.Ui;
@@ -21,12 +22,12 @@ public partial class GameInterface : Control
 
     private void UnspecifiedButtonOnPressed()
     {
-        EventBus.Emit(new FoldModeChange() { NextFoldMode = FoldMode.Unspecified });
+        EventBus.Emit(new FoldModeChange() { NextFoldMode = Assignment.U });
     }
 
     private void ValleyfoldButtonOnPressed()
     {
-        EventBus.Emit(new FoldModeChange() { NextFoldMode = FoldMode.Valley });
+        EventBus.Emit(new FoldModeChange() { NextFoldMode = Assignment.V });
     }
 
     private void AnimateButtonOnPressed()

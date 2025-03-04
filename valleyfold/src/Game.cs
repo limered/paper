@@ -8,7 +8,7 @@ namespace valleyfold;
 public partial class Game : Node
 {
     private bool _isAnimating;
-    private FoldMode _foldMode;
+    private Assignment _foldMode;
 
     public override void _Ready()
     {
