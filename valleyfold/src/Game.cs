@@ -1,18 +1,33 @@
 using Godot;
 using valleyfold.Fold;
+using valleyfold.Ui;
+using valleyfold.Utils;
 
 namespace valleyfold;
 
 public partial class Game : Node
 {
+    private bool _isAnimating;
+    private FoldMode _foldMode;
+
     public override void _Ready()
     {
         Statics.Game = this;
         Statics.Frame = new Frame();
         Statics.Frame.InitializePaper();
+
+        EventBus.Register<FoldModeChange>(OnFoldModeChange);
+        EventBus.Register<AnimationModeChange>(OnAnimationModeChanged);
     }
 
-    public override void _Process(double delta)
+    private void OnAnimationModeChanged(AnimationModeChange _)
     {
+        _isAnimating = !_isAnimating;
+    }
+
+    private void OnFoldModeChange(FoldModeChange msg)
+    {
+        if (_isAnimating) return;
+        _foldMode = msg.NextFoldMode;
     }
 }
