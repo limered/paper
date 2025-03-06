@@ -77,7 +77,7 @@ public partial class ClickSystem : Node3D
             return;
         }
 
-        if (_pickingMode == PickingMode.EndPoint)
+        if (_pickingMode == PickingMode.EndPoint && GhostEdgeLine != null)
         {
             var edgeStart = NearestPointToPoint(frame, _newEdgeStart);
             var edgeEnd = NearestPointToPoint(frame, _newEdgeEnd);
@@ -182,7 +182,8 @@ public partial class ClickSystem : Node3D
             }
             else
             {
-                GhostEdgeLine.Clear();
+                RemoveChild(GhostEdgeLine);
+                GhostEdgeLine = null;
                 _newEdgeStart = new Vector3(100, 100, 100);
                 _newEdgeEnd = new Vector3(100, 100, 100);
             }
