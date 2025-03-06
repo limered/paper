@@ -149,4 +149,36 @@ public static class EdgeQueries
         return frame.Edges.FirstOrDefault(edge =>
             edge.Vertices.Contains(vertexIdA) && edge.Vertices.Contains(vertexIdB));
     }
+
+    public static (bool, Vector2, Vector2) FoldBoardersVertices(Frame frame, Vector3 center, Vector3 perpendicular)
+    {
+        // collect all cut edges
+        var fullEdgeStart = center - perpendicular * 5f;
+        var fullEdgeEnd = center + perpendicular * 5f;
+        
+        var intersectedEdges = new List<(Vector2, int)>();
+        for (var i = 0; i < frame.Edges.Count; i++)
+        {
+            var edge = frame.Edges[i];
+            if (!EdgesIntersect(fullEdgeStart, fullEdgeEnd, frame.Vertices[edge.Vertices[0]].Coord,
+                    frame.Vertices[edge.Vertices[1]].Coord)) continue;
+            
+            var point = EdgeToEdgeIntersectionPoint(
+                new Vertex { Coord = fullEdgeStart },
+                new Vertex { Coord = fullEdgeEnd },
+                frame.Vertices[edge.Vertices[0]],
+                frame.Vertices[edge.Vertices[1]]);
+            intersectedEdges.Add((point, i));
+        }
+
+        if (intersectedEdges.Count <= 1)
+            return (false, new Vector2(fullEdgeStart.X, fullEdgeStart.Z), new Vector2(fullEdgeEnd.X, fullEdgeEnd.Z));
+        
+        // choose the two border edges
+        var projection = center.DirectionTo(fullEdgeEnd);
+        var sortedIntersectedEdges = intersectedEdges
+                .OrderBy(e => (new Vector3(e.Item1.X, 0, e.Item1.Y) - center).Dot(projection))
+                .ToList();
+        return (true, sortedIntersectedEdges.First().Item1, sortedIntersectedEdges.Last().Item1);
+    }
 }

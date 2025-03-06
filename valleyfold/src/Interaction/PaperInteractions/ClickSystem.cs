@@ -3,6 +3,7 @@ using Godot;
 using valleyfold.Fold;
 using valleyfold.Folding;
 using valleyfold.FrameModifications;
+using valleyfold.Render.Edges;
 
 namespace valleyfold.Interaction.PaperInteractions;
 
@@ -25,17 +26,23 @@ public class WorldNewPointData
     }
 }
 
+public enum PickingMode
+{
+    Buttons,
+    StartPoint,
+    EndPoint
+}
+
 public partial class ClickSystem : Node3D
 {
-    private WorldNewPointData _firstPoint;
-
     private Vector3 _mouseWorldPosition;
-    private WorldNewPointData _secondPoint;
+    private PickingMode _pickingMode = PickingMode.StartPoint;
+    private WorldNewPointData _startPoint;
     private WorldNewPointData _tempPointData = new();
-    [Export] public Node3D FirstNewVertex;
+    [Export] public Node3D FoldStartPoint;
     [Export] public Node3D GhostClickPosition;
+    [Export] public EdgeLine GhostEdgeLine;
     [Export] public Area3D MouseCollision;
-    [Export] public Node3D SecondNewVertex;
     [Export] public float VertexPickThreshold = 0.1f;
 
     public override void _Ready()
@@ -57,45 +64,59 @@ public partial class ClickSystem : Node3D
     {
         if (@event is not InputEventMouseButton mouseEvent) return;
         if (mouseEvent.ButtonIndex != MouseButton.Left || !mouseEvent.Pressed) return;
+        if (_pickingMode == PickingMode.Buttons) return;
+        if (_pickingMode == PickingMode.StartPoint)
+        {
+            _startPoint = _tempPointData.Copy();
+            _pickingMode = PickingMode.EndPoint;
+            return;
+        }
 
-        if (_firstPoint == null)
+        if (_pickingMode == PickingMode.EndPoint)
         {
-            _firstPoint = _tempPointData.Copy();
+            // set end point
+            // calculate fold between points
         }
-        else if (_secondPoint == null)
-        {
-            _secondPoint = _tempPointData.Copy();
-        }
-        else
-        {
-            if (_firstPoint.IsOnEdge && _secondPoint.IsOnEdge)
-                new EdgeToEdgeFold(
-                        _firstPoint.Edge,
-                        _secondPoint.Edge,
-                        _firstPoint.Coord,
-                        _secondPoint.Coord)
-                    .Apply(Statics.Frame);
-            else if (_firstPoint.IsOnEdge)
-                new VertexToEdgeFold(
-                        _firstPoint.Edge,
-                        _firstPoint.Coord,
-                        _secondPoint.ExistingVertex)
-                    .Apply(Statics.Frame);
-            else if (_secondPoint.IsOnEdge)
-                new VertexToEdgeFold(
-                        _secondPoint.Edge,
-                        _secondPoint.Coord,
-                        _firstPoint.ExistingVertex)
-                    .Apply(Statics.Frame);
-            else
-                new VertexToVertexFold(
-                        _firstPoint.ExistingVertex,
-                        _secondPoint.ExistingVertex)
-                    .Apply(Statics.Frame);
+        
 
-            _firstPoint = null;
-            _secondPoint = null;
-        }
+        // if (_startPoint == null)
+        // {
+        //     
+        // }
+        // else if (_secondPoint == null)
+        // {
+        //     _secondPoint = _tempPointData.Copy();
+        // }
+        // else
+        // {
+        //     if (_startPoint.IsOnEdge && _secondPoint.IsOnEdge)
+        //         new EdgeToEdgeFold(
+        //                 _startPoint.Edge,
+        //                 _secondPoint.Edge,
+        //                 _startPoint.Coord,
+        //                 _secondPoint.Coord)
+        //             .Apply(Statics.Frame);
+        //     else if (_startPoint.IsOnEdge)
+        //         new VertexToEdgeFold(
+        //                 _startPoint.Edge,
+        //                 _startPoint.Coord,
+        //                 _secondPoint.ExistingVertex)
+        //             .Apply(Statics.Frame);
+        //     else if (_secondPoint.IsOnEdge)
+        //         new VertexToEdgeFold(
+        //                 _secondPoint.Edge,
+        //                 _secondPoint.Coord,
+        //                 _startPoint.ExistingVertex)
+        //             .Apply(Statics.Frame);
+        //     else
+        //         new VertexToVertexFold(
+        //                 _startPoint.ExistingVertex,
+        //                 _secondPoint.ExistingVertex)
+        //             .Apply(Statics.Frame);
+        //
+        //     _startPoint = null;
+        //     _secondPoint = null;
+        // }
     }
 
     private WorldNewPointData NearestPointToPoint(Frame frame, Vector3 point)
@@ -133,11 +154,40 @@ public partial class ClickSystem : Node3D
         frame.UnmarkEdges();
         frame.UnmarkVertices();
 
-        _tempPointData = NearestPointToPoint(frame, _mouseWorldPosition);
+        if (_pickingMode == PickingMode.StartPoint)
+        {
+            _tempPointData = NearestPointToPoint(frame, _mouseWorldPosition);
+        }
+        else
+        {
+            _tempPointData.Coord = _mouseWorldPosition;
+
+            // render ghost edge
+            if (GhostEdgeLine == null)
+            {
+                GhostEdgeLine = new EdgeLine();
+                AddChild(GhostEdgeLine);
+            }
+            // calculate ghost edge line coords
+            var center = _startPoint.Coord.Lerp(_tempPointData.Coord, 0.5f);
+            var direction = _startPoint.Coord.DirectionTo(_tempPointData.Coord);
+            var perpendicular = new Vector3(-direction.Z, 0, direction.X);
+            
+            var (isValidFold, start, end) = EdgeQueries.FoldBoardersVertices(frame, center, perpendicular);
+
+            if (isValidFold)
+            {
+                GhostEdgeLine.LinePositions(new Vector3(start.X, 0, start.Y), new Vector3(end.X, 0, end.Y));
+                GhostEdgeLine.Draw();
+            }
+            else
+            {
+                GhostEdgeLine.Clear();
+            }
+        }
 
         GhostClickPosition.Position = _tempPointData.Coord;
 
-        FirstNewVertex.Position = _firstPoint?.Coord ?? new Vector3(100, 100, 100);
-        SecondNewVertex.Position = _secondPoint?.Coord ?? new Vector3(100, 100, 100);
+        FoldStartPoint.Position = _startPoint?.Coord ?? new Vector3(100, 100, 100);
     }
 }

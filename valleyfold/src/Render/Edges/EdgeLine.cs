@@ -61,4 +61,9 @@ public partial class EdgeLine : MeshInstance3D
 
         _lineMesh.SurfaceEnd();
     }
+
+    public void Clear()
+    {
+        _lineMesh.ClearSurfaces();
+    }
 }

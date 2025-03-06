@@ -51,32 +51,31 @@ script = ExtResource("4_u6g2v")
 [node name="FaceRendering" type="Node3D" parent="."]
 script = ExtResource("5_dvbkm")
 
-[node name="Node" type="Node3D" parent="." node_paths=PackedStringArray("FirstNewVertex", "GhostClickPosition", "MouseCollision", "SecondNewVertex")]
+[node name="Interaction" type="Node3D" parent="." node_paths=PackedStringArray("FoldStartPoint", "GhostClickPosition", "MouseCollision")]
 script = ExtResource("3_gm42t")
-FirstNewVertex = NodePath("FirstNewVertex")
+FoldStartPoint = NodePath("FirstNewVertex")
 GhostClickPosition = NodePath("GhostVertex")
 MouseCollision = NodePath("Area3D")
-SecondNewVertex = NodePath("SecondNewVertex")
 
-[node name="Area3D" type="Area3D" parent="Node"]
+[node name="Area3D" type="Area3D" parent="Interaction"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Node/Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interaction/Area3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.516602, -0.0501204, 0.5)
 shape = SubResource("BoxShape3D_rmvhn")
 
-[node name="GhostVertex" type="Node3D" parent="Node"]
+[node name="GhostVertex" type="Node3D" parent="Interaction"]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Node/GhostVertex"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Interaction/GhostVertex"]
 mesh = SubResource("SphereMesh_juy70")
 
-[node name="FirstNewVertex" type="Node3D" parent="Node"]
+[node name="FirstNewVertex" type="Node3D" parent="Interaction"]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Node/FirstNewVertex"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Interaction/FirstNewVertex"]
 mesh = SubResource("SphereMesh_u5yjp")
 
-[node name="SecondNewVertex" type="Node3D" parent="Node"]
+[node name="SecondNewVertex" type="Node3D" parent="Interaction"]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Node/SecondNewVertex"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Interaction/SecondNewVertex"]
 mesh = SubResource("SphereMesh_t2bpj")
 
 [node name="ingame" parent="." instance=ExtResource("6_p3hbg")]
