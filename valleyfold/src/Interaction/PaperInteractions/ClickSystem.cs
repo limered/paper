@@ -39,6 +39,8 @@ public partial class ClickSystem : Node3D
     private PickingMode _pickingMode = PickingMode.StartPoint;
     private WorldNewPointData _startPoint;
     private WorldNewPointData _tempPointData = new();
+    private Vector3 _newEdgeStart;
+    private Vector3 _newEdgeEnd;
     [Export] public Node3D FoldStartPoint;
     [Export] public Node3D GhostClickPosition;
     [Export] public EdgeLine GhostEdgeLine;
@@ -62,6 +64,9 @@ public partial class ClickSystem : Node3D
 
     public override void _Input(InputEvent @event)
     {
+        if (Statics.Frame == null) return;
+        var frame = Statics.Frame;
+        
         if (@event is not InputEventMouseButton mouseEvent) return;
         if (mouseEvent.ButtonIndex != MouseButton.Left || !mouseEvent.Pressed) return;
         if (_pickingMode == PickingMode.Buttons) return;
@@ -74,49 +79,42 @@ public partial class ClickSystem : Node3D
 
         if (_pickingMode == PickingMode.EndPoint)
         {
-            // set end point
-            // calculate fold between points
+            var edgeStart = NearestPointToPoint(frame, _newEdgeStart);
+            var edgeEnd = NearestPointToPoint(frame, _newEdgeEnd);
+            
+            if (edgeStart.IsOnEdge && edgeEnd.IsOnEdge)
+                new EdgeToEdgeFold(
+                        edgeStart.Edge,
+                        edgeEnd.Edge,
+                        edgeStart.Coord,
+                        edgeEnd.Coord)
+                    .Apply(Statics.Frame);
+            else if (edgeStart.IsOnEdge)
+                new VertexToEdgeFold(
+                        edgeStart.Edge,
+                        edgeStart.Coord,
+                        edgeEnd.ExistingVertex)
+                    .Apply(Statics.Frame);
+            else if (edgeEnd.IsOnEdge)
+                new VertexToEdgeFold(
+                        edgeEnd.Edge,
+                        edgeEnd.Coord,
+                        edgeStart.ExistingVertex)
+                    .Apply(Statics.Frame);
+            else
+                new VertexToVertexFold(
+                        edgeStart.ExistingVertex,
+                        edgeEnd.ExistingVertex)
+                    .Apply(Statics.Frame);
+            
+            
+            _newEdgeStart = new Vector3(100, 100, 100);
+            _newEdgeEnd = new Vector3(100, 100, 100);
+            _startPoint = null;
+            _pickingMode = PickingMode.StartPoint;
+            RemoveChild(GhostEdgeLine);
+            GhostEdgeLine = null;
         }
-        
-
-        // if (_startPoint == null)
-        // {
-        //     
-        // }
-        // else if (_secondPoint == null)
-        // {
-        //     _secondPoint = _tempPointData.Copy();
-        // }
-        // else
-        // {
-        //     if (_startPoint.IsOnEdge && _secondPoint.IsOnEdge)
-        //         new EdgeToEdgeFold(
-        //                 _startPoint.Edge,
-        //                 _secondPoint.Edge,
-        //                 _startPoint.Coord,
-        //                 _secondPoint.Coord)
-        //             .Apply(Statics.Frame);
-        //     else if (_startPoint.IsOnEdge)
-        //         new VertexToEdgeFold(
-        //                 _startPoint.Edge,
-        //                 _startPoint.Coord,
-        //                 _secondPoint.ExistingVertex)
-        //             .Apply(Statics.Frame);
-        //     else if (_secondPoint.IsOnEdge)
-        //         new VertexToEdgeFold(
-        //                 _secondPoint.Edge,
-        //                 _secondPoint.Coord,
-        //                 _startPoint.ExistingVertex)
-        //             .Apply(Statics.Frame);
-        //     else
-        //         new VertexToVertexFold(
-        //                 _startPoint.ExistingVertex,
-        //                 _secondPoint.ExistingVertex)
-        //             .Apply(Statics.Frame);
-        //
-        //     _startPoint = null;
-        //     _secondPoint = null;
-        // }
     }
 
     private WorldNewPointData NearestPointToPoint(Frame frame, Vector3 point)
@@ -162,27 +160,31 @@ public partial class ClickSystem : Node3D
         {
             _tempPointData.Coord = _mouseWorldPosition;
 
-            // render ghost edge
             if (GhostEdgeLine == null)
             {
                 GhostEdgeLine = new EdgeLine();
                 AddChild(GhostEdgeLine);
             }
-            // calculate ghost edge line coords
             var center = _startPoint.Coord.Lerp(_tempPointData.Coord, 0.5f);
             var direction = _startPoint.Coord.DirectionTo(_tempPointData.Coord);
             var perpendicular = new Vector3(-direction.Z, 0, direction.X);
             
-            var (isValidFold, start, end) = EdgeQueries.FoldBoardersVertices(frame, center, perpendicular);
+            var (isLineInside, start, end) = EdgeQueries.FoldBoardersVertices(frame, center, perpendicular);
 
-            if (isValidFold)
+            if (isLineInside)
             {
-                GhostEdgeLine.LinePositions(new Vector3(start.X, 0, start.Y), new Vector3(end.X, 0, end.Y));
+                _newEdgeStart = new Vector3(start.X, 0, start.Y);
+                _newEdgeEnd = new Vector3(end.X, 0, end.Y);
+                GhostEdgeLine.LinePositions(_newEdgeStart, _newEdgeEnd);
                 GhostEdgeLine.Draw();
+                
+                // TODO: Show ghost polygon of future fold
             }
             else
             {
                 GhostEdgeLine.Clear();
+                _newEdgeStart = new Vector3(100, 100, 100);
+                _newEdgeEnd = new Vector3(100, 100, 100);
             }
         }
 

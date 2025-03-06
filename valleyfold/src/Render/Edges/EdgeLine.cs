@@ -4,11 +4,11 @@ namespace valleyfold.Render.Edges;
 
 public partial class EdgeLine : MeshInstance3D
 {
+    private Vector3 _start;
     private Vector3 _end;
+    
     private ImmediateMesh _lineMesh;
     private ShaderMaterial _shaderMaterial;
-
-    private Vector3 _start;
     private float _width = 0.01f;
 
 

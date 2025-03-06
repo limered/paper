@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://c428s44dslmnn"]
+[gd_scene load_steps=11 format=3 uid="uid://c428s44dslmnn"]
 
 [ext_resource type="Script" path="res://src/Game.cs" id="1_km5vh"]
 [ext_resource type="Script" path="res://src/Render/Vertices/VertexRendering.cs" id="3_0tnsl"]
@@ -19,14 +19,6 @@ albedo_color = Color(1, 0, 1, 1)
 
 [sub_resource type="SphereMesh" id="SphereMesh_u5yjp"]
 material = SubResource("StandardMaterial3D_vpbyi")
-radius = 0.01
-height = 0.02
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ylrfg"]
-albedo_color = Color(0, 1, 1, 1)
-
-[sub_resource type="SphereMesh" id="SphereMesh_t2bpj"]
-material = SubResource("StandardMaterial3D_ylrfg")
 radius = 0.01
 height = 0.02
 
@@ -72,10 +64,5 @@ mesh = SubResource("SphereMesh_juy70")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Interaction/FirstNewVertex"]
 mesh = SubResource("SphereMesh_u5yjp")
-
-[node name="SecondNewVertex" type="Node3D" parent="Interaction"]
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Interaction/SecondNewVertex"]
-mesh = SubResource("SphereMesh_t2bpj")
 
 [node name="ingame" parent="." instance=ExtResource("6_p3hbg")]
