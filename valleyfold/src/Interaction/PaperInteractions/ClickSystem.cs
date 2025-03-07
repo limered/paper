@@ -38,6 +38,7 @@ public partial class ClickSystem : Node3D
 {
     private Vector3 _mouseWorldPosition;
     private PickingMode _pickingMode = PickingMode.StartPoint;
+    private PickingMode _lastPickingMode = PickingMode.StartPoint;
     private WorldNewPointData _startPoint;
     private WorldNewPointData _tempPointData = new();
     private Vector2 _newEdgeStart;
@@ -51,6 +52,14 @@ public partial class ClickSystem : Node3D
     public override void _Ready()
     {
         MouseCollision.InputEvent += MouseCollisionOnInputEvent;
+        MouseCollision.MouseExited += () =>
+        {
+            _lastPickingMode = _pickingMode; _pickingMode = PickingMode.Buttons;  
+        };
+        MouseCollision.MouseEntered += () =>
+        {
+            _pickingMode = _lastPickingMode;
+        };
     }
 
     private void MouseCollisionOnInputEvent(
@@ -60,6 +69,7 @@ public partial class ClickSystem : Node3D
         Vector3 normal,
         long shapeIdx)
     {
+        GD.Print(@event.ResourceName);
         _mouseWorldPosition = eventPosition;
     }
 
@@ -153,6 +163,7 @@ public partial class ClickSystem : Node3D
         frame.UnmarkEdges();
         frame.UnmarkVertices();
 
+        if (_pickingMode == PickingMode.Buttons) return;
         if (_pickingMode == PickingMode.StartPoint)
         {
             _tempPointData = NearestPointToPoint(frame, _mouseWorldPosition.Vector2XZ());
