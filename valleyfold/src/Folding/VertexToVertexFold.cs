@@ -48,8 +48,8 @@ public class VertexToVertexFold : IFold
 
             frame.AddEdge(new Edge
             {
-                Assignment = Assignment.U,
-                FoldAngle = 0,
+                Assignment = Assignment.V,
+                FoldAngle = 0.3f,
                 Vertices = new[] { last, current }
             });
 

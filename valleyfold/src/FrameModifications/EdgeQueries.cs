@@ -8,6 +8,21 @@ namespace valleyfold.FrameModifications;
 
 public static class EdgeQueries
 {
+    public static Face[] Faces(this Edge edge)
+    {
+        var frame = Statics.Frame;
+        var collectedFaces = new List<Face>();
+        for (var i = 0; i < frame.Faces.Count; i++)
+        {
+            var face = frame.Faces[i];
+            if (face.Vertices.Contains(edge.Vertices[0]) && face.Vertices.Contains(edge.Vertices[1]))
+            {
+                collectedFaces.Add(face);
+            }
+        }
+        return collectedFaces.ToArray();
+    }
+    
     public static List<Edge> NearestEdgesToPoint(Frame frame, Vector2 point)
     {
         var nearestEdges = new List<Edge>();
