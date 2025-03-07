@@ -19,7 +19,7 @@ public class FrameTests
         [Fact]
         public void PointIsOutside_ReturnsSomeEdges()
         {
-            var point = new Vector3(-0.5f, 0, 0.5f);
+            var point = new Vector2(-0.5f, 0.5f);
 
             var edges = EdgeQueries.NearestEdgesToPoint(_frame, point);
 
@@ -29,7 +29,7 @@ public class FrameTests
         [Fact]
         public void PointIsInside_ReturnAllPolygonEdges()
         {
-            var point = new Vector3(0.5f, 0, 0.5f);
+            var point = new Vector2(0.5f, 0.5f);
 
             var edges = EdgeQueries.NearestEdgesToPoint(_frame, point);
 
@@ -42,7 +42,7 @@ public class FrameTests
         [Fact]
         public void ReturnsNearestVertexToPoint()
         {
-            var point = new Vector3(1.5f, 0, 1.5f);
+            var point = new Vector2(1.5f, 1.5f);
 
             var result = VertexQueries.NearestVertexIdTo(_frame, point);
 
@@ -52,7 +52,7 @@ public class FrameTests
         [Fact]
         public void IfThresholdIsGivenOnlyPointInsideThreshold()
         {
-            var point = new Vector3(1.1f, 0, 1.1f);
+            var point = new Vector2(1.1f, 1.1f);
 
             var result = VertexQueries.NearestVertexIdTo(_frame, point, 0.2f);
 
@@ -62,7 +62,7 @@ public class FrameTests
         [Fact]
         public void IfThresholdIsGivenAndPointsOutside_ReturnNegativeOne()
         {
-            var point = new Vector3(1.3f, 0, 1.3f);
+            var point = new Vector2(1.3f, 1.3f);
 
             var result = VertexQueries.NearestVertexIdTo(_frame, point, 0.2f);
 
@@ -75,18 +75,18 @@ public class FrameTests
         [Fact]
         public void CalculateNearestPointOnEdge()
         {
-            var point = new Vector3(-0.5f, 0, 0.5f);
+            var point = new Vector2(-0.5f, 0.5f);
             var edge = _frame.Edges.ElementAt(3);
 
             var result = EdgeQueries.NearestPointOnEdgeTo(_frame, point, edge);
 
-            Assert.Equivalent(new Vector3(0, 0, 0.5f), result);
+            Assert.Equivalent(new Vector2(0, 0.5f), result);
         }
 
         [Fact]
         public void CalculateCorrectlyForDiagonalEdge()
         {
-            var point = new Vector3(0.5f, 0, 0.5f);
+            var point = new Vector2(0.5f, 0.5f);
             var edge = new Edge
             {
                 Vertices = [0, 2],
@@ -94,35 +94,35 @@ public class FrameTests
             };
 
             var result = EdgeQueries.NearestPointOnEdgeTo(_frame, point, edge);
-            Assert.Equivalent(new Vector3(0.5f, 0, 0.5f), result);
+            Assert.Equivalent(new Vector2(0.5f, 0.5f), result);
         }
 
         [Fact]
         public void CalculateNearestPointOnEdges()
         {
-            var point = new Vector3(-0.5f, 0, 0.5f);
+            var point = new Vector2(-0.5f, 0.5f);
             var edges = new List<Edge> { _frame.Edges.ElementAt(3), _frame.Edges.ElementAt(1) };
 
             var result = EdgeQueries.NearestPointOnEdgeToPoint(_frame, point, edges);
 
-            Assert.Equivalent(new Vector3(0, 0, 0.5f), result.Item1);
+            Assert.Equivalent(new Vector2(0, 0.5f), result.Item1);
         }
 
         [Fact]
         public void CalculateNearestPointOnEdgesRight()
         {
-            var point = new Vector3(1.5f, 0, 0.5f);
+            var point = new Vector2(1.5f, 0.5f);
             var edges = new List<Edge> { _frame.Edges.ElementAt(3), _frame.Edges.ElementAt(1) };
 
             var result = EdgeQueries.NearestPointOnEdgeToPoint(_frame, point, edges);
 
-            Assert.Equivalent(new Vector3(1f, 0, 0.5f), result.Item1);
+            Assert.Equivalent(new Vector2(1f, 0.5f), result.Item1);
         }
 
         [Fact]
         public void ReturnsEdgeContainingPoint()
         {
-            var point = new Vector3(1.5f, 0, 0.5f);
+            var point = new Vector2(1.5f, 0.5f);
             var edges = new List<Edge> { _frame.Edges.ElementAt(3), _frame.Edges.ElementAt(1) };
 
             var result = EdgeQueries.NearestPointOnEdgeToPoint(_frame, point, edges);
@@ -136,7 +136,7 @@ public class FrameTests
         [Fact]
         public void AddsTheVertexToFrame()
         {
-            var point = new Vector3(1f, 0, 0.5f);
+            var point = new Vector2(1f, 0.5f);
             var edge = _frame.Edges.ElementAt(1);
 
             var id = EdgeCommands.AddVertexToEdge(_frame, new Vertex { Coord = point }, edge);
@@ -147,7 +147,7 @@ public class FrameTests
         [Fact]
         public void SplitsEdge()
         {
-            var point = new Vector3(1f, 0, 0.5f);
+            var point = new Vector2(1f, 0.5f);
             var edge = _frame.Edges.ElementAt(1);
             var oldEdgeEndId = edge.Vertices[1];
 
@@ -161,7 +161,7 @@ public class FrameTests
         [Fact]
         public void AddVertexToAdjacentFaces()
         {
-            var point = new Vector3(1f, 0, 0.5f);
+            var point = new Vector2(1f, 0.5f);
             var edge = _frame.Edges.ElementAt(1);
             var edgeAdjacentFace = _frame.Faces.First();
 
@@ -173,7 +173,7 @@ public class FrameTests
         [Fact]
         public void FaceKeepsOtherVertices()
         {
-            var point = new Vector3(1f, 0, 0.5f);
+            var point = new Vector2(1f, 0.5f);
             var edge = _frame.Edges.ElementAt(1);
             var edgeAdjacentFace = _frame.Faces.First();
 
@@ -186,8 +186,9 @@ public class FrameTests
         [Fact]
         public void EdgeIstLastEdge_AddsVertexAtEndpoint()
         {
-            var point = new Vector3(0, 0, 0.5f);
-            var edge = _frame.Edges.Last();
+            var point = new Vector2(0, 0.5f);
+            var edge = _frame.Edges
+                .Last();
             var edgeAdjacentFace = _frame.Faces.First();
 
             _ = EdgeCommands.AddVertexToEdge(_frame, new Vertex { Coord = point }, edge);

@@ -9,10 +9,10 @@ public class EdgeToEdgeFold : IFold
 {
     private readonly Edge _edgeA;
     private readonly Edge _edgeB;
-    private readonly Vector3 _pointA;
-    private readonly Vector3 _pointB;
+    private readonly Vector2 _pointA;
+    private readonly Vector2 _pointB;
 
-    public EdgeToEdgeFold(Edge edgeA, Edge edgeB, Vector3 pointA, Vector3 pointB)
+    public EdgeToEdgeFold(Edge edgeA, Edge edgeB, Vector2 pointA, Vector2 pointB)
     {
         _edgeA = edgeA;
         _edgeB = edgeB;

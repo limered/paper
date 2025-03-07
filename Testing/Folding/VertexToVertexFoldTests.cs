@@ -59,7 +59,7 @@ public class VertexToVertexFoldTests
             SplitVertically();
 
             Assert.Equivalent(4, _testingFrame.Faces.Count);
-            Assert.Equivalent(new Vertex { Coord = new Vector3(0.5f, 0, 0.5f) }, _testingFrame.Vertices[8]);
+            Assert.Equivalent(new Vertex { Coord = new Vector2(0.5f, 0.5f) }, _testingFrame.Vertices[8]);
         }
 
         [Fact]
@@ -69,7 +69,7 @@ public class VertexToVertexFoldTests
             new VertexToVertexFold(1, 3).Apply(_testingFrame);
 
             Assert.Equivalent(4, _testingFrame.Faces.Count);
-            Assert.Equivalent(new Vertex { Coord = new Vector3(0.5f, 0, 0.5f) }, _testingFrame.Vertices[4]);
+            Assert.Equivalent(new Vertex { Coord = new Vector2(0.5f, 0.5f) }, _testingFrame.Vertices[4]);
         }
 
         [Fact]
@@ -80,13 +80,13 @@ public class VertexToVertexFoldTests
             new VertexToVertexFold(0, 2).Apply(_testingFrame);
 
             Assert.Equivalent(6, _testingFrame.Faces.Count);
-            Assert.Equal(1, _testingFrame.Vertices.Count(v => v.Coord == new Vector3(0.5f, 0, 0.5f)));
+            Assert.Equal(1, _testingFrame.Vertices.Count(v => v.Coord == new Vector2(0.5f, 0.5f)));
         }
 
         private void SplitHorizontally()
         {
-            var pointA = new Vector3(0, 0, 0.5f);
-            var pointB = new Vector3(1f, 0, 0.5f);
+            var pointA = new Vector2(0, 0.5f);
+            var pointB = new Vector2(1f, 0.5f);
             var edgeA = _testingFrame.Edges.ElementAt(3);
             var edgeB = _testingFrame.Edges.ElementAt(1);
 
@@ -95,8 +95,8 @@ public class VertexToVertexFoldTests
 
         private void SplitVertically()
         {
-            var pointA = new Vector3(0.5f, 0, 0);
-            var pointB = new Vector3(0.5f, 0, 1f);
+            var pointA = new Vector2(0.5f, 0);
+            var pointB = new Vector2(0.5f, 1f);
             var edgeA = _testingFrame.Edges.ElementAt(0);
             var edgeB = _testingFrame.Edges.ElementAt(2);
 

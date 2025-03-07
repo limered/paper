@@ -3,6 +3,7 @@ using System.Linq;
 using Godot;
 using Godot.Collections;
 using valleyfold.Fold;
+using valleyfold.Utils;
 
 namespace valleyfold.Render.Faces;
 
@@ -24,7 +25,7 @@ public partial class FaceRendering : Node3D
             var face = frame.Faces[i];
 
             var faceVertexes = new List<Vector3>();
-            faceVertexes.AddRange(face.Vertices.Select(i => frame.Vertices[i].Coord));
+            faceVertexes.AddRange(face.Vertices.Select(v => frame.Vertices[v].Coord.Vector3XZ()));
 
             var faceNormals = faceVertexes
                 .Select(_ => Vector3.Up)

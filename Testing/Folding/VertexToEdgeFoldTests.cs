@@ -18,7 +18,7 @@ public class VertexToEdgeFoldTests
     public void IfEdgeAlreadyExists_DoNotChangeFrame()
     {
         var edge = _testingFrame.Edges.ElementAt(0);
-        new VertexToEdgeFold(edge, new Vector3(), 0)
+        new VertexToEdgeFold(edge, new Vector2(), 0)
             .Apply(_testingFrame);
 
         Assert.Equivalent(1, _testingFrame.Faces.Count);
@@ -27,7 +27,7 @@ public class VertexToEdgeFoldTests
     [Fact]
     public void AddANewEdgeBetweenPoints()
     {
-        var point = new Vector3(0, 0, 0.5f);
+        var point = new Vector2(0, 0.5f);
         var edge = _testingFrame.Edges.ElementAt(3);
 
         var expectedEdge = new Edge
@@ -46,7 +46,7 @@ public class VertexToEdgeFoldTests
     [Fact]
     public void CreateTwoNewFaces()
     {
-        var point = new Vector3(0, 0, 0.5f);
+        var point = new Vector2(0, 0.5f);
         var edge = _testingFrame.Edges.ElementAt(3);
 
         new VertexToEdgeFold(edge, point, 1)

@@ -1,5 +1,6 @@
 using Godot;
 using valleyfold.Fold;
+using valleyfold.Utils;
 
 namespace valleyfold.Render.Vertices;
 
@@ -27,7 +28,7 @@ public partial class VertexRendering : Node3D
         for (var i = 0; i < frame.Vertices.Count; i++)
         {
             var child = GetChild<MeshInstance3D>(i);
-            child.Position = frame.Vertices[i].Coord;
+            child.Position = frame.Vertices[i].Coord.Vector3XZ();
         }
     }
 

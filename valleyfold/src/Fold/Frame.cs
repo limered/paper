@@ -26,10 +26,10 @@ public class Frame
     {
         Vertices.AddRange(new[]
         {
-            new Vertex { Coord = new Vector3(0, 0, 0) },
-            new Vertex { Coord = new Vector3(1, 0, 0) },
-            new Vertex { Coord = new Vector3(1, 0, 1) },
-            new Vertex { Coord = new Vector3(0, 0, 1) }
+            new Vertex { Coord = new Vector2(0, 0) },
+            new Vertex { Coord = new Vector2(1, 0) },
+            new Vertex { Coord = new Vector2(1, 1) },
+            new Vertex { Coord = new Vector2(0, 1) }
         });
 
         Edges.AddRange(new[]

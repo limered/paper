@@ -1,6 +1,7 @@
 using System.Linq;
 using Godot;
 using valleyfold.Fold;
+using valleyfold.Utils;
 
 namespace valleyfold.Render.Edges;
 
@@ -28,7 +29,7 @@ public partial class EdgeRendering : Node3D
             var end = frame.Vertices[edge.Vertices[1]];
 
             var child = GetChild<EdgeLine>(i);
-            child.LinePositions(start.Coord, end.Coord);
+            child.LinePositions(start.Coord.Vector3XZ(), end.Coord.Vector3XZ());
             child.LineWidth(edge.IsSelected ? SelectedLineWidth : DeselectedLineWidth);
             child.Draw();
         }

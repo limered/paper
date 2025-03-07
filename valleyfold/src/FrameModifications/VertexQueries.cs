@@ -6,7 +6,7 @@ namespace valleyfold.FrameModifications;
 
 public static class VertexQueries
 {
-    public static Id NearestVertexIdTo(Frame frame, Vector3 point, float threshold = float.MaxValue)
+    public static Id NearestVertexIdTo(Frame frame, Vector2 point, float threshold = float.MaxValue)
     {
         var nearest = -1;
         var minDist = float.MaxValue;
@@ -38,19 +38,19 @@ public static class VertexQueries
     }
 
 
-    private static bool IsPointOnSegment(Vector3 point, Vector3 segmentStart, Vector3 segmentEnd)
+    private static bool IsPointOnSegment(Vector2 point, Vector2 segmentStart, Vector2 segmentEnd)
     {
-        var crossProduct = (point.Z - segmentStart.Z) * (segmentEnd.X - segmentStart.X) -
-                           (point.X - segmentStart.X) * (segmentEnd.Z - segmentStart.Z);
+        var crossProduct = (point.Y - segmentStart.Y) * (segmentEnd.X - segmentStart.X) -
+                           (point.X - segmentStart.X) * (segmentEnd.Y - segmentStart.Y);
 
         if (Mathf.Abs(crossProduct) > Mathf.Epsilon)
             return false;
 
         var minX = Mathf.Min(segmentStart.X, segmentEnd.X);
         var maxX = Mathf.Max(segmentStart.X, segmentEnd.X);
-        var minY = Mathf.Min(segmentStart.Z, segmentEnd.Z);
-        var maxY = Mathf.Max(segmentStart.Z, segmentEnd.Z);
+        var minY = Mathf.Min(segmentStart.Y, segmentEnd.Y);
+        var maxY = Mathf.Max(segmentStart.Y, segmentEnd.Y);
 
-        return point.X >= minX && point.X <= maxX && point.Z >= minY && point.Z <= maxY;
+        return point.X >= minX && point.X <= maxX && point.Y >= minY && point.Y <= maxY;
     }
 }

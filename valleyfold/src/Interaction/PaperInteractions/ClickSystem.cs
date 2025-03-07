@@ -4,12 +4,13 @@ using valleyfold.Fold;
 using valleyfold.Folding;
 using valleyfold.FrameModifications;
 using valleyfold.Render.Edges;
+using valleyfold.Utils;
 
 namespace valleyfold.Interaction.PaperInteractions;
 
 public class WorldNewPointData
 {
-    public Vector3 Coord;
+    public Vector2 Coord;
     public Edge Edge;
     public Id ExistingVertex;
     public bool IsOnEdge;
@@ -39,8 +40,8 @@ public partial class ClickSystem : Node3D
     private PickingMode _pickingMode = PickingMode.StartPoint;
     private WorldNewPointData _startPoint;
     private WorldNewPointData _tempPointData = new();
-    private Vector3 _newEdgeStart;
-    private Vector3 _newEdgeEnd;
+    private Vector2 _newEdgeStart;
+    private Vector2 _newEdgeEnd;
     [Export] public Node3D FoldStartPoint;
     [Export] public Node3D GhostClickPosition;
     [Export] public EdgeLine GhostEdgeLine;
@@ -108,8 +109,8 @@ public partial class ClickSystem : Node3D
                     .Apply(Statics.Frame);
             
             
-            _newEdgeStart = new Vector3(100, 100, 100);
-            _newEdgeEnd = new Vector3(100, 100, 100);
+            _newEdgeStart = new Vector2(100, 100);
+            _newEdgeEnd = new Vector2(100, 100);
             _startPoint = null;
             _pickingMode = PickingMode.StartPoint;
             RemoveChild(GhostEdgeLine);
@@ -117,7 +118,7 @@ public partial class ClickSystem : Node3D
         }
     }
 
-    private WorldNewPointData NearestPointToPoint(Frame frame, Vector3 point)
+    private WorldNewPointData NearestPointToPoint(Frame frame, Vector2 point)
     {
         var result = new WorldNewPointData();
         var nearestVertexId = VertexQueries.NearestVertexIdTo(frame, point, VertexPickThreshold);
@@ -154,11 +155,11 @@ public partial class ClickSystem : Node3D
 
         if (_pickingMode == PickingMode.StartPoint)
         {
-            _tempPointData = NearestPointToPoint(frame, _mouseWorldPosition);
+            _tempPointData = NearestPointToPoint(frame, _mouseWorldPosition.Vector2XZ());
         }
         else
         {
-            _tempPointData.Coord = _mouseWorldPosition;
+            _tempPointData.Coord = _mouseWorldPosition.Vector2XZ();
 
             if (GhostEdgeLine == null)
             {
@@ -167,15 +168,15 @@ public partial class ClickSystem : Node3D
             }
             var center = _startPoint.Coord.Lerp(_tempPointData.Coord, 0.5f);
             var direction = _startPoint.Coord.DirectionTo(_tempPointData.Coord);
-            var perpendicular = new Vector3(-direction.Z, 0, direction.X);
+            var perpendicular = new Vector2(-direction.Y, direction.X);
             
             var (isLineInside, start, end) = EdgeQueries.FoldBoardersVertices(frame, center, perpendicular);
 
             if (isLineInside)
             {
-                _newEdgeStart = new Vector3(start.X, 0, start.Y);
-                _newEdgeEnd = new Vector3(end.X, 0, end.Y);
-                GhostEdgeLine.LinePositions(_newEdgeStart, _newEdgeEnd);
+                _newEdgeStart = new Vector2(start.X, start.Y);
+                _newEdgeEnd = new Vector2(end.X, end.Y);
+                GhostEdgeLine.LinePositions(_newEdgeStart.Vector3XZ(), _newEdgeEnd.Vector3XZ());
                 GhostEdgeLine.Draw();
                 
                 // TODO: Show ghost polygon of future fold
@@ -184,13 +185,13 @@ public partial class ClickSystem : Node3D
             {
                 RemoveChild(GhostEdgeLine);
                 GhostEdgeLine = null;
-                _newEdgeStart = new Vector3(100, 100, 100);
-                _newEdgeEnd = new Vector3(100, 100, 100);
+                _newEdgeStart = new Vector2(100, 100);
+                _newEdgeEnd = new Vector2(100, 100);
             }
         }
 
-        GhostClickPosition.Position = _tempPointData.Coord;
+        GhostClickPosition.Position = _tempPointData.Coord.Vector3XZ();
 
-        FoldStartPoint.Position = _startPoint?.Coord ?? new Vector3(100, 100, 100);
+        FoldStartPoint.Position = _startPoint?.Coord.Vector3XZ() ?? new Vector3(100, 100, 100);
     }
 }
