@@ -1,5 +1,7 @@
+using System.Linq;
 using Godot;
 using valleyfold.Fold;
+using valleyfold.Folding;
 using valleyfold.Ui;
 using valleyfold.Utils;
 
@@ -15,9 +17,21 @@ public partial class Game : Node
         Statics.Game = this;
         Statics.Frame = new Frame();
         Statics.Frame.InitializePaper();
+        FoldFrame();
 
         EventBus.Register<FoldModeChange>(OnFoldModeChange);
         EventBus.Register<AnimationModeChange>(OnAnimationModeChanged);
+    }
+
+    private static void FoldFrame()
+    {
+        var vertexA = new Vertex { Coord = new Vector2(0, 0.2f) };
+        var vertexB = new Vertex { Coord = new Vector2(1f, 0.5f) };
+        var edgeA = Statics.Frame.Edges.ElementAt(3);
+        var edgeB = Statics.Frame.Edges.ElementAt(1);
+
+        new EdgeToEdgeFold(edgeA, edgeB, vertexA.Coord, vertexB.Coord)
+            .Apply(Statics.Frame);
     }
 
     private void OnAnimationModeChanged(AnimationModeChange _)
