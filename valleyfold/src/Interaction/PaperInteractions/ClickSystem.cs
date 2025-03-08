@@ -177,28 +177,44 @@ public partial class ClickSystem : Node3D
                 GhostEdgeLine = new EdgeLine();
                 AddChild(GhostEdgeLine);
             }
-            var center = _startPoint.Coord.Lerp(_tempPointData.Coord, 0.5f);
-            var direction = _startPoint.Coord.DirectionTo(_tempPointData.Coord);
-            var perpendicular = new Vector2(-direction.Y, direction.X);
-            
-            var (isLineInside, start, end) = EdgeQueries.FoldBoardersVertices(frame, center, perpendicular);
 
-            if (isLineInside)
+            if (_startPoint.IsOnEdge)
             {
-                _newEdgeStart = new Vector2(start.X, start.Y);
-                _newEdgeEnd = new Vector2(end.X, end.Y);
-                GhostEdgeLine.LinePositions(_newEdgeStart.Vector3XZ(), _newEdgeEnd.Vector3XZ());
-                GhostEdgeLine.Draw();
                 
-                // TODO: Show ghost polygon of future fold
             }
             else
             {
-                RemoveChild(GhostEdgeLine);
-                GhostEdgeLine = null;
-                _newEdgeStart = new Vector2(100, 100);
-                _newEdgeEnd = new Vector2(100, 100);
+                var (start, end) = new VertexAction(
+                        _startPoint.ExistingVertex, 
+                        _tempPointData.Coord)
+                    .Draft(frame);
+                
+                GhostEdgeLine.LinePositions(start.Vector3XZ(), end.Vector3XZ());
+                GhostEdgeLine.Draw();
             }
+            
+            // var center = _startPoint.Coord.Lerp(_tempPointData.Coord, 0.5f);
+            // var direction = _startPoint.Coord.DirectionTo(_tempPointData.Coord);
+            // var perpendicular = new Vector2(-direction.Y, direction.X);
+            //
+            // var (isLineInside, start, end) = EdgeQueries.FoldBoardersVertices(frame, center, perpendicular);
+            //
+            // if (isLineInside)
+            // {
+            //     _newEdgeStart = new Vector2(start.X, start.Y);
+            //     _newEdgeEnd = new Vector2(end.X, end.Y);
+            //     GhostEdgeLine.LinePositions(_newEdgeStart.Vector3XZ(), _newEdgeEnd.Vector3XZ());
+            //     GhostEdgeLine.Draw();
+            //     
+            //     // TODO: Show ghost polygon of future fold
+            // }
+            // else
+            // {
+            //     RemoveChild(GhostEdgeLine);
+            //     GhostEdgeLine = null;
+            //     _newEdgeStart = new Vector2(100, 100);
+            //     _newEdgeEnd = new Vector2(100, 100);
+            // }
         }
 
         GhostClickPosition.Position = _tempPointData.Coord.Vector3XZ();

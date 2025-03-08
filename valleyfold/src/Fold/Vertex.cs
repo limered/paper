@@ -6,7 +6,5 @@ namespace valleyfold.Fold;
 public class Vertex
 {
     public Vector2 Coord;
-    public List<Id> Edges = new();
-    public List<Id> Faces = new();
     public bool IsSelected;
 }

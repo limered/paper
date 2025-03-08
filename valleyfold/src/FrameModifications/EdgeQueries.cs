@@ -195,4 +195,35 @@ public static class EdgeQueries
             .ToList();
         return (true, sortedIntersectedEdges.First().Item1, sortedIntersectedEdges.Last().Item1);
     }
+
+    public static (Vector2 pointA, Edge edgeA, Vector2 pointB, Edge edgeB) CrossedEdgesOnPolygon(
+        Frame frame, Vector2 center, Vector2 perpendicular, Face polyWithCenter)
+    {
+        var fullEdgeStart = center - perpendicular * 5f;
+        var fullEdgeEnd = center + perpendicular * 5f;
+
+        var points = new List<Vector2>(2);
+        var edges = new List<Edge>(2);
+        var polyEdges = polyWithCenter.Edges();
+        for (var i = 0; i < polyEdges.Length; i++)
+        {
+            var edge = polyEdges[i];
+            if (EdgesIntersect(
+                    frame.Vertices[edge.Vertices[0]].Coord,
+                    frame.Vertices[edge.Vertices[1]].Coord,
+                    fullEdgeStart,
+                    fullEdgeEnd))
+            {
+                var point = EdgeToEdgeIntersectionPoint(
+                    new Vertex { Coord = fullEdgeStart },
+                    new Vertex { Coord = fullEdgeEnd },
+                    frame.Vertices[edge.Vertices[0]],
+                    frame.Vertices[edge.Vertices[1]]);
+                points.Add(point);
+                edges.Add(edge);
+            }
+        }
+
+        return (points[0], edges[0], points[1], edges[1]);
+    }
 }
