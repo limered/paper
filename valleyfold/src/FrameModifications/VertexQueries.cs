@@ -68,6 +68,13 @@ public static class VertexQueries
         return connectedFaces.ToArray();
     }
 
+    public static Face[] Faces(this Vertex vertex)
+    {
+        var frame = Statics.Frame;
+        var vertexId = frame.Vertices.IndexOf(vertex);
+        return ((Id)vertexId).Faces();
+    }
+
     public static Edge[] Edges(this Id vertex)
     {
         var frame = Statics.Frame;
@@ -79,5 +86,12 @@ public static class VertexQueries
         }
 
         return connectedEdges.ToArray();
+    }
+
+    public static Edge[] Edges(this Vertex vertex)
+    {
+        var frame = Statics.Frame;
+        var vertexId = frame.Vertices.IndexOf(vertex);
+        return ((Id)vertexId).Edges();
     }
 }
