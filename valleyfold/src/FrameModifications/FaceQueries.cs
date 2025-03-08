@@ -27,10 +27,9 @@ public static class FaceQueries
         {
             var edge = frame.Edges[i];
             if (face.Vertices.Contains(edge.Vertices[0]) && face.Vertices.Contains(edge.Vertices[1]))
-            {
                 collectedEdges.Add(edge);
-            }
         }
+
         return collectedEdges.ToArray();
     }
 }

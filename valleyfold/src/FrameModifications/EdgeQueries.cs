@@ -16,13 +16,12 @@ public static class EdgeQueries
         {
             var face = frame.Faces[i];
             if (face.Vertices.Contains(edge.Vertices[0]) && face.Vertices.Contains(edge.Vertices[1]))
-            {
                 collectedFaces.Add(face);
-            }
         }
+
         return collectedFaces.ToArray();
     }
-    
+
     public static List<Edge> NearestEdgesToPoint(Frame frame, Vector2 point)
     {
         var nearestEdges = new List<Edge>();
@@ -76,12 +75,12 @@ public static class EdgeQueries
         var crossedEdges = new List<Edge>();
         foreach (var frameEdge in frame.Edges)
         {
-            if (frameEdge.Vertices[0] == startVertex && frameEdge.Vertices[1] == endVertex ||
-                frameEdge.Vertices[0] == endVertex && frameEdge.Vertices[1] == startVertex) continue;
-            
+            if ((frameEdge.Vertices[0] == startVertex && frameEdge.Vertices[1] == endVertex) ||
+                (frameEdge.Vertices[0] == endVertex && frameEdge.Vertices[1] == startVertex)) continue;
+
             if (startVertex == frameEdge.Vertices[0] || startVertex == frameEdge.Vertices[1] ||
                 endVertex == frameEdge.Vertices[0] || endVertex == frameEdge.Vertices[1]) continue;
-            
+
             if (EdgesIntersect(
                     frame.Vertices[startVertex].Coord,
                     frame.Vertices[endVertex].Coord,
@@ -89,10 +88,10 @@ public static class EdgeQueries
                     frame.Vertices[frameEdge.Vertices[1]].Coord))
                 crossedEdges.Add(frameEdge);
         }
-        
+
         return crossedEdges;
     }
-    
+
     private static bool EdgesIntersect(Vector2 start1, Vector2 end1, Vector2 start2, Vector2 end2)
     {
         float x1 = start1.X, y1 = start1.Y;
@@ -114,9 +113,9 @@ public static class EdgeQueries
     public static Vector2 EdgeToEdgeIntersectionPoint(Frame frame, Edge a, Edge b)
     {
         var (x1, y1) = frame.Vertices[a.Vertices[0]].Coord;
-        var (x2,  y2) = frame.Vertices[a.Vertices[1]].Coord;
-        var (x3,  y3) = frame.Vertices[b.Vertices[0]].Coord;
-        var (x4,  y4) = frame.Vertices[b.Vertices[1]].Coord;
+        var (x2, y2) = frame.Vertices[a.Vertices[1]].Coord;
+        var (x3, y3) = frame.Vertices[b.Vertices[0]].Coord;
+        var (x4, y4) = frame.Vertices[b.Vertices[1]].Coord;
 
         var denominator = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
 
@@ -129,12 +128,12 @@ public static class EdgeQueries
         if (ua is < 0 or > 1 || ub is < 0 or > 1)
             throw new ArgumentException(
                 $"No Intersection Point, CheckInput Edges beforehand using {nameof(EdgesIntersect)}");
-        
+
         var x0 = x1 + ua * (x2 - x1);
         var y0 = y1 + ua * (y2 - y1);
         return new Vector2(x0, y0);
     }
-    
+
     public static Vector2 EdgeToEdgeIntersectionPoint(Vertex startA, Vertex endA, Vertex startB, Vertex endB)
     {
         var (x1, y1) = startA.Coord;
@@ -153,7 +152,7 @@ public static class EdgeQueries
         if (ua is < 0 or > 1 || ub is < 0 or > 1)
             throw new ArgumentException(
                 $"No Intersection Point, CheckInput Edges beforehand using {nameof(EdgesIntersect)}");
-        
+
         var x0 = x1 + ua * (x2 - x1);
         var y0 = y1 + ua * (y2 - y1);
         return new Vector2(x0, y0);
@@ -170,14 +169,14 @@ public static class EdgeQueries
         // collect all cut edges
         var fullEdgeStart = center - perpendicular * 5f;
         var fullEdgeEnd = center + perpendicular * 5f;
-        
+
         var intersectedEdges = new List<(Vector2, int)>();
         for (var i = 0; i < frame.Edges.Count; i++)
         {
             var edge = frame.Edges[i];
             if (!EdgesIntersect(fullEdgeStart, fullEdgeEnd, frame.Vertices[edge.Vertices[0]].Coord,
                     frame.Vertices[edge.Vertices[1]].Coord)) continue;
-            
+
             var point = EdgeToEdgeIntersectionPoint(
                 new Vertex { Coord = fullEdgeStart },
                 new Vertex { Coord = fullEdgeEnd },
@@ -188,12 +187,12 @@ public static class EdgeQueries
 
         if (intersectedEdges.Count <= 1)
             return (false, fullEdgeStart, fullEdgeEnd);
-        
+
         // choose the two border edges
         var projection = center.DirectionTo(fullEdgeEnd);
         var sortedIntersectedEdges = intersectedEdges
-                .OrderBy(e => (new Vector2(e.Item1.X, e.Item1.Y) - center).Dot(projection))
-                .ToList();
+            .OrderBy(e => (new Vector2(e.Item1.X, e.Item1.Y) - center).Dot(projection))
+            .ToList();
         return (true, sortedIntersectedEdges.First().Item1, sortedIntersectedEdges.Last().Item1);
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using valleyfold.Fold;
 
@@ -52,5 +53,31 @@ public static class VertexQueries
         var maxY = Mathf.Max(segmentStart.Y, segmentEnd.Y);
 
         return point.X >= minX && point.X <= maxX && point.Y >= minY && point.Y <= maxY;
+    }
+
+    public static Face[] Faces(this Id vertex)
+    {
+        var frame = Statics.Frame;
+        var connectedFaces = new List<Face>();
+        for (var i = 0; i < frame.Faces.Count; i++)
+        {
+            var face = frame.Faces[i];
+            if (face.Vertices.Contains(vertex)) connectedFaces.Add(face);
+        }
+
+        return connectedFaces.ToArray();
+    }
+
+    public static Edge[] Edges(this Id vertex)
+    {
+        var frame = Statics.Frame;
+        var connectedEdges = new List<Edge>();
+        for (var i = 0; i < frame.Edges.Count; i++)
+        {
+            var edge = frame.Edges[i];
+            if (edge.Vertices.Contains(vertex)) connectedEdges.Add(edge);
+        }
+
+        return connectedEdges.ToArray();
     }
 }
