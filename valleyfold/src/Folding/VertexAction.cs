@@ -16,7 +16,7 @@ public class VertexAction
         _endPoint = endPoint;
     }
 
-    public (Vector2 start, Vector2 end) Draft(Frame frame)
+    public EdgeStrip Draft(Frame frame)
     {
         var startVertex = frame.Vertices[_selectedVertexId];
         var direction = startVertex.Coord.DirectionTo(_endPoint);
@@ -25,11 +25,17 @@ public class VertexAction
         var perpendicular = new Vector2(-direction.Y, direction.X);
 
         var polyWithCenter = FaceQueries.FaceContainingPoint(frame, center);
-        if (polyWithCenter == null) return (Vector2.Zero, Vector2.Zero);
+        if (polyWithCenter == null) return EdgeStrip.Empty;
 
-        var (pointA, edgeA, pointB, edgeB) =
+        var edgeStrip = new EdgeStrip();
+        
+        var firstCrossings =
             EdgeQueries.CrossedEdgesOnPolygon(frame, center, perpendicular, polyWithCenter);
 
-        return (pointA, pointB);
+        edgeStrip.Add(firstCrossings);
+        
+        // March along edges
+        
+        return edgeStrip;
     }
 }

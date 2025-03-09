@@ -184,13 +184,17 @@ public partial class ClickSystem : Node3D
             }
             else
             {
-                var (start, end) = new VertexAction(
+                var strip = new VertexAction(
                         _startPoint.ExistingVertex, 
                         _tempPointData.Coord)
                     .Draft(frame);
-                
-                GhostEdgeLine.LinePositions(start.Vector3XZ(), end.Vector3XZ());
-                GhostEdgeLine.Draw();
+                if(strip.Length > 0)
+                {
+                    var start = strip.StartPoints.First();
+                    var end = strip.EndPoints.First();
+                    GhostEdgeLine.LinePositions(start.Vector3XZ(), end.Vector3XZ());
+                    GhostEdgeLine.Draw();
+                }
             }
             
             // var center = _startPoint.Coord.Lerp(_tempPointData.Coord, 0.5f);
