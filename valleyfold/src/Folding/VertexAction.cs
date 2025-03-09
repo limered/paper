@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Godot;
 using valleyfold.Fold;
 using valleyfold.FrameModifications;
@@ -33,8 +34,38 @@ public class VertexAction
             EdgeQueries.CrossedEdgesOnPolygon(frame, center, perpendicular, polyWithCenter);
 
         edgeStrip.Add(firstCrossings);
+
+        var nextEdge = firstCrossings.edgeA;
+        var lastPoint = firstCrossings.pointA;
+        var lastPolygon = polyWithCenter;
+        if (nextEdge.Assignment != Assignment.B)
+        {
+            if(nextEdge.Assignment == Assignment.V)
+            {
+                var edge = frame.Vertices[nextEdge.Vertices[0]].Coord
+                    .DirectionTo(frame.Vertices[nextEdge.Vertices[1]].Coord); 
+                perpendicular = perpendicular.Reflect(edge);
+            }
+            var nextPolygon = nextEdge.Faces().First(p => p != lastPolygon);
+            var nextCrossings = EdgeQueries.CrossedEdgesOnPolygon(frame, lastPoint, perpendicular, nextPolygon);
+            edgeStrip.Add(nextCrossings);
+        }
         
-        // March along edges
+        nextEdge = firstCrossings.edgeB;
+        lastPoint = firstCrossings.pointB;
+        lastPolygon = polyWithCenter;
+        if (nextEdge.Assignment != Assignment.B)
+        {
+            if(nextEdge.Assignment == Assignment.V)
+            {
+                var edge = frame.Vertices[nextEdge.Vertices[0]].Coord
+                    .DirectionTo(frame.Vertices[nextEdge.Vertices[1]].Coord); 
+                perpendicular = perpendicular.Reflect(edge);
+            }
+            var nextPolygon = nextEdge.Faces().First(p => p != lastPolygon);
+            var nextCrossings = EdgeQueries.CrossedEdgesOnPolygon(frame, lastPoint, perpendicular, nextPolygon);
+            edgeStrip.Add(nextCrossings);
+        }
         
         return edgeStrip;
     }

@@ -1,12 +1,13 @@
+using System.Collections.Generic;
 using Godot;
 
 namespace valleyfold.Render.Edges;
 
 public partial class EdgeLine : MeshInstance3D
 {
-    private Vector3 _start;
-    private Vector3 _end;
-    
+    private readonly List<Vector3> _end = new();
+    private readonly List<Vector3> _start = new();
+
     private ImmediateMesh _lineMesh;
     private ShaderMaterial _shaderMaterial;
     private float _width = 0.01f;
@@ -24,8 +25,20 @@ public partial class EdgeLine : MeshInstance3D
 
     public void LinePositions(Vector3 start, Vector3 end)
     {
-        _start = start;
-        _end = end;
+        ClearPositions();
+        AddPositions(start, end);
+    }
+
+    public void AddPositions(Vector3 start, Vector3 end)
+    {
+        _start.Add(start);
+        _end.Add(end);
+    }
+
+    public void ClearPositions()
+    {
+        _start.Clear();
+        _end.Clear();
     }
 
     public void LineWidth(float width)
@@ -37,32 +50,38 @@ public partial class EdgeLine : MeshInstance3D
     {
         _shaderMaterial?.SetShaderParameter("line_color", color);
     }
-    
+
     public void Draw()
     {
         _lineMesh.ClearSurfaces();
         _lineMesh.SurfaceBegin(Mesh.PrimitiveType.Triangles);
 
-        var direction = (_end - _start).Normalized();
-        var perpendicular = direction.Cross(Vector3.Up).Normalized() * _width;
+        for (var i = 0; i < _start.Count; ++i)
+        {
+            var start = _start[i];
+            var end = _end[i];
 
-        var v1 = _start - perpendicular;
-        var v2 = _start + perpendicular;
-        var v3 = _end - perpendicular;
-        var v4 = _end + perpendicular;
+            var direction = (end - start).Normalized();
+            var perpendicular = direction.Cross(Vector3.Up).Normalized() * _width;
 
-        _lineMesh.SurfaceAddVertex(v4);
-        _lineMesh.SurfaceAddVertex(v2);
-        _lineMesh.SurfaceAddVertex(v1);
+            var v1 = start - perpendicular;
+            var v2 = start + perpendicular;
+            var v3 = end - perpendicular;
+            var v4 = end + perpendicular;
 
-        _lineMesh.SurfaceAddVertex(v3);
-        _lineMesh.SurfaceAddVertex(v4);
-        _lineMesh.SurfaceAddVertex(v1);
+            _lineMesh.SurfaceAddVertex(v4);
+            _lineMesh.SurfaceAddVertex(v2);
+            _lineMesh.SurfaceAddVertex(v1);
+
+            _lineMesh.SurfaceAddVertex(v3);
+            _lineMesh.SurfaceAddVertex(v4);
+            _lineMesh.SurfaceAddVertex(v1);
+        }
 
         _lineMesh.SurfaceEnd();
     }
 
-    public void Clear()
+    public void ClearRendering()
     {
         _lineMesh.ClearSurfaces();
     }

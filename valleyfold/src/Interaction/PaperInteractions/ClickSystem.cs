@@ -69,7 +69,6 @@ public partial class ClickSystem : Node3D
         Vector3 normal,
         long shapeIdx)
     {
-        GD.Print(@event.ResourceName);
         _mouseWorldPosition = eventPosition;
     }
 
@@ -188,11 +187,12 @@ public partial class ClickSystem : Node3D
                         _startPoint.ExistingVertex, 
                         _tempPointData.Coord)
                     .Draft(frame);
-                if(strip.Length > 0)
+                GhostEdgeLine.ClearPositions();
+                for (var i = 0; i < strip.Length; i++)
                 {
-                    var start = strip.StartPoints.First();
-                    var end = strip.EndPoints.First();
-                    GhostEdgeLine.LinePositions(start.Vector3XZ(), end.Vector3XZ());
+                    var start = strip.StartPoints[i];
+                    var end = strip.EndPoints[i];
+                    GhostEdgeLine.AddPositions(start.Vector3XZ(), end.Vector3XZ());
                     GhostEdgeLine.Draw();
                 }
             }
