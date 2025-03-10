@@ -48,7 +48,7 @@ public class VertexAction
                 foldDirection = foldDirection.Reflect(edge);
             }
             var polygon = lastEdge.Faces().First(p => p != lastPolygon);
-            var crossings = EdgeQueries.CrossedEdgesOnPolygon(frame, lastPoint, perpendicular, polygon);
+            var crossings = EdgeQueries.CrossedEdgesOnPolygon(frame, lastPoint, foldDirection, polygon);
             
             lastEdge = crossings.edgeA == lastEdge ? crossings.edgeB : crossings.edgeA;
             lastPoint = crossings.edgeA == lastEdge ? crossings.pointB : crossings.pointA;
@@ -64,16 +64,17 @@ public class VertexAction
         lastEdge = firstCrossings.edgeB;
         lastPoint = firstCrossings.pointB;
         lastPolygon = polyWithCenter;
+        foldDirection = perpendicular;
         while (lastEdge.Assignment != Assignment.B)
         {
             if(lastEdge.Assignment == Assignment.V)
             {
                 var edge = frame.Vertices[lastEdge.Vertices[0]].Coord
                     .DirectionTo(frame.Vertices[lastEdge.Vertices[1]].Coord); 
-                perpendicular = perpendicular.Reflect(edge);
+                foldDirection = foldDirection.Reflect(edge);
             }
             var polygon = lastEdge.Faces().First(p => p != lastPolygon);
-            var crossings = EdgeQueries.CrossedEdgesOnPolygon(frame, lastPoint, perpendicular, polygon);
+            var crossings = EdgeQueries.CrossedEdgesOnPolygon(frame, lastPoint, foldDirection, polygon);
             
             lastEdge = crossings.edgeA == lastEdge ? crossings.edgeB : crossings.edgeA;
             lastPoint = crossings.edgeA == lastEdge ? crossings.pointB : crossings.pointA;
@@ -82,6 +83,7 @@ public class VertexAction
             _edgeStrip.Add(crossings);
         }
         
+        _edgeStrip.Sort();
         return _edgeStrip;
     }
 
