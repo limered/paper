@@ -43,6 +43,7 @@ public partial class ClickSystem : Node3D
     private WorldNewPointData _tempPointData = new();
     private Vector2 _newEdgeStart;
     private Vector2 _newEdgeEnd;
+    private VertexAction _currentAction;
     [Export] public Node3D FoldStartPoint;
     [Export] public Node3D GhostClickPosition;
     [Export] public EdgeLine GhostEdgeLine;
@@ -89,33 +90,35 @@ public partial class ClickSystem : Node3D
 
         if (_pickingMode == PickingMode.EndPoint && GhostEdgeLine != null)
         {
-            var edgeStart = NearestPointToPoint(frame, _newEdgeStart);
-            var edgeEnd = NearestPointToPoint(frame, _newEdgeEnd);
+            _currentAction?.ApplyFoldedEdges(frame);
             
-            if (edgeStart.IsOnEdge && edgeEnd.IsOnEdge)
-                new EdgeToEdgeFold(
-                        edgeStart.Edge,
-                        edgeEnd.Edge,
-                        edgeStart.Coord,
-                        edgeEnd.Coord)
-                    .Apply(Statics.Frame);
-            else if (edgeStart.IsOnEdge)
-                new VertexToEdgeFold(
-                        edgeStart.Edge,
-                        edgeStart.Coord,
-                        edgeEnd.ExistingVertex)
-                    .Apply(Statics.Frame);
-            else if (edgeEnd.IsOnEdge)
-                new VertexToEdgeFold(
-                        edgeEnd.Edge,
-                        edgeEnd.Coord,
-                        edgeStart.ExistingVertex)
-                    .Apply(Statics.Frame);
-            else
-                new VertexToVertexFold(
-                        edgeStart.ExistingVertex,
-                        edgeEnd.ExistingVertex)
-                    .Apply(Statics.Frame);
+            // var edgeStart = NearestPointToPoint(frame, _newEdgeStart);
+            // var edgeEnd = NearestPointToPoint(frame, _newEdgeEnd);
+            //
+            // if (edgeStart.IsOnEdge && edgeEnd.IsOnEdge)
+            //     new EdgeToEdgeFold(
+            //             edgeStart.Edge,
+            //             edgeEnd.Edge,
+            //             edgeStart.Coord,
+            //             edgeEnd.Coord)
+            //         .Apply(Statics.Frame);
+            // else if (edgeStart.IsOnEdge)
+            //     new VertexToEdgeFold(
+            //             edgeStart.Edge,
+            //             edgeStart.Coord,
+            //             edgeEnd.ExistingVertex)
+            //         .Apply(Statics.Frame);
+            // else if (edgeEnd.IsOnEdge)
+            //     new VertexToEdgeFold(
+            //             edgeEnd.Edge,
+            //             edgeEnd.Coord,
+            //             edgeStart.ExistingVertex)
+            //         .Apply(Statics.Frame);
+            // else
+            //     new VertexToVertexFold(
+            //             edgeStart.ExistingVertex,
+            //             edgeEnd.ExistingVertex)
+            //         .Apply(Statics.Frame);
             
             
             _newEdgeStart = new Vector2(100, 100);
@@ -183,10 +186,11 @@ public partial class ClickSystem : Node3D
             }
             else
             {
-                var strip = new VertexAction(
+                _currentAction = new VertexAction(
                         _startPoint.ExistingVertex, 
-                        _tempPointData.Coord)
-                    .Draft(frame);
+                        _tempPointData.Coord);
+                
+                var strip = _currentAction.Draft(frame);
                 GhostEdgeLine.ClearPositions();
                 for (var i = 0; i < strip.Length; i++)
                 {
