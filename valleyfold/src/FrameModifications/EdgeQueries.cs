@@ -92,7 +92,7 @@ public static class EdgeQueries
         return crossedEdges;
     }
 
-    private static bool EdgesIntersect(Vector2 start1, Vector2 end1, Vector2 start2, Vector2 end2)
+    public static bool EdgesIntersect(Vector2 start1, Vector2 end1, Vector2 start2, Vector2 end2)
     {
         float x1 = start1.X, y1 = start1.Y;
         float x2 = end1.X, y2 = end1.Y;
@@ -196,7 +196,7 @@ public static class EdgeQueries
         return (true, sortedIntersectedEdges.First().Item1, sortedIntersectedEdges.Last().Item1);
     }
 
-    public static (Vector2 pointA, Edge edgeA, Vector2 pointB, Edge edgeB) CrossedEdgesOnPolygon(
+    public static (Vector2 pointA, Edge edgeA, Vector2 pointB, Edge edgeB)? CrossedEdgesOnPolygon(
         Frame frame, Vector2 center, Vector2 perpendicular, Face polyWithCenter)
     {
         var fullEdgeStart = center - perpendicular * 5f;
@@ -223,7 +223,8 @@ public static class EdgeQueries
                 edges.Add(edge);
             }
         }
-
-        return (points[0], edges[0], points[1], edges[1]);
+        return points.Any() ? 
+            (points[0], edges[0], points[1], edges[1]) : 
+            default((Vector2 pointA, Edge edgeA, Vector2 pointB, Edge edgeB)?);
     }
 }

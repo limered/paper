@@ -192,10 +192,10 @@ public partial class ClickSystem : Node3D
                 
                 var strip = _currentAction.Draft(frame);
                 GhostEdgeLine.ClearPositions();
-                for (var i = 0; i < strip.Length; i++)
+                for (var i = 0; i < strip.Points.Count - 1; i++)
                 {
-                    var start = strip.StartPoints[i];
-                    var end = strip.EndPoints[i];
+                    var start = strip.Points[i];
+                    var end = strip.Points[i+1];
                     GhostEdgeLine.AddPositions(start.Vector3XZ(), end.Vector3XZ());
                     GhostEdgeLine.Draw();
                 }

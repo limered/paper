@@ -10,11 +10,13 @@ public class VertexToVertexFold : IFold
 {
     private readonly Id _vertexIdA;
     private readonly Id _vertexIdB;
+    private readonly Assignment _assignment;
 
-    public VertexToVertexFold(Id vertexIdA, Id vertexIdB)
+    public VertexToVertexFold(Id vertexIdA, Id vertexIdB, Assignment assignment = Assignment.U)
     {
         _vertexIdA = vertexIdA;
         _vertexIdB = vertexIdB;
+        _assignment = assignment;
     }
 
 
@@ -36,7 +38,7 @@ public class VertexToVertexFold : IFold
         SplitFacesAndGenerateEdges(frame, crossedEdgeVertexIds);
     }
 
-    private static void SplitFacesAndGenerateEdges(Frame frame, List<Id> crossedEdgeVertexIds)
+    private void SplitFacesAndGenerateEdges(Frame frame, List<Id> crossedEdgeVertexIds)
     {
         var last = crossedEdgeVertexIds[0];
         for (var i = 1; i < crossedEdgeVertexIds.Count; i++)
@@ -48,7 +50,7 @@ public class VertexToVertexFold : IFold
 
             frame.AddEdge(new Edge
             {
-                Assignment = Assignment.V,
+                Assignment = _assignment,
                 FoldAngle = 0.3f,
                 Vertices = new[] { last, current }
             });

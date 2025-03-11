@@ -22,6 +22,8 @@ public static class FaceQueries
 
     public static Edge[] Edges(this Face face)
     {
+        // TODO: sort edges for result
+        
         var frame = Statics.Frame;
         var collectedEdges = new List<Edge>();
         for (var i = 0; i < frame.Edges.Count; i++)
