@@ -3,6 +3,7 @@ using System.Linq;
 using Godot;
 using valleyfold.Fold;
 using valleyfold.FrameModifications;
+using valleyfold.Utils;
 
 namespace valleyfold.Folding;
 
@@ -18,58 +19,43 @@ public class VertexAction
         _endPoint = endPoint;
     }
 
-    public (Vector2 point, Edge edge)? CalculateEdgeCrossing(
-        Frame frame, Vector2 lineA, Vector2 lineB, Face face, Edge edgeToSkip)
+    private void MarchEdges(
+        Frame frame, Edge startEdge, Vector2 startPoint, Face startFace, Vector2 foldDirection, bool prepand
+    )
     {
-        var faceEdges = face.Edges();
-        for (var i = 0; i < faceEdges.Length; i++)
+        var lastEdge = startEdge;
+        var lastPoint = startPoint;
+        var lastPolygon = startFace;
+        var moveToNext = true;
+        while (lastEdge.Assignment != Assignment.B && moveToNext)
         {
-            var edge = faceEdges[i];
-            if (edge == edgeToSkip) continue;
-            var point = LineSegmentCrossing(
-                lineA, lineB,
-                frame.Vertices[edge.Vertices[0]].Coord,
-                frame.Vertices[edge.Vertices[1]].Coord);
-            
-            if(point is null) continue;
-            return (point.Value, edge);
-        }
+            if (lastEdge.Assignment == Assignment.V)
+            {
+                var edge = frame.Vertices[lastEdge.Vertices[0]].Coord
+                    .DirectionTo(frame.Vertices[lastEdge.Vertices[1]].Coord);
+                foldDirection = foldDirection.Reflect(edge);
+            }
 
-        return default;
-    }
+            var nextPolygon = lastEdge.Faces().First(p => p != lastPolygon);
+            var nextCrossings = FoldMath.CalculateEdgeOtherEdgeCrossing(
+                frame, lastPoint, lastPoint + foldDirection, nextPolygon, lastEdge
+            );
+            if (nextCrossings == default) break;
+            if (_edgeStrip.Edges.Contains(nextCrossings.Value.edge)) moveToNext = false;
 
-    public Vector2? LineSegmentCrossing(
-        Vector2 lineA, Vector2 lineB, Vector2 segmentStart, Vector2 segmentEnd)
-    {
-        var lineDirection = lineB - lineA;
-        var segmentDirection = segmentEnd - segmentStart;
-        
-        var denominator = lineDirection.X * segmentDirection.Y - lineDirection.Y * segmentDirection.X;
-        
-        // Parallel
-        if (Math.Abs(denominator) < float.Epsilon)
-            return null;
-        
-        var startDiff = new Vector2(segmentStart.X - lineA.X, segmentStart.Y - lineA.Y);
-        var t = (startDiff.X * segmentDirection.Y - startDiff.Y * segmentDirection.X) / denominator;
-        var s = (startDiff.X * lineDirection.Y - startDiff.Y * lineDirection.X) / denominator;
-        
-        if (s is >= 0 and <= 1)
-        {
-            return new Vector2(
-                lineA.X + t * lineDirection.X,
-                lineA.Y + t * lineDirection.Y);
+            lastEdge = nextCrossings.Value.edge;
+            lastPoint = nextCrossings.Value.point;
+            lastPolygon = nextPolygon;
+
+            if (prepand)
+                _edgeStrip.PrependSingle(lastPoint, lastEdge);
+            else
+                _edgeStrip.AddSingle(lastPoint, lastEdge);
         }
-        return null;
     }
 
     public EdgeStrip Draft(Frame frame)
     {
-        // TODO: Rebuild calculation to only use one point on edges
-        // e.g. a->b->c->d, not: a->b,b->c,c->d
-
-        // TODO: Support edges through vertex
-
         var startVertex = frame.Vertices[_selectedVertexId];
         var direction = startVertex.Coord.DirectionTo(_endPoint);
 
@@ -88,60 +74,13 @@ public class VertexAction
         _edgeStrip.AddSingle(firstCrossings.Value.pointA, firstCrossings.Value.edgeA);
         _edgeStrip.AddSingle(firstCrossings.Value.pointB, firstCrossings.Value.edgeB);
 
-        var lastEdge = firstCrossings.Value.edgeA;
-        var lastPoint = firstCrossings.Value.pointA;
-        var lastPolygon = polyWithCenter;
-        var foldDirection = perpendicular;
-        var moveToNext = true;
-        while (lastEdge.Assignment != Assignment.B && moveToNext)
-        {
-            if(lastEdge.Assignment == Assignment.V)
-            {
-                var edge = frame.Vertices[lastEdge.Vertices[0]].Coord
-                    .DirectionTo(frame.Vertices[lastEdge.Vertices[1]].Coord); 
-                foldDirection = foldDirection.Reflect(edge);
-            }
-            var nextPolygon = lastEdge.Faces().First(p => p != lastPolygon);
-            var nextCrossings = CalculateEdgeCrossing(
-                frame, lastPoint, lastPoint + foldDirection, nextPolygon, lastEdge
-            );
-            if (nextCrossings == default) break;
-            if (_edgeStrip.Edges.Contains(nextCrossings.Value.edge)) moveToNext = false;
-            
-            lastEdge = nextCrossings.Value.edge;
-            lastPoint = nextCrossings.Value.point;
-            lastPolygon = nextPolygon;
+        MarchEdges(
+            frame, firstCrossings.Value.edgeA, firstCrossings.Value.pointA, polyWithCenter, perpendicular, true
+        );
+        MarchEdges(
+            frame, firstCrossings.Value.edgeB, firstCrossings.Value.pointB, polyWithCenter, perpendicular, false
+        );
 
-            _edgeStrip.PrependSingle(lastPoint, lastEdge);
-        }
-        
-        lastEdge = firstCrossings.Value.edgeB;
-        lastPoint = firstCrossings.Value.pointB;
-        lastPolygon = polyWithCenter;
-        foldDirection = perpendicular;
-        moveToNext = true;
-        while (lastEdge.Assignment != Assignment.B && moveToNext)
-        {
-            if(lastEdge.Assignment == Assignment.V)
-            {
-                var edge = frame.Vertices[lastEdge.Vertices[0]].Coord
-                    .DirectionTo(frame.Vertices[lastEdge.Vertices[1]].Coord); 
-                foldDirection = foldDirection.Reflect(edge);
-            }
-            var nextPolygon = lastEdge.Faces().First(p => p != lastPolygon);
-            var nextCrossings = CalculateEdgeCrossing(
-                frame, lastPoint, lastPoint + foldDirection, nextPolygon, lastEdge
-            );
-            if (nextCrossings == default) break;
-            if (_edgeStrip.Edges.Contains(nextCrossings.Value.edge)) moveToNext = false;
-
-            lastEdge = nextCrossings.Value.edge;
-            lastPoint = nextCrossings.Value.point;
-            lastPolygon = nextPolygon;
-
-            _edgeStrip.AddSingle(lastPoint, lastEdge);
-        }
-        
         return _edgeStrip;
     }
 
@@ -156,7 +95,7 @@ public class VertexAction
             .Apply(frame);
 
         if (_edgeStrip.Points.Count <= 2) return;
-        
+
         for (var i = 2; i < _edgeStrip.Points.Count; i++)
         {
             var lastVertex = frame.Vertices.Count - 1;
