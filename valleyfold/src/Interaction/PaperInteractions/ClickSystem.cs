@@ -79,6 +79,21 @@ public partial class ClickSystem : Node3D
         var frame = Statics.Frame;
         
         if (@event is not InputEventMouseButton mouseEvent) return;
+        
+        if (mouseEvent.ButtonIndex == MouseButton.Right && 
+            mouseEvent.Pressed && 
+            _pickingMode == PickingMode.EndPoint)
+        {
+            _pickingMode = PickingMode.StartPoint;
+            _startPoint = null;
+            _newEdgeStart = new Vector2(100, 100);
+            _newEdgeEnd = new Vector2(100, 100);
+            _currentAction = null;
+            RemoveChild(GhostEdgeLine);
+            GhostEdgeLine = null;
+            return;
+        }
+        
         if (mouseEvent.ButtonIndex != MouseButton.Left || !mouseEvent.Pressed) return;
         if (_pickingMode == PickingMode.Buttons) return;
         if (_pickingMode == PickingMode.StartPoint)
