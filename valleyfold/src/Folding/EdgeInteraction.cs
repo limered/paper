@@ -6,16 +6,18 @@ using valleyfold.Utils;
 
 namespace valleyfold.Folding;
 
-public class VertexAction : IInteraction
+public class EdgeInteraction : IInteraction
 {
+    private readonly Vector2 _startPoint;
     private readonly Vector2 _endPoint;
-    private readonly Id _selectedVertexId;
+    private readonly Edge _selectedEdge;
     private EdgeStrip _edgeStrip;
 
-    public VertexAction(Id selectedVertexId, Vector2 endPoint)
+    public EdgeInteraction(Vector2 startPoint, Vector2 endPoint, Edge selectedEdge)
     {
-        _selectedVertexId = selectedVertexId;
+        _startPoint = startPoint;
         _endPoint = endPoint;
+        _selectedEdge = selectedEdge;
     }
 
     private void MarchEdges(
@@ -52,18 +54,16 @@ public class VertexAction : IInteraction
                 _edgeStrip.AddSingle(lastPoint, lastEdge);
         }
     }
-
+    
     public EdgeStrip Draft(Frame frame)
     {
-        var startVertex = frame.Vertices[_selectedVertexId];
-        var direction = startVertex.Coord.DirectionTo(_endPoint);
-
-        var center = startVertex.Coord.Lerp(_endPoint, 0.5f);
+        var direction = _startPoint.DirectionTo(_endPoint);
+        var center = _startPoint.Lerp(_endPoint, 0.5f);
         var perpendicular = new Vector2(-direction.Y, direction.X);
-
+        
         var polyWithCenter = FaceQueries.FaceContainingPoint(frame, center);
         if (polyWithCenter == null) return EdgeStrip.Empty;
-
+        
         _edgeStrip = new EdgeStrip();
 
         var firstCrossings = EdgeQueries

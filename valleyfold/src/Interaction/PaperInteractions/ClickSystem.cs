@@ -43,7 +43,7 @@ public partial class ClickSystem : Node3D
     private WorldNewPointData _tempPointData = new();
     private Vector2 _newEdgeStart;
     private Vector2 _newEdgeEnd;
-    private VertexAction _currentAction;
+    private IInteraction _currentAction;
     [Export] public Node3D FoldStartPoint;
     [Export] public Node3D GhostClickPosition;
     [Export] public EdgeLine GhostEdgeLine;
@@ -92,41 +92,13 @@ public partial class ClickSystem : Node3D
         {
             _currentAction?.ApplyFoldedEdges(frame);
             
-            // var edgeStart = NearestPointToPoint(frame, _newEdgeStart);
-            // var edgeEnd = NearestPointToPoint(frame, _newEdgeEnd);
-            //
-            // if (edgeStart.IsOnEdge && edgeEnd.IsOnEdge)
-            //     new EdgeToEdgeFold(
-            //             edgeStart.Edge,
-            //             edgeEnd.Edge,
-            //             edgeStart.Coord,
-            //             edgeEnd.Coord)
-            //         .Apply(Statics.Frame);
-            // else if (edgeStart.IsOnEdge)
-            //     new VertexToEdgeFold(
-            //             edgeStart.Edge,
-            //             edgeStart.Coord,
-            //             edgeEnd.ExistingVertex)
-            //         .Apply(Statics.Frame);
-            // else if (edgeEnd.IsOnEdge)
-            //     new VertexToEdgeFold(
-            //             edgeEnd.Edge,
-            //             edgeEnd.Coord,
-            //             edgeStart.ExistingVertex)
-            //         .Apply(Statics.Frame);
-            // else
-            //     new VertexToVertexFold(
-            //             edgeStart.ExistingVertex,
-            //             edgeEnd.ExistingVertex)
-            //         .Apply(Statics.Frame);
-            
-            
             _newEdgeStart = new Vector2(100, 100);
             _newEdgeEnd = new Vector2(100, 100);
             _startPoint = null;
             _pickingMode = PickingMode.StartPoint;
             RemoveChild(GhostEdgeLine);
             GhostEdgeLine = null;
+            _currentAction = null;
         }
     }
 
@@ -182,7 +154,10 @@ public partial class ClickSystem : Node3D
 
             if (_startPoint.IsOnEdge)
             {
-                
+                _currentAction = new EdgeInteraction(
+                    _startPoint.Coord, 
+                    _tempPointData.Coord,
+                    _startPoint.Edge);
             }
             else
             {
@@ -190,12 +165,16 @@ public partial class ClickSystem : Node3D
                         _startPoint.ExistingVertex, 
                         _tempPointData.Coord);
                 
+                
+            }
+            if(_currentAction is not null)
+            {
                 var strip = _currentAction.Draft(frame);
                 GhostEdgeLine.ClearPositions();
                 for (var i = 0; i < strip.Points.Count - 1; i++)
                 {
                     var start = strip.Points[i];
-                    var end = strip.Points[i+1];
+                    var end = strip.Points[i + 1];
                     GhostEdgeLine.AddPositions(start.Vector3XZ(), end.Vector3XZ());
                     GhostEdgeLine.Draw();
                 }
