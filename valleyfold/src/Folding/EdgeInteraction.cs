@@ -21,7 +21,7 @@ public class EdgeInteraction : IInteraction
     }
 
     private void MarchEdges(
-        Frame frame, Edge startEdge, Vector2 startPoint, Face startFace, Vector2 foldDirection, bool prepand
+        Frame frame, Edge startEdge, Vector2 startPoint, Face startFace, Vector2 foldDirection, bool prepend
     )
     {
         var lastEdge = startEdge;
@@ -48,7 +48,7 @@ public class EdgeInteraction : IInteraction
             lastPoint = nextCrossings.Value.point;
             lastPolygon = nextPolygon;
 
-            if (prepand)
+            if (prepend)
                 _edgeStrip.PrependSingle(lastPoint, lastEdge);
             else
                 _edgeStrip.AddSingle(lastPoint, lastEdge);
