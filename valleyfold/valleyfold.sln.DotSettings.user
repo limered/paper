@@ -3,12 +3,7 @@
 	<s:String x:Key="/Default/Environment/Highlighting/HighlightingSourceSnapshotLocation/@EntryValue">C:\Users\livei\AppData\Local\JetBrains\Rider2024.1\resharper-host\temp\Rider\vAny\CoverageData\_valleyfold.1415318313\Snapshot\snapshot.utdcvr</s:String>
 	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=4bc0d281_002D176b_002D48b8_002Db948_002De20ab56d1d3c/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Testing&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::0A938AC8-7E60-4B0E-BF0B-6C2BD709EBDA::net8.0::Testing.Folding.VertexActionTests+DraftTests.DraggedVertexCreatesEdgeBetweenPoints&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::0A938AC8-7E60-4B0E-BF0B-6C2BD709EBDA::net8.0::Testing.Folding.VertexActionTests+DraftTests.DraggedVertexCreatesEdgeBetweenPointsWithMultipleFolds&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::0A938AC8-7E60-4B0E-BF0B-6C2BD709EBDA::net8.0::Testing.Folding.VertexActionTests+DraftTests.IfNewEdgeCrossesUnspecifiedFold_DraftTwoEdgesInOneLine&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::0A938AC8-7E60-4B0E-BF0B-6C2BD709EBDA::net8.0::Testing.Folding.VertexActionTests+DraftTests.IfNewEdgeCrossesValleyFold_DraftTwoEdgesInOneLine&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
+  &lt;ProjectFolder&gt;0A938AC8-7E60-4B0E-BF0B-6C2BD709EBDA/d:Folding&lt;/ProjectFolder&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	
 	
