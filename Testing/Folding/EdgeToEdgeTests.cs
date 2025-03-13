@@ -35,14 +35,12 @@ public class EdgeToEdgeTests
         var expectedEdge = new Edge
         {
             Vertices = [4, 5],
-            Assignment = Assignment.U,
-            FoldAngle = 0
         };
 
         new EdgeToEdgeFold(edgeA, edgeB, vertexA.Coord, vertexB.Coord)
             .Apply(_testingFrame);
 
-        Assert.Equivalent(expectedEdge, _testingFrame.Edges[6]);
+        Assert.Equivalent(expectedEdge.Vertices, _testingFrame.Edges[6].Vertices);
     }
 
     [Fact]

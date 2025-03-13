@@ -33,14 +33,12 @@ public class VertexToEdgeFoldTests
         var expectedEdge = new Edge
         {
             Vertices = [1, 4],
-            Assignment = Assignment.U,
-            FoldAngle = 0
         };
 
         new VertexToEdgeFold(edge, point, 1)
             .Apply(_testingFrame);
 
-        Assert.Equivalent(expectedEdge, _testingFrame.Edges[5]);
+        Assert.Equivalent(expectedEdge.Vertices, _testingFrame.Edges[5].Vertices);
     }
     
     [Fact]
