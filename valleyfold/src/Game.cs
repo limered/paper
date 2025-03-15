@@ -17,7 +17,7 @@ public partial class Game : Node
         Statics.Game = this;
         Statics.Frame = new Frame();
         Statics.Frame.InitializePaper();
-        // FoldFrame();
+        FoldFrame();
 
         EventBus.Register<FoldModeChange>(OnFoldModeChange);
         EventBus.Register<AnimationModeChange>(OnAnimationModeChanged);
@@ -30,7 +30,7 @@ public partial class Game : Node
         var edgeA = Statics.Frame.Edges.ElementAt(3);
         var edgeB = Statics.Frame.Edges.ElementAt(1);
 
-        new EdgeToEdgeFold(edgeA, edgeB, vertexA.Coord, vertexB.Coord)
+        new EdgeToEdgeFold(edgeA, edgeB, vertexA.Coord, vertexB.Coord, Assignment.V)
             .Apply(Statics.Frame);
     }
 
