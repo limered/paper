@@ -51,7 +51,7 @@ public class VertexToVertexFold : IFold
             frame.AddEdge(new Edge
             {
                 Assignment = _assignment,
-                FoldAngle = 0.3f,
+                FoldAngle = 0.7f,
                 Vertices = new[] { last, current }
             });
 
