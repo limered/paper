@@ -16,16 +16,21 @@ public partial class FaceRendering : Node3D
         if (Statics.Frame == null) return;
         var frame = Statics.Frame;
 
-        var faceCount = frame.Faces.Count;
-        if (GetChildCount() < faceCount) AddOrShowFaces(frame);
-        else if (GetChildCount() > faceCount) HideFaces(frame);
+        // RenderFaces(frame.Faces, frame.Vertices.Select(v => v.Coord.Vector3XZ()).ToList());
+    }
+
+    public void RenderFaces(List<Face> faces, List<Vector3> vertices)
+    {
+        var faceCount = faces.Count;
+        if (GetChildCount() < faceCount) AddOrShowFaces(faces);
+        else if (GetChildCount() > faceCount) HideFaces(faces);
 
         for (var i = 0; i < faceCount; i++)
         {
-            var face = frame.Faces[i];
+            var face = faces[i];
 
             var faceVertexes = new List<Vector3>();
-            faceVertexes.AddRange(face.Vertices.Select(v => frame.Vertices[v].Coord.Vector3XZ()));
+            faceVertexes.AddRange(face.Vertices.Select(v => vertices[v]));
 
             var faceNormals = faceVertexes
                 .Select(_ => Vector3.Up)
@@ -51,18 +56,18 @@ public partial class FaceRendering : Node3D
         }
     }
 
-    private void HideFaces(Frame frame)
+    private void HideFaces(List<Face> faces)
     {
-        for (var i = frame.Faces.Count - 1; i < GetChildCount(); i++)
+        for (var i = faces.Count - 1; i < GetChildCount(); i++)
         {
             var child = GetChild<FaceNode>(i);
             child.Hide();
         }
     }
 
-    private void AddOrShowFaces(Frame frame)
+    private void AddOrShowFaces(List<Face> faces)
     {
-        for (var i = GetChildCount() - 1; i < frame.Faces.Count; i++)
+        for (var i = GetChildCount() - 1; i < faces.Count; i++)
         {
             var child = GetChildOrNull<FaceNode>(i);
             if (child == null)
