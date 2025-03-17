@@ -1,5 +1,6 @@
 using System.Linq;
 using Godot;
+using valleyfold.ChangeTracking;
 using valleyfold.FrameModifications;
 using valleyfold.TwoDeeModels;
 using valleyfold.Utils;
@@ -83,17 +84,23 @@ public class EdgeInteraction : IInteraction
         return _edgeStrip;
     }
 
-    public void ApplyFoldedEdges(Frame frame)
+    public ChangeRecord ApplyFoldedEdges(Frame frame)
     {
-        new EdgeToEdgeFold(
+        var (startId, endId) = new EdgeToEdgeFold(
                 _edgeStrip.Edges[0],
                 _edgeStrip.Edges[1],
                 _edgeStrip.Points[0],
                 _edgeStrip.Points[1],
                 Assignment.V)
             .Apply(frame);
+        
+        var changeRecord = new ChangeRecord()
+        {
+            FoldLine = (startId, endId),
+            StartPoint = _startPoint.Vector3XZ(), // TODO: use 3d coord
+        };
 
-        if (_edgeStrip.Points.Count <= 2) return;
+        if (_edgeStrip.Points.Count <= 2) return changeRecord;
 
         for (var i = 2; i < _edgeStrip.Points.Count; i++)
         {
@@ -104,5 +111,7 @@ public class EdgeInteraction : IInteraction
             new VertexToEdgeFold(edge, point, lastVertex, Assignment.V)
                 .Apply(frame);
         }
+
+        return changeRecord;
     }
 }

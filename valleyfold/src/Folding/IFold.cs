@@ -4,5 +4,5 @@ namespace valleyfold.Folding;
 
 public interface IFold
 {
-    void Apply(Frame frame);
+    (Id start, Id end) Apply(Frame frame);
 }

@@ -105,7 +105,11 @@ public partial class ClickSystem : Node3D
 
         if (_pickingMode == PickingMode.EndPoint && GhostEdgeLine != null)
         {
-            _currentAction?.ApplyFoldedEdges(frame);
+            if(_currentAction is not null)
+            {
+                var changeRecord = _currentAction.ApplyFoldedEdges(frame);
+                Statics.ChangeMemory.AddChange(changeRecord);
+            }
             
             _newEdgeStart = new Vector2(100, 100);
             _newEdgeEnd = new Vector2(100, 100);

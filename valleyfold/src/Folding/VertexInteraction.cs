@@ -1,5 +1,6 @@
 using System.Linq;
 using Godot;
+using valleyfold.ChangeTracking;
 using valleyfold.FrameModifications;
 using valleyfold.TwoDeeModels;
 using valleyfold.Utils;
@@ -9,12 +10,12 @@ namespace valleyfold.Folding;
 public class VertexInteraction : IInteraction
 {
     private readonly Vector2 _endPoint;
-    private readonly Id _selectedVertexId;
+    private readonly Id _startVertex;
     private EdgeStrip _edgeStrip;
 
-    public VertexInteraction(Id selectedVertexId, Vector2 endPoint)
+    public VertexInteraction(Id startVertex, Vector2 endPoint)
     {
-        _selectedVertexId = selectedVertexId;
+        _startVertex = startVertex;
         _endPoint = endPoint;
     }
 
@@ -52,10 +53,9 @@ public class VertexInteraction : IInteraction
                 _edgeStrip.AddSingle(lastPoint, lastEdge);
         }
     }
-
     public EdgeStrip Draft(Frame frame)
     {
-        var startVertex = frame.Vertices[_selectedVertexId];
+        var startVertex = frame.Vertices[_startVertex];
         var direction = startVertex.Coord.DirectionTo(_endPoint);
 
         var center = startVertex.Coord.Lerp(_endPoint, 0.5f);
@@ -83,17 +83,23 @@ public class VertexInteraction : IInteraction
         return _edgeStrip;
     }
 
-    public void ApplyFoldedEdges(Frame frame)
+    public ChangeRecord ApplyFoldedEdges(Frame frame)
     {
-        new EdgeToEdgeFold(
+        var (startId, endId) = new EdgeToEdgeFold(
                 _edgeStrip.Edges[0],
                 _edgeStrip.Edges[1],
                 _edgeStrip.Points[0],
                 _edgeStrip.Points[1],
                 Assignment.V)
             .Apply(frame);
+        
+        var changeRecord = new ChangeRecord()
+        {
+            FoldLine = (startId, endId),
+            StartPoint = frame.Vertices[_startVertex].Coord.Vector3XZ(), // TODO: use 3d coord
+        };
 
-        if (_edgeStrip.Points.Count <= 2) return;
+        if (_edgeStrip.Points.Count <= 2) return changeRecord;
 
         for (var i = 2; i < _edgeStrip.Points.Count; i++)
         {
@@ -104,5 +110,7 @@ public class VertexInteraction : IInteraction
             new VertexToEdgeFold(edge, point, lastVertex, Assignment.V)
                 .Apply(frame);
         }
+        
+        return changeRecord;
     }
 }

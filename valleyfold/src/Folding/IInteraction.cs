@@ -1,3 +1,4 @@
+using valleyfold.ChangeTracking;
 using valleyfold.TwoDeeModels;
 
 namespace valleyfold.Folding;
@@ -5,5 +6,5 @@ namespace valleyfold.Folding;
 public interface IInteraction
 {
     EdgeStrip Draft(Frame frame);
-    void ApplyFoldedEdges(Frame frame);
+    ChangeRecord ApplyFoldedEdges(Frame frame);
 }
