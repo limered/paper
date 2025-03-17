@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using valleyfold.Fold;
 using valleyfold.FrameModifications;
 using valleyfold.Render.Faces;
+using valleyfold.TwoDeeModels;
 using valleyfold.Utils;
 
 namespace valleyfold.Render.ThreeD;

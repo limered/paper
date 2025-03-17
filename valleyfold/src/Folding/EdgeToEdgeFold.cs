@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Godot;
-using valleyfold.Fold;
 using valleyfold.FrameModifications;
+using valleyfold.TwoDeeModels;
 
 namespace valleyfold.Folding;
 

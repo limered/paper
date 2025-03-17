@@ -1,9 +1,9 @@
 using System.Linq;
 using Godot;
-using valleyfold.Fold;
 using valleyfold.Folding;
 using valleyfold.FrameModifications;
 using valleyfold.Render.Edges;
+using valleyfold.TwoDeeModels;
 using valleyfold.Utils;
 
 namespace valleyfold.Interaction.PaperInteractions;

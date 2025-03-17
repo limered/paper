@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Godot;
-using valleyfold.Fold;
+using valleyfold.TwoDeeModels;
 
 namespace valleyfold.Folding;
 

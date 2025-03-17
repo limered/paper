@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Godot.Collections;
-using valleyfold.Fold;
+using valleyfold.TwoDeeModels;
 using valleyfold.Utils;
 
 namespace valleyfold.Render.Faces;

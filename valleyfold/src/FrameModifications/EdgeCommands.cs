@@ -1,5 +1,5 @@
 using Godot;
-using valleyfold.Fold;
+using valleyfold.TwoDeeModels;
 
 namespace valleyfold.FrameModifications;
 

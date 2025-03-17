@@ -1,6 +1,6 @@
 using Godot;
-using valleyfold.Fold;
 using valleyfold.Folding;
+using valleyfold.TwoDeeModels;
 
 namespace Testing.Folding;
 

@@ -1,4 +1,4 @@
-namespace valleyfold.Fold;
+namespace valleyfold.TwoDeeModels;
 
 public class Edge
 {

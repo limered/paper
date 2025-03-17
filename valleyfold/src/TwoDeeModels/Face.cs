@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace valleyfold.Fold;
+namespace valleyfold.TwoDeeModels;
 
 public class Face
 {

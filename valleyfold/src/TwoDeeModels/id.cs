@@ -1,4 +1,4 @@
-namespace valleyfold.Fold;
+namespace valleyfold.TwoDeeModels;
 
 public record struct Id(int Value)
 {

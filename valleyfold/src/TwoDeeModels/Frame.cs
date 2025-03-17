@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Godot;
 
-namespace valleyfold.Fold;
+namespace valleyfold.TwoDeeModels;
 
 public enum Assignment
 {
