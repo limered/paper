@@ -1,11 +1,10 @@
-using System.Collections.Generic;
-using valleyfold.Folding;
+using Godot;
 using valleyfold.TwoDeeModels;
 
 namespace valleyfold.ChangeTracking;
 
 public record struct ChangeRecord()
 {
-    public IInteraction Interaction { get; } = null;
-    public List<Id> FoldedEdges { get; } = new();
+    public (Id start, Id end) FoldLine { get; init; } = new();
+    public Vector3 StartPoint { get; init; } = default;
 }
