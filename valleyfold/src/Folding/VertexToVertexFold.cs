@@ -20,10 +20,10 @@ public class VertexToVertexFold : IFold
     }
 
 
-    public void Apply(Frame frame)
+    public (Id start, Id end) Apply(Frame frame)
     {
-        if (VerticesAreTheSame() || VerticesLieOnTheSameEdge(frame)) return;
-
+        if (VerticesAreTheSame() || VerticesLieOnTheSameEdge(frame)) return default;
+ 
         var crossedVertices = VertexQueries.VerticesCrossedByEdge(frame, _vertexIdA, _vertexIdB);
         var crossedEdges = EdgeQueries.EdgesCrossedByEdge(frame, _vertexIdA, _vertexIdB);
         if (crossedVertices.Any() && crossedEdges.Any())
@@ -36,6 +36,7 @@ public class VertexToVertexFold : IFold
                 frame, crossedEdgeVertexIds.Concat(crossedVertices));
 
         SplitFacesAndGenerateEdges(frame, crossedEdgeVertexIds);
+        return (_vertexIdA, _vertexIdB);
     }
 
     private void SplitFacesAndGenerateEdges(Frame frame, List<Id> crossedEdgeVertexIds)

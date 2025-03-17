@@ -22,9 +22,9 @@ public class EdgeToEdgeFold : IFold
         _assignment = assignment;
     }
 
-    public void Apply(Frame frame)
+    public (Id start, Id end) Apply(Frame frame)
     {
-        if (NewFoldOnSameEdge()) return;
+        if (NewFoldOnSameEdge()) return default;
 
         var vertexIds = new List<Id>
         {
@@ -32,7 +32,7 @@ public class EdgeToEdgeFold : IFold
             EdgeCommands.AddVertexToEdge(frame, new Vertex { Coord = _pointB }, _edgeB)
         };
 
-        new VertexToVertexFold(vertexIds[0], vertexIds[1], _assignment).Apply(frame);
+        return new VertexToVertexFold(vertexIds[0], vertexIds[1], _assignment).Apply(frame);
     }
 
     private bool NewFoldOnSameEdge()

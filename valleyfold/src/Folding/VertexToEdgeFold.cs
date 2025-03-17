@@ -20,13 +20,13 @@ public class VertexToEdgeFold : IFold
         _assignment = assignment;
     }
 
-    public void Apply(Frame frame)
+    public (Id start, Id end) Apply(Frame frame)
     {
-        if (AreOnSameEdge()) return;
+        if (AreOnSameEdge()) return default;
 
         var newVertexId = EdgeCommands.AddVertexToEdge(frame, new Vertex { Coord = _point }, _edge);
 
-        new VertexToVertexFold(_vertexId, newVertexId, _assignment).Apply(frame);
+        return new VertexToVertexFold(_vertexId, newVertexId, _assignment).Apply(frame);
     }
 
     private bool AreOnSameEdge()
