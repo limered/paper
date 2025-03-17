@@ -6,13 +6,13 @@ using valleyfold.Utils;
 
 namespace valleyfold.Folding;
 
-public class VertexAction : IInteraction
+public class VertexInteraction : IInteraction
 {
     private readonly Vector2 _endPoint;
     private readonly Id _selectedVertexId;
     private EdgeStrip _edgeStrip;
 
-    public VertexAction(Id selectedVertexId, Vector2 endPoint)
+    public VertexInteraction(Id selectedVertexId, Vector2 endPoint)
     {
         _selectedVertexId = selectedVertexId;
         _endPoint = endPoint;

@@ -176,7 +176,7 @@ public partial class ClickSystem : Node3D
             }
             else
             {
-                _currentAction = new VertexAction(
+                _currentAction = new VertexInteraction(
                         _startPoint.ExistingVertex, 
                         _tempPointData.Coord);
                 

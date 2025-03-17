@@ -6,23 +6,23 @@ using valleyfold.TwoDeeModels;
 
 namespace Testing.Folding;
 
-public class VertexActionTests
+public class VertexInteractionTests
 {
     private readonly Frame _testingFrame;
     
-    public VertexActionTests()
+    public VertexInteractionTests()
     {
         _testingFrame = new Frame();
         _testingFrame.InitializePaper();
         Statics.Frame = _testingFrame;
     }
 
-    public class DraftTests : VertexActionTests
+    public class DraftTests : VertexInteractionTests
     {
         [Fact]
         public void DraggedVertexCreatesEdgeBetweenPoints()
         {
-            var vertexAction = new VertexAction(0, new Vector2(.5f, .5f));
+            var vertexAction = new VertexInteraction(0, new Vector2(.5f, .5f));
             var edgeStrip = vertexAction.Draft(_testingFrame);
             
             Assert.Equivalent(2, edgeStrip.Length);
@@ -43,7 +43,7 @@ public class VertexActionTests
             new EdgeToEdgeFold(startEdge, endEdge, startPoint, endPoint, Assignment.U)
                 .Apply(_testingFrame);
             
-            var vertexAction = new VertexAction(0, new Vector2(0.5f, 0.5f));
+            var vertexAction = new VertexInteraction(0, new Vector2(0.5f, 0.5f));
             var edgeStrip = vertexAction.Draft(_testingFrame);
             
             Assert.Equivalent(3, edgeStrip.Length);
@@ -67,7 +67,7 @@ public class VertexActionTests
             new EdgeToEdgeFold(startEdge, endEdge, startPoint, endPoint, Assignment.V)
                 .Apply(_testingFrame);
             
-            var vertexAction = new VertexAction(0, new Vector2(0.4f, 0.4f));
+            var vertexAction = new VertexInteraction(0, new Vector2(0.4f, 0.4f));
             var edgeStrip = vertexAction.Draft(_testingFrame);
             
             Assert.Equivalent(3, edgeStrip.Length);
