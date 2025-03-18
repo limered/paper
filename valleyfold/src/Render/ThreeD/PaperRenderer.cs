@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using valleyfold.FrameModifications;
+using valleyfold.Render.Edges;
 using valleyfold.Render.Faces;
-using valleyfold.TwoDeeModels;
+using valleyfold.Render.ThreeD.Events;
+using valleyfold.Render.Vertices;
 using valleyfold.Utils;
 
 namespace valleyfold.Render.ThreeD;
@@ -12,6 +13,8 @@ namespace valleyfold.Render.ThreeD;
 public partial class PaperRenderer : Node3D
 {
     [Export] public FaceRendering FaceRendering;
+    [Export] public EdgeRendering EdgeRendering;
+    [Export] public VertexRendering VertexRendering;
     
     private Vector3[] _vertices;
 
@@ -49,29 +52,11 @@ public partial class PaperRenderer : Node3D
 
     public override void _Process(double delta)
     {
-        // copy vertices from frame
         if (Statics.Frame == null) return;
-        var frame = Statics.Frame;
-        _vertices = new Vector3[frame.Vertices.Count];
-        
-        for (var i = 0; i < frame.Vertices.Count; i++)
+        if (_vertices is not null && _vertices.Any())
         {
-            _vertices[i] = frame.Vertices[i].Coord.Vector3XZ();
-        }
-
-        var changes = Statics.ChangeMemory.Changes;
-        foreach (var change in changes)
-        {
-            for (var v = 0; v < _vertices.Length; v++)
-            {
-                var vertex = _vertices[v];
-                var start = _vertices[change.FoldLine.start];
-                var end = _vertices[change.FoldLine.end];
-                
-                // TODO: use vertex id if can be used, else interpolate edge segment
-                if (start.DirectionTo(vertex).Dot(change.StartPoint) < 0) continue;
-                _vertices[v] = ReflectedAroundLine(start, end, vertex);
-            }
+            FaceRendering.RenderFaces(Statics.Frame.Faces, _vertices.ToList());
+            EdgeRendering.Render(Statics.Frame.Edges, _vertices.ToList());
         }
         
         // fold vertices on edges
@@ -114,14 +99,12 @@ public partial class PaperRenderer : Node3D
         //     }
         //     reflectedAroundFaces.Add(initialFace);
         // }
-        
-        FaceRendering.RenderFaces(frame.Faces, _vertices.ToList());
     }
 
     private Vector3 ReflectedAroundLine(Vector3 foldLineStart, Vector3 foldLineEnd, Vector3 vertex)
     {
         var foldAxis = (foldLineEnd - foldLineStart).Normalized();
-        var foldAngle = Math.PI * 1f;
+        const double foldAngle = Math.PI * 0.9f;
         var vertexPositionRelativeToEdge = vertex - foldLineStart;
         var vertexPositionRelativeToEdgeRotated = vertexPositionRelativeToEdge
             .Rotated(foldAxis, (float)foldAngle);

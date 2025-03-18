@@ -68,6 +68,8 @@ mesh = SubResource("SphereMesh_u5yjp")
 
 [node name="ingame" parent="." instance=ExtResource("6_p3hbg")]
 
-[node name="ThreeDRenderer" type="Node3D" parent="." node_paths=PackedStringArray("FaceRendering")]
+[node name="ThreeDRenderer" type="Node3D" parent="." node_paths=PackedStringArray("FaceRendering", "EdgeRendering", "VertexRendering")]
 script = ExtResource("7_iug24")
 FaceRendering = NodePath("../FaceRendering")
+EdgeRendering = NodePath("../EdgeRendering")
+VertexRendering = NodePath("../VertexRendering")

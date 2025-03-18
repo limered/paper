@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using valleyfold.TwoDeeModels;
@@ -18,26 +19,31 @@ public partial class EdgeRendering : Node3D
         if (Statics.Frame == null) return;
         var frame = Statics.Frame;
 
-        var edgeCount = frame.Edges.Count;
-        if(GetChildCount() < edgeCount) AddOrShowLines(frame);
-        else if(GetChildCount() > edgeCount) HideLines(frame);
+        // Render(frame.Edges, frame.Vertices.Select(v => v.Coord.Vector3XZ()).ToList());
+    }
+
+    public void Render(List<Edge> edges, List<Vector3> vertices)
+    {
+        var edgeCount = edges.Count;
+        if(GetChildCount() < edgeCount) AddOrShowLines(edges);
+        else if(GetChildCount() > edgeCount) HideLines(edges);
         
         for (var i = 0; i < edgeCount; i++)
         {
-            var edge = frame.Edges[i];
-            var start = frame.Vertices[edge.Vertices[0]];
-            var end = frame.Vertices[edge.Vertices[1]];
+            var edge = edges[i];
+            var start = vertices[edge.Vertices[0]];
+            var end = vertices[edge.Vertices[1]];
 
             var child = GetChild<EdgeLine>(i);
-            child.LinePositions(start.Coord.Vector3XZ(), end.Coord.Vector3XZ());
+            child.LinePositions(start, end);
             child.LineWidth(edge.IsSelected ? SelectedLineWidth : DeselectedLineWidth);
             child.Draw();
         }
     }
 
-    private void AddOrShowLines(Frame frame)
+    private void AddOrShowLines(List<Edge> edges)
     {
-        var edgeCount = frame.Edges.Count;
+        var edgeCount = edges.Count;
         for (var i = GetChildCount() - 1; i < edgeCount; i++)
         {
             var child = GetChildOrNull<MeshInstance3D>(i);
@@ -53,9 +59,9 @@ public partial class EdgeRendering : Node3D
         }
     }
 
-    private void HideLines(Frame frame)
+    private void HideLines(List<Edge> edges)
     {
-        var edgeCount = frame.Edges.Count;
+        var edgeCount = edges.Count;
         for (var i = edgeCount - 1; i < GetChildCount(); i++) GetChild<MeshInstance3D>(i).Hide();
     }
 }
