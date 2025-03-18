@@ -15,6 +15,38 @@ public partial class PaperRenderer : Node3D
     
     private Vector3[] _vertices;
 
+    public override void _Ready()
+    {
+        EventBus.Register<PaperFoldedEvent>(OnPaperFolded);
+    }
+
+    private void OnPaperFolded(PaperFoldedEvent _)
+    {
+        if (Statics.Frame == null) return;
+        var frame = Statics.Frame;
+        _vertices = new Vector3[frame.Vertices.Count];
+        
+        for (var i = 0; i < frame.Vertices.Count; i++)
+        {
+            _vertices[i] = frame.Vertices[i].Coord.Vector3XZ();
+        }
+
+        var changes = Statics.ChangeMemory.Changes;
+        foreach (var change in changes)
+        {
+            for (var v = 0; v < _vertices.Length; v++)
+            {
+                var vertex = _vertices[v];
+                var start = _vertices[change.FoldLine.start];
+                var end = _vertices[change.FoldLine.end];
+                
+                // TODO: use vertex id if can be used, else interpolate edge segment
+                if (start.DirectionTo(vertex).Dot(change.StartPoint) < 0) continue;
+                _vertices[v] = ReflectedAroundLine(start, end, vertex);
+            }
+        }
+    }
+
     public override void _Process(double delta)
     {
         // copy vertices from frame

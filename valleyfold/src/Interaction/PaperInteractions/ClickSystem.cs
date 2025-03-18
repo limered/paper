@@ -3,6 +3,7 @@ using Godot;
 using valleyfold.Folding;
 using valleyfold.FrameModifications;
 using valleyfold.Render.Edges;
+using valleyfold.Render.ThreeD.Events;
 using valleyfold.TwoDeeModels;
 using valleyfold.Utils;
 
@@ -109,6 +110,7 @@ public partial class ClickSystem : Node3D
             {
                 var changeRecord = _currentAction.ApplyFoldedEdges(frame);
                 Statics.ChangeMemory.AddChange(changeRecord);
+                
             }
             
             _newEdgeStart = new Vector2(100, 100);
@@ -118,6 +120,8 @@ public partial class ClickSystem : Node3D
             RemoveChild(GhostEdgeLine);
             GhostEdgeLine = null;
             _currentAction = null;
+            
+            EventBus.Emit(new PaperFoldedEvent());
         }
     }
 
@@ -183,8 +187,6 @@ public partial class ClickSystem : Node3D
                 _currentAction = new VertexInteraction(
                         _startPoint.ExistingVertex, 
                         _tempPointData.Coord);
-                
-                
             }
             if(_currentAction is not null)
             {
