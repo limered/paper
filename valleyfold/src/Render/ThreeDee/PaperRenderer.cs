@@ -5,6 +5,7 @@ using valleyfold.Render.Edges;
 using valleyfold.Render.Faces;
 using valleyfold.Render.ThreeDee.Events;
 using valleyfold.Render.Vertices;
+using valleyfold.ThreeDeeModels;
 using valleyfold.Utils;
 
 namespace valleyfold.Render.ThreeDee;
@@ -15,8 +16,6 @@ public partial class PaperRenderer : Node3D
     [Export] public EdgeRendering EdgeRendering;
     [Export] public VertexRendering VertexRendering;
     
-    private Vector3[] _vertices;
-
     public override void _Ready()
     {
         EventBus.Register<PaperFoldedEvent>(OnPaperFolded);
@@ -26,25 +25,21 @@ public partial class PaperRenderer : Node3D
     {
         if (Statics.Frame == null) return;
         var frame = Statics.Frame;
-        _vertices = new Vector3[frame.Vertices.Count];
-        
-        for (var i = 0; i < frame.Vertices.Count; i++)
-        {
-            _vertices[i] = frame.Vertices[i].Coord.Vector3XZ();
-        }
+        var frame3d = Statics.Frame3d;
+        frame3d.ImportFromFrame(frame);
 
         var changes = Statics.ChangeMemory.Changes;
         foreach (var change in changes)
         {
-            for (var v = 0; v < _vertices.Length; v++)
+            for (var v = 0; v < frame3d.Vertices.Count; v++)
             {
-                var vertex = _vertices[v];
-                var start = _vertices[change.FoldLine.start];
-                var end = _vertices[change.FoldLine.end];
+                var vertex = frame3d.Vertices[v].Coord;
+                var start = frame3d.Vertices[change.FoldLine.start].Coord;
+                var end = frame3d.Vertices[change.FoldLine.end].Coord;
                 
                 // TODO: use vertex id if can be used, else interpolate edge segment
                 if (start.DirectionTo(vertex).Dot(change.StartPoint) < 0) continue;
-                _vertices[v] = ReflectedAroundLine(start, end, vertex);
+                frame3d.Vertices[v] = new Vertex3D { Coord = ReflectedAroundLine(start, end, vertex) };
             }
         }
     }
@@ -52,10 +47,16 @@ public partial class PaperRenderer : Node3D
     public override void _Process(double delta)
     {
         if (Statics.Frame == null) return;
-        if (_vertices is not null && _vertices.Any())
+        var frame = Statics.Frame;
+        var frame3d = Statics.Frame3d;
+        frame3d.ImportFromFrame(frame);
+        
+        if (frame3d.Vertices is not null && frame3d.Vertices.Any())
         {
-            FaceRendering.RenderFaces(Statics.Frame.Faces, _vertices.ToList());
-            EdgeRendering.Render(Statics.Frame.Edges, _vertices.ToList());
+            var vertices = frame3d.Vertices.Select(v => v.Coord).ToList();
+            // FaceRendering.RenderFaces(Statics.Frame.Faces, vertices);
+            // EdgeRendering.Render(Statics.Frame.Edges, vertices);
+            VertexRendering.Render(frame3d.Vertices);
         }
         
         // fold vertices on edges
