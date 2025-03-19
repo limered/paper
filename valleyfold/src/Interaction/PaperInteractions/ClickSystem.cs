@@ -56,7 +56,8 @@ public partial class ClickSystem : Node3D
         MouseCollision.InputEvent += MouseCollisionOnInputEvent;
         MouseCollision.MouseExited += () =>
         {
-            _lastPickingMode = _pickingMode; _pickingMode = PickingMode.Buttons;  
+            _lastPickingMode = _pickingMode; 
+            _pickingMode = PickingMode.Buttons;  
         };
         MouseCollision.MouseEntered += () =>
         {

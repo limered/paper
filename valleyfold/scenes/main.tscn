@@ -2,11 +2,11 @@
 
 [ext_resource type="Script" path="res://src/Game.cs" id="1_km5vh"]
 [ext_resource type="Script" path="res://src/Render/Vertices/VertexRendering.cs" id="3_0tnsl"]
-[ext_resource type="Script" path="res://src/Interaction/PaperInteractions/ClickSystem.cs" id="3_gm42t"]
 [ext_resource type="Script" path="res://src/Render/Edges/EdgeRendering.cs" id="4_u6g2v"]
 [ext_resource type="Script" path="res://src/Render/Faces/FaceRendering.cs" id="5_dvbkm"]
+[ext_resource type="Script" path="res://src/Interaction/ThreeDeePaperSelector.cs" id="5_glt47"]
 [ext_resource type="PackedScene" uid="uid://csalpbkhu034i" path="res://scenes/ingame.tscn" id="6_p3hbg"]
-[ext_resource type="Script" path="res://src/Render/ThreeD/PaperRenderer.cs" id="7_iug24"]
+[ext_resource type="Script" path="res://src/Render/ThreeDee/PaperRenderer.cs" id="7_j1jfc"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_rmvhn"]
 size = Vector3(3.47156, 0.1, 3.00415)
@@ -44,11 +44,9 @@ script = ExtResource("4_u6g2v")
 [node name="FaceRendering" type="Node3D" parent="."]
 script = ExtResource("5_dvbkm")
 
-[node name="Interaction" type="Node3D" parent="." node_paths=PackedStringArray("FoldStartPoint", "GhostClickPosition", "MouseCollision")]
-script = ExtResource("3_gm42t")
-FoldStartPoint = NodePath("FirstNewVertex")
-GhostClickPosition = NodePath("GhostVertex")
-MouseCollision = NodePath("Area3D")
+[node name="Interaction" type="Node3D" parent="." node_paths=PackedStringArray("MouseCollisionArea")]
+script = ExtResource("5_glt47")
+MouseCollisionArea = NodePath("Area3D")
 
 [node name="Area3D" type="Area3D" parent="Interaction"]
 
@@ -68,8 +66,5 @@ mesh = SubResource("SphereMesh_u5yjp")
 
 [node name="ingame" parent="." instance=ExtResource("6_p3hbg")]
 
-[node name="ThreeDRenderer" type="Node3D" parent="." node_paths=PackedStringArray("FaceRendering", "EdgeRendering", "VertexRendering")]
-script = ExtResource("7_iug24")
-FaceRendering = NodePath("../FaceRendering")
-EdgeRendering = NodePath("../EdgeRendering")
-VertexRendering = NodePath("../VertexRendering")
+[node name="ThreeDRenderer" type="Node3D" parent="."]
+script = ExtResource("7_j1jfc")
