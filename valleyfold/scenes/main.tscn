@@ -44,9 +44,10 @@ script = ExtResource("4_u6g2v")
 [node name="FaceRendering" type="Node3D" parent="."]
 script = ExtResource("5_dvbkm")
 
-[node name="Interaction" type="Node3D" parent="." node_paths=PackedStringArray("MouseCollisionArea")]
+[node name="Interaction" type="Node3D" parent="." node_paths=PackedStringArray("MouseCollisionArea", "MouseMarker")]
 script = ExtResource("5_glt47")
 MouseCollisionArea = NodePath("Area3D")
+MouseMarker = NodePath("GhostVertex")
 
 [node name="Area3D" type="Area3D" parent="Interaction"]
 
@@ -60,11 +61,15 @@ shape = SubResource("BoxShape3D_rmvhn")
 mesh = SubResource("SphereMesh_juy70")
 
 [node name="FirstNewVertex" type="Node3D" parent="Interaction"]
+visible = false
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Interaction/FirstNewVertex"]
 mesh = SubResource("SphereMesh_u5yjp")
 
 [node name="ingame" parent="." instance=ExtResource("6_p3hbg")]
 
-[node name="ThreeDRenderer" type="Node3D" parent="."]
+[node name="ThreeDRenderer" type="Node3D" parent="." node_paths=PackedStringArray("FaceRendering", "EdgeRendering", "VertexRendering")]
 script = ExtResource("7_j1jfc")
+FaceRendering = NodePath("../FaceRendering")
+EdgeRendering = NodePath("../EdgeRendering")
+VertexRendering = NodePath("../VertexRendering")

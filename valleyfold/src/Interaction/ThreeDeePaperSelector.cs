@@ -1,15 +1,18 @@
+using System.Linq;
 using Godot;
 using valleyfold.Interaction.PaperInteractions;
+using valleyfold.ThreeDeeModels;
 using valleyfold.TwoDeeModels;
 
 namespace valleyfold.Interaction;
 
 public partial class ThreeDeePaperSelector : Node3D
 {
-    private PickingMode _lastPickingMode;
+    private PickingMode _lastPickingMode = PickingMode.StartPoint;
     private Vector3 _mouseWorldPosition;
-    private PickingMode _pickingMode;
+    private PickingMode _pickingMode = PickingMode.StartPoint;
     [Export] public Area3D MouseCollisionArea;
+    [Export] public Node3D MouseMarker;
 
     public override void _Ready()
     {
@@ -76,5 +79,41 @@ public partial class ThreeDeePaperSelector : Node3D
 
     private void StartFoldInteraction(Frame frame)
     {
+    }
+
+    public override void _Process(double delta)
+    {
+        if (Statics.Frame == null) return;
+        var frame = Statics.Frame;
+        var frame3d = Statics.Frame3d;
+        
+        frame.UnmarkVertices();
+        frame.UnmarkEdges();
+        
+        if (_pickingMode == PickingMode.Buttons) return;
+        if (_pickingMode == PickingMode.StartPoint)
+        {
+            MouseMarker.GlobalPosition = _mouseWorldPosition;
+            MarkVertexInFrame(frame3d, _mouseWorldPosition);
+            return;
+        }
+    }
+
+    private static void MarkVertexInFrame(Frame3D frame3d, Vector3 mouseWorldPosition)
+    {
+        if(frame3d.Vertices is null || !frame3d.Vertices.Any()) return;
+        var closestId = 0;
+        var closestDistance = float.MaxValue;
+        for (var i = 0; i < frame3d.Vertices.Count; i++)
+        {
+            var vertex = frame3d.Vertices[i].Coord;
+            var distance = vertex.DistanceTo(mouseWorldPosition);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestId = i;
+            }
+        }
+        Statics.Frame.Vertices[closestId].IsSelected = true;
     }
 }
