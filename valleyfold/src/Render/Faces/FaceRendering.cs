@@ -16,7 +16,7 @@ public partial class FaceRendering : Node3D
         if (Statics.Frame == null) return;
         var frame = Statics.Frame;
 
-        RenderFaces(frame.Faces, frame.Vertices.Select(v => v.Coord.Vector3XZ()).ToList());
+        // RenderFaces(frame.Faces, frame.Vertices.Select(v => v.Coord.Vector3XZ()).ToList());
     }
 
     public void RenderFaces(List<Face> faces, List<Vector3> vertices)
