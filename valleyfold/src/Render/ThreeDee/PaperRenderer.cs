@@ -1,14 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using valleyfold.Render.Edges;
 using valleyfold.Render.Faces;
-using valleyfold.Render.ThreeD.Events;
+using valleyfold.Render.ThreeDee.Events;
 using valleyfold.Render.Vertices;
 using valleyfold.Utils;
 
-namespace valleyfold.Render.ThreeD;
+namespace valleyfold.Render.ThreeDee;
 
 public partial class PaperRenderer : Node3D
 {

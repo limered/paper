@@ -3,7 +3,7 @@ using Godot;
 using valleyfold.Folding;
 using valleyfold.FrameModifications;
 using valleyfold.Render.Edges;
-using valleyfold.Render.ThreeD.Events;
+using valleyfold.Render.ThreeDee.Events;
 using valleyfold.TwoDeeModels;
 using valleyfold.Utils;
 
