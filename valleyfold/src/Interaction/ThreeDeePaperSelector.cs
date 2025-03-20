@@ -13,6 +13,9 @@ public partial class ThreeDeePaperSelector : Node3D
     private PickingMode _pickingMode = PickingMode.StartPoint;
     [Export] public Area3D MouseCollisionArea;
     [Export] public Node3D MouseMarker;
+    
+    private Id _pickedVertex;
+    private PreviewLine _previewLine;
 
     public override void _Ready()
     {
@@ -40,6 +43,7 @@ public partial class ThreeDeePaperSelector : Node3D
         long shapeIdx)
     {
         _mouseWorldPosition = eventPosition;
+        _mouseWorldPosition.Y = 0;
     }
 
     public override void _Input(InputEvent @event)
@@ -70,15 +74,24 @@ public partial class ThreeDeePaperSelector : Node3D
     }
 
     private void ResetFoldInteraction()
-    {
+    {        
+        _previewLine?.Visible(false);
     }
 
     private void ConfirmFoldInteraction(Frame frame)
     {
+        _previewLine?.Visible(false);
     }
 
     private void StartFoldInteraction(Frame frame)
     {
+        if(_previewLine is null)
+        {
+            _previewLine = new PreviewLine();
+            AddChild(_previewLine);
+        }
+        _previewLine.Visible(true);
+        _previewLine.LineColor(Colors.Aqua);
     }
 
     public override void _Process(double delta)
@@ -90,18 +103,24 @@ public partial class ThreeDeePaperSelector : Node3D
         frame.UnmarkVertices();
         frame.UnmarkEdges();
         
-        if (_pickingMode == PickingMode.Buttons) return;
-        if (_pickingMode == PickingMode.StartPoint)
+        switch (_pickingMode)
         {
-            MouseMarker.GlobalPosition = _mouseWorldPosition;
-            MarkVertexInFrame(frame3d, _mouseWorldPosition);
-            return;
+            case PickingMode.Buttons:
+                return;
+            case PickingMode.StartPoint:
+                _pickedVertex = MarkVertexInFrame(frame3d, _mouseWorldPosition);
+                break;
+            case PickingMode.EndPoint:
+                UpdateFoldPreview(frame3d, _pickedVertex, _mouseWorldPosition, _previewLine);
+                break;
         }
+
+        MouseMarker.GlobalPosition = _mouseWorldPosition;
     }
 
-    private static void MarkVertexInFrame(Frame3D frame3d, Vector3 mouseWorldPosition)
+    private static Id MarkVertexInFrame(Frame3D frame3d, Vector3 mouseWorldPosition)
     {
-        if(frame3d.Vertices is null || !frame3d.Vertices.Any()) return;
+        if(frame3d.Vertices is null || !frame3d.Vertices.Any()) return -1;
         var closestId = 0;
         var closestDistance = float.MaxValue;
         for (var i = 0; i < frame3d.Vertices.Count; i++)
@@ -115,5 +134,20 @@ public partial class ThreeDeePaperSelector : Node3D
             }
         }
         Statics.Frame.Vertices[closestId].IsSelected = true;
+        return closestId;
+    }
+
+    private static void UpdateFoldPreview(
+        Frame3D frame3d,
+        Id pickedVertex, 
+        Vector3 mouseWorldPosition, 
+        PreviewLine previewLine)
+    {
+        var centerPoint = frame3d.Vertices[pickedVertex].Coord.Lerp(mouseWorldPosition, 0.5f);
+        var direction = (mouseWorldPosition - frame3d.Vertices[pickedVertex].Coord).Normalized();
+        var perpendicular = new Vector3(-direction.Z, 0, direction.X);
+        previewLine.UpdatePosition(centerPoint, perpendicular);
+        
+        previewLine.Draw();
     }
 }
