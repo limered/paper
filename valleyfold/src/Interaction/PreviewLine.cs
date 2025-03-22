@@ -29,7 +29,7 @@ public partial class PreviewLine : MeshInstance3D
         _direction = direction;
     }
 
-    public void Visible(bool visible)
+    public void ChangeVisibility(bool visible)
     {
         _isVisible = visible;
     }

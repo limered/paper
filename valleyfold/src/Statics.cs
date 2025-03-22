@@ -1,4 +1,5 @@
 using valleyfold.ChangeTracking;
+using valleyfold.Folding;
 using valleyfold.ThreeDeeModels;
 using valleyfold.TwoDeeModels;
 
@@ -11,4 +12,5 @@ public static class Statics
 
     public static ChangeMemory ChangeMemory { get; } = new();
     public static Frame3D Frame3d { get; } = new();
+    public static FoldInteractionApplier FoldInteractionApplier { get; } = new();
 } 

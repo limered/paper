@@ -1,5 +1,7 @@
 using System.Linq;
 using Godot;
+using valleyfold.ChangeTracking;
+using valleyfold.Folding;
 using valleyfold.Interaction.PaperInteractions;
 using valleyfold.ThreeDeeModels;
 using valleyfold.TwoDeeModels;
@@ -13,7 +15,7 @@ public partial class ThreeDeePaperSelector : Node3D
     private PickingMode _pickingMode = PickingMode.StartPoint;
     [Export] public Area3D MouseCollisionArea;
     [Export] public Node3D MouseMarker;
-    
+
     private Id _pickedVertex;
     private PreviewLine _previewLine;
 
@@ -74,23 +76,25 @@ public partial class ThreeDeePaperSelector : Node3D
     }
 
     private void ResetFoldInteraction()
-    {        
-        _previewLine?.Visible(false);
+    {
+        _previewLine?.ChangeVisibility(false);
     }
 
     private void ConfirmFoldInteraction(Frame frame)
     {
-        _previewLine?.Visible(false);
+        FoldInteractionApplier.ApplyVertexValleyFold(_pickedVertex, _mouseWorldPosition);
+        _previewLine?.ChangeVisibility(false);
     }
 
     private void StartFoldInteraction(Frame frame)
     {
-        if(_previewLine is null)
+        if (_previewLine is null)
         {
             _previewLine = new PreviewLine();
             AddChild(_previewLine);
         }
-        _previewLine.Visible(true);
+
+        _previewLine.ChangeVisibility(true);
         _previewLine.LineColor(Colors.Aqua);
     }
 
@@ -99,10 +103,10 @@ public partial class ThreeDeePaperSelector : Node3D
         if (Statics.Frame == null) return;
         var frame = Statics.Frame;
         var frame3d = Statics.Frame3d;
-        
+
         frame.UnmarkVertices();
         frame.UnmarkEdges();
-        
+
         switch (_pickingMode)
         {
             case PickingMode.Buttons:
@@ -120,7 +124,7 @@ public partial class ThreeDeePaperSelector : Node3D
 
     private static Id MarkVertexInFrame(Frame3D frame3d, Vector3 mouseWorldPosition)
     {
-        if(frame3d.Vertices is null || !frame3d.Vertices.Any()) return -1;
+        if (frame3d.Vertices is null || !frame3d.Vertices.Any()) return -1;
         var closestId = 0;
         var closestDistance = float.MaxValue;
         for (var i = 0; i < frame3d.Vertices.Count; i++)
@@ -133,21 +137,22 @@ public partial class ThreeDeePaperSelector : Node3D
                 closestId = i;
             }
         }
+
         Statics.Frame.Vertices[closestId].IsSelected = true;
         return closestId;
     }
 
     private static void UpdateFoldPreview(
         Frame3D frame3d,
-        Id pickedVertex, 
-        Vector3 mouseWorldPosition, 
+        Id pickedVertex,
+        Vector3 mouseWorldPosition,
         PreviewLine previewLine)
     {
         var centerPoint = frame3d.Vertices[pickedVertex].Coord.Lerp(mouseWorldPosition, 0.5f);
         var direction = (mouseWorldPosition - frame3d.Vertices[pickedVertex].Coord).Normalized();
         var perpendicular = new Vector3(-direction.Z, 0, direction.X);
         previewLine.UpdatePosition(centerPoint, perpendicular);
-        
+
         previewLine.Draw();
     }
 }
