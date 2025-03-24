@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 using valleyfold.TwoDeeModels;
 
@@ -13,5 +14,7 @@ public record struct ChangeRecord()
     public Id PickedEdge { get; init; } = default;
     public float PickedEdgeT { get; init; } = default;
     public Vector3 StartPoint { get; init; } = default;
-    public Vector3 EndPoint { get; init; } = default;
+    public Vector3 FoldLineA { get; init; } = default;
+    public Vector3 FoldLineB { get; init; } = default;
+    public List<Id> AddedVertices { get; init; } = new();
 }

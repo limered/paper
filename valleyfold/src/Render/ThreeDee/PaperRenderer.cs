@@ -34,22 +34,52 @@ public partial class PaperRenderer : Node3D
             for (var v = 0; v < frame3d.Vertices.Count; v++)
             {
                 var vertex = frame3d.Vertices[v].Coord;
-                var start = frame3d.Vertices[change.FoldLine.start].Coord;
-                var end = frame3d.Vertices[change.FoldLine.end].Coord;
+                var start = change.FoldLineA;
+                var end = change.FoldLineB;
                 
-                // TODO: use vertex id if can be used, else interpolate edge segment
                 if (start.DirectionTo(vertex).Dot(change.StartPoint) < 0) continue;
                 frame3d.Vertices[v] = new Vertex3D { Coord = ReflectedAroundLine(start, end, vertex) };
             }
         }
     }
 
+    public static bool AreOnSameSide(Vector2 lineA, Vector2 lineB, Vector2 pointC, Vector2 pointD)
+    {
+        // Calculate cross product for point C relative to line AB
+        var crossC = (pointC.X - lineA.X) * (lineB.Y - lineA.Y) 
+                     - (pointC.Y - lineA.Y) * (lineB.X - lineA.X);
+
+        // Calculate cross product for point D relative to line AB
+        var crossD = (pointD.X - lineA.X) * (lineB.Y - lineA.Y) 
+                     - (pointD.Y - lineA.Y) * (lineB.X - lineA.X);
+
+        // Same side if both cross products have the same sign (or both are zero)
+        return (crossC * crossD) >= 0;
+    }
+    
     public override void _Process(double delta)
     {
         if (Statics.Frame == null) return;
         var frame = Statics.Frame;
         var frame3d = Statics.Frame3d;
         frame3d.ImportFromFrame(frame);
+        
+        var changes = Statics.ChangeMemory.Changes;
+        foreach (var change in changes)
+        {
+            var pickedVertex = frame3d.Vertices[change.PickedVertex].Coord;
+            for (var v = 0; v < frame3d.Vertices.Count; v++)
+            {
+                var vertex = frame3d.Vertices[v].Coord;
+                var start = change.FoldLineA;
+                var end = change.FoldLineB;
+                
+                if (AreOnSameSide(start.Vector2XZ(), end.Vector2XZ(), vertex.Vector2XZ(), pickedVertex.Vector2XZ()))
+                {
+                    frame3d.Vertices[v] = new Vertex3D { Coord = ReflectedAroundLine(start, end, vertex) };
+                }
+            }
+        }
         
         if (frame3d.Vertices is not null && frame3d.Vertices.Any())
         {
@@ -104,7 +134,7 @@ public partial class PaperRenderer : Node3D
     private Vector3 ReflectedAroundLine(Vector3 foldLineStart, Vector3 foldLineEnd, Vector3 vertex)
     {
         var foldAxis = (foldLineEnd - foldLineStart).Normalized();
-        const double foldAngle = Math.PI * 0.9f;
+        const double foldAngle = Math.PI;
         var vertexPositionRelativeToEdge = vertex - foldLineStart;
         var vertexPositionRelativeToEdgeRotated = vertexPositionRelativeToEdge
             .Rotated(foldAxis, (float)foldAngle);
