@@ -48,4 +48,15 @@ public static class FoldMath
                 lineA.Y + t * lineDirection.Y);
         return null;
     }
+    
+    public static bool AreOnSameSideOfLine(Vector2 lineA, Vector2 lineB, Vector2 pointC, Vector2 pointD)
+    {
+        var crossC = (pointC.X - lineA.X) * (lineB.Y - lineA.Y) 
+                     - (pointC.Y - lineA.Y) * (lineB.X - lineA.X);
+
+        var crossD = (pointD.X - lineA.X) * (lineB.Y - lineA.Y) 
+                     - (pointD.Y - lineA.Y) * (lineB.X - lineA.X);
+
+        return (crossC * crossD) >= 0;
+    }
 }
