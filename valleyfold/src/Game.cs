@@ -17,6 +17,7 @@ public partial class Game : Node
         Statics.Game = this;
         Statics.Frame = new Frame();
         Statics.Frame.InitializePaper();
+        Statics.Frame3d.ImportFromFrame(Statics.Frame);
         // FoldFrame();
 
         EventBus.Register<FoldModeChange>(OnFoldModeChange);

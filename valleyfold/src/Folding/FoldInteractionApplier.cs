@@ -3,6 +3,7 @@ using System.Linq;
 using Godot;
 using valleyfold.ChangeTracking;
 using valleyfold.FrameModifications;
+using valleyfold.Render.ThreeDee.Events;
 using valleyfold.TwoDeeModels;
 using valleyfold.Utils;
 
@@ -22,34 +23,36 @@ public class FoldInteractionApplier
 
         var lineA = centerPoint + perpendicular * 100;
         var lineB = centerPoint - perpendicular * 100;
+        
+        var lineA2d = lineA.Vector2XZ();
+        var lineB2d = lineB.Vector2XZ();
 
-        var crossings = new List<(float t, Edge edge)>();
+        var addedVertices = new List<Id>();
         for (var e = 0; e < frame.Edges.Count; e++)
         {
             var edge = frame.Edges[e];
             var edgeStart = frame3d.Vertices[edge.Vertices[0]].Coord;
             var edgeEnd = frame3d.Vertices[edge.Vertices[1]].Coord;
-            // Maybe use 3d line segment crossing (or projection)
+            
             var crossing = FoldMath.LineSegmentCrossing(
-                lineA.Vector2XZ(), 
-                lineB.Vector2XZ(), 
+                lineA2d, 
+                lineB2d, 
                 edgeStart.Vector2XZ(), 
                 edgeEnd.Vector2XZ());
             if (!crossing.HasValue) continue;
-            var startToPoint = crossing.Value.Vector3XZ() - frame3d.Vertices[edge.Vertices[0]].Coord;
-            var edgeVector = edgeEnd - edgeStart;
-            var t = startToPoint.Dot(edgeVector);
-            crossings.Add((t, edge));
-        }
-
-        var addedVertices = new List<Id>();
-        foreach (var (t, edge) in crossings)
-        {
+            
+            // calculate t value for point on edge
+            var pointDirection = crossing.Value.Vector3XZ() - edgeStart;
+            var lineDirection = edgeEnd - edgeStart;
+            var t = pointDirection.Dot(lineDirection) / lineDirection.LengthSquared();
+            
+            // add new vertices to edge
             var pointOn2dEdge = frame.Vertices[edge.Vertices[0]].Coord.Lerp(frame.Vertices[edge.Vertices[1]].Coord, t);
             var addedVertexId = EdgeCommands.AddVertexToEdge(frame, new Vertex { Coord = pointOn2dEdge }, edge);
             addedVertices.Add(addedVertexId);
         }
-
+        
+        // add new edges between added vertices
         for (var v = 0; v < addedVertices.Count; v++)
         {
             var vertexId = addedVertices[v];
@@ -59,14 +62,14 @@ public class FoldInteractionApplier
                 var otherVertexId = addedVertices[cv];
                 var faces = frame.Faces.Where(f => f.Vertices.Contains(vertexId) && f.Vertices.Contains(otherVertexId));
                 if (!faces.Any()) continue;
-                if(frame.Edges.Any(e => e.Vertices.Contains(vertexId) && e.Vertices.Contains(otherVertexId))) continue; // already existing edge
+                if (frame.Edges.Any(e => e.Vertices.Contains(vertexId) && e.Vertices.Contains(otherVertexId))) continue; // already existing edge
                 
-                // add new edges between vertices
+                // ToDo: use different assignments depending on face up direction
                 new VertexToVertexFold(vertexId, otherVertexId, Assignment.V).Apply(frame);
             }
         }
 
-        var changeRecord = new ChangeRecord()
+        var changeRecord = new ChangeRecord
         {
             PickedByVertex = true,
             PickedVertex = startVertex,
@@ -76,6 +79,6 @@ public class FoldInteractionApplier
         };
         Statics.ChangeMemory.AddChange(changeRecord);
 
-        // -> renderer render change record
+        EventBus.Emit(new PaperFoldedEvent());
     }
 }
