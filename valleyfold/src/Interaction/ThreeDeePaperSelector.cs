@@ -1,8 +1,6 @@
 using System.Linq;
 using Godot;
-using valleyfold.ChangeTracking;
 using valleyfold.Folding;
-using valleyfold.Interaction.PaperInteractions;
 using valleyfold.ThreeDeeModels;
 using valleyfold.TwoDeeModels;
 
@@ -80,13 +78,13 @@ public partial class ThreeDeePaperSelector : Node3D
         _previewLine?.ChangeVisibility(false);
     }
 
-    private void ConfirmFoldInteraction(Frame frame)
+    private void ConfirmFoldInteraction(Frame _)
     {
         FoldInteractionApplier.ApplyVertexValleyFold(_pickedVertex, _mouseWorldPosition);
         _previewLine?.ChangeVisibility(false);
     }
 
-    private void StartFoldInteraction(Frame frame)
+    private void StartFoldInteraction(Frame _)
     {
         if (_previewLine is null)
         {
