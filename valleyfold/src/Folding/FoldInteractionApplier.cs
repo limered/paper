@@ -28,7 +28,8 @@ public class FoldInteractionApplier
         var lineB2d = lineB.Vector2XZ();
 
         var addedVertices = new List<Id>();
-        for (var e = 0; e < frame.Edges.Count; e++)
+        var edgeCount = frame.Edges.Count;
+        for (var e = 0; e < edgeCount; e++)
         {
             var edge = frame.Edges[e];
             var edgeStart = frame3d.Vertices[edge.Vertices[0]].Coord;
