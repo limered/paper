@@ -113,6 +113,7 @@ public partial class ThreeDeePaperSelector : Node3D
                 return;
             case PickingMode.StartPoint:
                 _pickedVertex = MarkVertexInFrame(frame3d, _mouseWorldPosition);
+                frame3d.ImportMetadataFromFrame(frame);
                 break;
             case PickingMode.EndPoint:
                 UpdateFoldPreview(frame3d, _pickedVertex, _mouseWorldPosition, _previewLine);

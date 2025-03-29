@@ -14,9 +14,14 @@ public class Frame3D
         foreach (var vertex in frame.Vertices)
             Vertices.Add(new Vertex3D
             {
-                Coord = vertex.Coord.Vector3XZ(),
-                IsSelected = vertex.IsSelected
+                Coord = vertex.Coord.Vector3XZ()
             });
+    }
+
+    public void ImportMetadataFromFrame(Frame frame)
+    {
+        for (var i = 0; i < frame.Vertices.Count; i++)
+            Vertices[i].IsSelected = frame.Vertices[i].IsSelected;
     }
 
     public void UnmarkVertices()
