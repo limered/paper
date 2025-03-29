@@ -48,8 +48,6 @@ public partial class ThreeDeePaperSelector : Node3D
 
     public override void _Input(InputEvent @event)
     {
-        if (Statics.Frame == null) return;
-        var frame = Statics.Frame;
         if (@event is not InputEventMouseButton mouseEvent) return;
 
         switch (_pickingMode)
@@ -57,11 +55,11 @@ public partial class ThreeDeePaperSelector : Node3D
             case PickingMode.Buttons:
                 return;
             case PickingMode.StartPoint when mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed:
-                StartFoldInteraction(frame);
+                StartFoldInteraction();
                 _pickingMode = PickingMode.EndPoint;
                 return;
             case PickingMode.EndPoint when mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed:
-                ConfirmFoldInteraction(frame);
+                ConfirmFoldInteraction();
                 _pickingMode = PickingMode.StartPoint;
                 break;
             case PickingMode.EndPoint when mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed:
@@ -79,14 +77,14 @@ public partial class ThreeDeePaperSelector : Node3D
         _previewLine?.Draw();
     }
 
-    private void ConfirmFoldInteraction(Frame _)
+    private void ConfirmFoldInteraction()
     {
         FoldInteractionApplier.ApplyVertexValleyFold(_pickedVertex, _mouseWorldPosition);
         _previewLine?.ChangeVisibility(false);
         _previewLine?.Draw();
     }
 
-    private void StartFoldInteraction(Frame _)
+    private void StartFoldInteraction()
     {
         if (_previewLine is null)
         {
@@ -96,6 +94,7 @@ public partial class ThreeDeePaperSelector : Node3D
 
         _previewLine.ChangeVisibility(true);
         _previewLine.LineColor(Colors.Aqua);
+        _previewLine.Draw();
     }
 
     public override void _Process(double delta)
