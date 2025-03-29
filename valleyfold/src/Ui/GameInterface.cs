@@ -22,7 +22,7 @@ public partial class GameInterface : Control
 
     private void UnspecifiedButtonOnPressed()
     {
-        EventBus.Emit(new FoldModeChange() { NextFoldMode = Assignment.U });
+        EventBus.Emit(new FoldModeChange() { NextFoldMode = Assignment.F });
     }
 
     private void ValleyfoldButtonOnPressed()

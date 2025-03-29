@@ -33,7 +33,7 @@ offset_top = 584.0
 offset_right = 134.0
 offset_bottom = 627.0
 mouse_default_cursor_shape = 2
-text = "U"
+text = "F"
 
 [node name="animate" type="Button" parent="Sidepane"]
 layout_mode = 0
