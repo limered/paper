@@ -76,12 +76,14 @@ public partial class ThreeDeePaperSelector : Node3D
     private void ResetFoldInteraction()
     {
         _previewLine?.ChangeVisibility(false);
+        _previewLine?.Draw();
     }
 
     private void ConfirmFoldInteraction(Frame _)
     {
         FoldInteractionApplier.ApplyVertexValleyFold(_pickedVertex, _mouseWorldPosition);
         _previewLine?.ChangeVisibility(false);
+        _previewLine?.Draw();
     }
 
     private void StartFoldInteraction(Frame _)
