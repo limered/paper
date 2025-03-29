@@ -16,21 +16,21 @@ public partial class GameInterface : Control
         var valleyfoldButton = GetNode<Button>("Sidepane/valleyfold");
         valleyfoldButton.Pressed += ValleyfoldButtonOnPressed;
 
-        var unspecifiedButton = GetNode<Button>("Sidepane/unspecifiedfold");
+        var unspecifiedButton = GetNode<Button>("Sidepane/unfold");
         unspecifiedButton.Pressed += UnspecifiedButtonOnPressed;
     }
 
-    private void UnspecifiedButtonOnPressed()
+    private static void UnspecifiedButtonOnPressed()
     {
-        EventBus.Emit(new FoldModeChange() { NextFoldMode = Assignment.F });
+        EventBus.Emit(new FoldModeChange { NextFoldMode = Assignment.F });
     }
 
-    private void ValleyfoldButtonOnPressed()
+    private static void ValleyfoldButtonOnPressed()
     {
-        EventBus.Emit(new FoldModeChange() { NextFoldMode = Assignment.V });
+        EventBus.Emit(new FoldModeChange { NextFoldMode = Assignment.V });
     }
 
-    private void AnimateButtonOnPressed()
+    private static void AnimateButtonOnPressed()
     {
         EventBus.Emit(new AnimationModeChange());
     }

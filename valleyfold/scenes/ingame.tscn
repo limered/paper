@@ -26,7 +26,7 @@ offset_bottom = 628.0
 mouse_default_cursor_shape = 2
 text = "V"
 
-[node name="unspecifiedfold" type="Button" parent="Sidepane"]
+[node name="unfold" type="Button" parent="Sidepane"]
 layout_mode = 0
 offset_left = 80.0
 offset_top = 584.0

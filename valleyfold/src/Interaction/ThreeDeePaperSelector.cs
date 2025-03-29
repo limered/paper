@@ -4,6 +4,7 @@ using valleyfold.Folding;
 using valleyfold.FrameModifications;
 using valleyfold.ThreeDeeModels;
 using valleyfold.TwoDeeModels;
+using valleyfold.Ui;
 using valleyfold.Utils;
 
 namespace valleyfold.Interaction;
@@ -26,6 +27,25 @@ public partial class ThreeDeePaperSelector : Node3D
         MouseCollisionArea.InputEvent += MouseCollisionAreaOnInputEvent;
         MouseCollisionArea.MouseExited += ChangeToButtonsPicking;
         MouseCollisionArea.MouseEntered += ChangeToLastPaperPicking;
+        
+        EventBus.Register<FoldModeChange>(OnFoldModeChange);
+    }
+
+    private void OnFoldModeChange(FoldModeChange msg)
+    {
+        if (msg.NextFoldMode == Assignment.F)
+        {
+            _pickingMode = PickingMode.EdgeSelect;
+            _lastPickingMode = PickingMode.EdgeSelect;
+        }
+        else
+        {
+            _pickingMode = PickingMode.StartPoint;
+            _lastPickingMode = PickingMode.StartPoint;
+        }
+        
+        Statics.Frame?.UnmarkEdges();
+        Statics.Frame?.UnmarkVertices();
     }
 
     private void ChangeToLastPaperPicking()
@@ -70,14 +90,14 @@ public partial class ThreeDeePaperSelector : Node3D
                 ResetFoldInteraction();
                 _pickingMode = PickingMode.StartPoint;
                 break;
-            case PickingMode.EdgeSelect:
+            case PickingMode.EdgeSelect when mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed:
+                break;
+            case PickingMode.EdgeSelect when mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed:
                 break;
             default:
                 return;
         }
     }
-
-
 
     private void ResetFoldInteraction()
     {
