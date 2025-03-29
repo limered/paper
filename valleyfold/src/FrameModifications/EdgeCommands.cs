@@ -28,7 +28,8 @@ public static class EdgeCommands
         {
             Vertices = new Id[] { id, edge.Vertices[1] },
             Assignment = edge.Assignment,
-            FoldAngle = edge.FoldAngle
+            FoldAngle = edge.FoldAngle,
+            Id = frame.Edges.Count
         };
         edge.Vertices[1] = id;
         frame.AddEdge(secondEdge);

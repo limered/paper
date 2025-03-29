@@ -1,8 +1,10 @@
 using System.Linq;
 using Godot;
 using valleyfold.Folding;
+using valleyfold.FrameModifications;
 using valleyfold.ThreeDeeModels;
 using valleyfold.TwoDeeModels;
+using valleyfold.Utils;
 
 namespace valleyfold.Interaction;
 
@@ -16,6 +18,8 @@ public partial class ThreeDeePaperSelector : Node3D
 
     private Id _pickedVertex;
     private PreviewLine _previewLine;
+
+    private Id _hoveredEdgeId;
 
     public override void _Ready()
     {
@@ -66,10 +70,14 @@ public partial class ThreeDeePaperSelector : Node3D
                 ResetFoldInteraction();
                 _pickingMode = PickingMode.StartPoint;
                 break;
+            case PickingMode.EdgeSelect:
+                break;
             default:
                 return;
         }
     }
+
+
 
     private void ResetFoldInteraction()
     {
@@ -104,7 +112,6 @@ public partial class ThreeDeePaperSelector : Node3D
         var frame3d = Statics.Frame3d;
 
         frame.UnmarkVertices();
-        frame.UnmarkEdges();
 
         switch (_pickingMode)
         {
@@ -117,9 +124,26 @@ public partial class ThreeDeePaperSelector : Node3D
             case PickingMode.EndPoint:
                 UpdateFoldPreview(frame3d, _pickedVertex, _mouseWorldPosition, _previewLine);
                 break;
+            case PickingMode.EdgeSelect:
+                HoverNearestEdge();
+                break;
         }
 
         MouseMarker.GlobalPosition = _mouseWorldPosition;
+    }
+    
+    private void HoverNearestEdge()
+    {
+        var frame = Statics.Frame;
+        var frame3d = Statics.Frame3d;
+        
+        frame.UnmarkEdges();
+        
+        var nearestEdges = EdgeQueries.NearestEdgesToPoint3d(frame3d, _mouseWorldPosition);
+        if (!nearestEdges.Any()) return;
+        var (_, edge) = EdgeQueries.NearestPointOnEdgeToPoint(frame3d, _mouseWorldPosition, nearestEdges);
+        edge.IsSelected = true;
+        _hoveredEdgeId = edge.Id;
     }
 
     private static Id MarkVertexInFrame(Frame3D frame3d, Vector3 mouseWorldPosition)

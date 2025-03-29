@@ -7,6 +7,9 @@ namespace valleyfold.ThreeDeeModels;
 public class Frame3D
 {
     public List<Vertex3D> Vertices { get; } = new();
+    public List<Face> Faces => Statics.Frame.Faces;
+    public List<Edge> Edges => Statics.Frame.Edges;
+    public List<Vertex> Vertices2D => Statics.Frame.Vertices;
 
     public void ImportFromFrame(Frame frame)
     {

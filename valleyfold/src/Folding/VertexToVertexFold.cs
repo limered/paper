@@ -53,7 +53,8 @@ public class VertexToVertexFold : IFold
             {
                 Assignment = _assignment,
                 FoldAngle = 1f,
-                Vertices = new[] { last, current }
+                Vertices = new[] { last, current },
+                Id = frame.Edges.Count
             });
 
             last = current;

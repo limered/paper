@@ -6,10 +6,10 @@ public class Edge
      * Vertices[0] is first
      */
     public Id[] Vertices = new Id[2];
+    public Id Id { get; init; }
     
     public Assignment Assignment;
     public float FoldAngle;
-    public float Length;
     public bool IsSelected;
 
     public override string ToString()

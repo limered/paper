@@ -4,5 +4,6 @@ public enum PickingMode
 {
     StartPoint,
     EndPoint,
-    Buttons
+    Buttons,
+    EdgeSelect
 }

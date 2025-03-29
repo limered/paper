@@ -3,17 +3,6 @@ using Godot;
 
 namespace valleyfold.TwoDeeModels;
 
-public enum Assignment
-{
-    B, // Border
-    M, // Mountain Fold
-    V, // Valley Fold
-    F, // Unfolded ( M/V than open)
-    U, // Unspecified Fold
-    C, // Cut Fold
-    J // Join (Flat triangulated polygon edge)
-}
-
 public class Frame
 {
     public List<Face> Faces { get; } = new();
@@ -36,25 +25,29 @@ public class Frame
             {
                 Vertices = new Id[] { 0, 1 },
                 Assignment = Assignment.B,
-                FoldAngle = 0
+                FoldAngle = 0,
+                Id = 0,
             },
             new Edge
             {
                 Vertices = new Id[] { 1, 2 },
                 Assignment = Assignment.B,
-                FoldAngle = 0
+                FoldAngle = 0,
+                Id = 1,
             },
             new Edge
             {
                 Vertices = new Id[] { 2, 3 },
                 Assignment = Assignment.B,
-                FoldAngle = 0
+                FoldAngle = 0,
+                Id = 2,
             },
             new Edge
             {
                 Vertices = new Id[] { 3, 0 },
                 Assignment = Assignment.B,
-                FoldAngle = 0
+                FoldAngle = 0,
+                Id = 3,
             }
         });
 
