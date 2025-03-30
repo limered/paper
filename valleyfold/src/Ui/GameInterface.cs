@@ -1,3 +1,4 @@
+using System;
 using Godot;
 using valleyfold.TwoDeeModels;
 using valleyfold.Utils;
@@ -7,6 +8,7 @@ namespace valleyfold.Ui;
 public partial class GameInterface : Control
 {
     private Button _animateButton;
+    private Label _activeFoldLabel;
 
     public override void _Ready()
     {
@@ -18,6 +20,29 @@ public partial class GameInterface : Control
 
         var unspecifiedButton = GetNode<Button>("Sidepane/unfold");
         unspecifiedButton.Pressed += UnspecifiedButtonOnPressed;
+
+        _activeFoldLabel = GetNode<Label>("Sidepane/active_fold_mode");
+        _activeFoldLabel.Text = "Valleyfold";
+        EventBus.Register<FoldModeChange>(MapFoldModeToText);
+    }
+
+    private void MapFoldModeToText(FoldModeChange msg)
+    {
+        switch (msg.NextFoldMode)
+        {
+            case Assignment.M:
+                _activeFoldLabel.Text = "Mountainfold";
+                break;
+            case Assignment.V:
+                _activeFoldLabel.Text = "Valleyfold";
+                break;
+            case Assignment.F:
+                _activeFoldLabel.Text = "Unfold";
+                break;
+            default:
+                _activeFoldLabel.Text = "Unspecified";
+                break;
+        }
     }
 
     private static void UnspecifiedButtonOnPressed()
