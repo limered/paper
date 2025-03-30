@@ -22,7 +22,7 @@ public class EdgeToEdgeFold : IFold
         _assignment = assignment;
     }
 
-    public (Id start, Id end) Apply(Frame frame)
+    public Id Apply(Frame frame)
     {
         if (NewFoldOnSameEdge()) return default;
 

@@ -20,45 +20,32 @@ public class VertexToVertexFold : IFold
     }
 
 
-    public (Id start, Id end) Apply(Frame frame)
+    public Id Apply(Frame frame)
     {
-        if (VerticesAreTheSame() || VerticesLieOnTheSameEdge(frame)) return default;
- 
-        var crossedVertices = VertexQueries.VerticesCrossedByEdge(frame, _vertexIdA, _vertexIdB);
-        var crossedEdges = EdgeQueries.EdgesCrossedByEdge(frame, _vertexIdA, _vertexIdB);
-        if (crossedVertices.Any() && crossedEdges.Any())
-            crossedEdges = FilterEdgesCrossedByStartOrEnd(crossedVertices, crossedEdges);
-
-        var crossedEdgeVertexIds = crossedEdges.Any() ? 
-                GenerateCrossVerticesOnEdges(frame, crossedEdges) : 
-                new List<Id>();
-        crossedEdgeVertexIds = OrderCrossedVerticesByDistanceToStart(
-                frame, crossedEdgeVertexIds.Concat(crossedVertices));
-
-        SplitFacesAndGenerateEdges(frame, crossedEdgeVertexIds);
-        return (_vertexIdA, _vertexIdB);
+        if (VerticesAreTheSame() || VerticesLieOnTheSameEdge(frame)) return -1;
+        
+        return SplitFacesAndGenerateEdges(frame, new List<Id>{_vertexIdA, _vertexIdB});
     }
 
-    private void SplitFacesAndGenerateEdges(Frame frame, List<Id> crossedEdgeVertexIds)
+    private Id SplitFacesAndGenerateEdges(Frame frame, List<Id> crossedEdgeVertexIds)
     {
         var last = crossedEdgeVertexIds[0];
-        for (var i = 1; i < crossedEdgeVertexIds.Count; i++)
+        var current = crossedEdgeVertexIds[1];
+        var faceToSplit = FaceQueries.FacesContainingVertexIds(frame, new List<Id> { last, current });
+
+        FaceCommands.SplitFace(frame, faceToSplit, last, current);
+
+        var edge = new Edge
         {
-            var current = crossedEdgeVertexIds[i];
-            var faceToSplit = FaceQueries.FacesContainingVertexIds(frame, new List<Id> { last, current });
-
-            FaceCommands.SplitFace(frame, faceToSplit, last, current);
-
-            frame.AddEdge(new Edge
-            {
-                Assignment = _assignment,
-                FoldAngle = 1f,
-                Vertices = new[] { last, current },
-                Id = frame.Edges.Count
-            });
-
-            last = current;
-        }
+            Assignment = _assignment,
+            FoldAngle = 1f,
+            Vertices = new[] { last, current },
+            Id = frame.Edges.Count
+        };
+        
+        frame.AddEdge(edge);
+        
+        return edge.Id;        
     }
 
     private List<Id> OrderCrossedVerticesByDistanceToStart(Frame frame, IEnumerable<Id> crossedVertexIds)

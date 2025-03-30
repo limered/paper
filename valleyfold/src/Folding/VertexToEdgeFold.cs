@@ -20,7 +20,7 @@ public class VertexToEdgeFold : IFold
         _assignment = assignment;
     }
 
-    public (Id start, Id end) Apply(Frame frame)
+    public Id Apply(Frame frame)
     {
         if (AreOnSameEdge()) return default;
 
