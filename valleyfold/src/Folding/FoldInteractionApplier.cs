@@ -72,7 +72,6 @@ public class FoldInteractionApplier
 
         var changeRecord = new ChangeRecord
         {
-            PickedByVertex = true,
             PickedVertex = startVertex,
             FoldLineA = lineA,
             FoldLineB = lineB,
