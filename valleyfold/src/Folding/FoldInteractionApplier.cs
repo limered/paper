@@ -53,7 +53,7 @@ public class FoldInteractionApplier
             addedVertices.Add(addedVertexId);
         }
         
-        // add new edges between added vertices
+        var addedEdges = new List<Id>();
         for (var v = 0; v < addedVertices.Count; v++)
         {
             var vertexId = addedVertices[v];
@@ -66,7 +66,8 @@ public class FoldInteractionApplier
                 if (frame.Edges.Any(e => e.Vertices.Contains(vertexId) && e.Vertices.Contains(otherVertexId))) continue; // already existing edge
                 
                 // ToDo: use different assignments depending on face up direction
-                new VertexToVertexFold(vertexId, otherVertexId, Assignment.V).Apply(frame);
+                var addedEdge = new VertexToVertexFold(vertexId, otherVertexId, Assignment.V).Apply(frame);
+                addedEdges.Add(addedEdge);
             }
         }
 
@@ -76,6 +77,7 @@ public class FoldInteractionApplier
             FoldLineA = lineA,
             FoldLineB = lineB,
             AddedVertices = addedVertices,
+            AddedEdges = addedEdges
         };
         Statics.ChangeMemory.AddChange(changeRecord);
 

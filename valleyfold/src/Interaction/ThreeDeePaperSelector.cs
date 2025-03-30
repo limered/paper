@@ -163,8 +163,15 @@ public partial class ThreeDeePaperSelector : Node3D
         if (!nearestEdges.Any()) return;
         var (_, edge) = EdgeQueries.NearestPointOnEdgeToPoint(frame3d, _mouseWorldPosition, nearestEdges);
         if (!edge.IsUnfoldable()) return;
+        if (!IsLastFolded(edge)) return;
         edge.IsSelected = true;
         _hoveredEdgeId = edge.Id;
+    }
+
+    private bool IsLastFolded(Edge edge)
+    {
+        var lastChangeset = Statics.ChangeMemory.Changes.Last();
+        return lastChangeset.AddedEdges.Contains(edge.Id);
     }
 
     private static Id MarkVertexInFrame(Frame3D frame3d, Vector3 mouseWorldPosition)
