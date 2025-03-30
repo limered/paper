@@ -11,9 +11,14 @@ public class Edge
     public Assignment Assignment;
     public float FoldAngle;
     public bool IsSelected;
-
+    
     public override string ToString()
     {
         return $"[Edge: ({Vertices[0].Value},{Vertices[1].Value}) , ass: {Assignment} , angle: {FoldAngle}]";
+    }
+
+    public bool IsUnfoldable()
+    {
+        return Assignment is Assignment.V or Assignment.M;
     }
 }

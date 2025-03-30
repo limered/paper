@@ -162,6 +162,7 @@ public partial class ThreeDeePaperSelector : Node3D
         var nearestEdges = EdgeQueries.NearestEdgesToPoint3d(frame3d, _mouseWorldPosition);
         if (!nearestEdges.Any()) return;
         var (_, edge) = EdgeQueries.NearestPointOnEdgeToPoint(frame3d, _mouseWorldPosition, nearestEdges);
+        if (!edge.IsUnfoldable()) return;
         edge.IsSelected = true;
         _hoveredEdgeId = edge.Id;
     }
