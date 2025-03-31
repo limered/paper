@@ -1,5 +1,6 @@
 using System.Linq;
 using Godot;
+using valleyfold.ChangeTracking;
 using valleyfold.Folding;
 using valleyfold.FrameModifications;
 using valleyfold.ThreeDeeModels;
@@ -163,12 +164,21 @@ public partial class ThreeDeePaperSelector : Node3D
         if (!nearestEdges.Any()) return;
         var (_, edge) = EdgeQueries.NearestPointOnEdgeToPoint(frame3d, _mouseWorldPosition, nearestEdges);
         if (!edge.IsUnfoldable()) return;
-        if (!IsLastFolded(edge)) return;
+        if (!IsLastFolded(edge) || IsAlreadyUnfolded(edge)) return;
         edge.IsSelected = true;
         _hoveredEdgeId = edge.Id;
     }
 
-    private bool IsLastFolded(Edge edge)
+    private bool IsAlreadyUnfolded(Edge edge)
+    {
+        var changeContainingEdge = Statics
+            .ChangeMemory
+            .Changes
+            .FirstOrDefault(cr => cr.AddedEdges.Contains(edge.Id) && cr.Unfolded);
+        return changeContainingEdge is not null;
+    }
+
+    private static bool IsLastFolded(Edge edge)
     {
         var lastChangeset = Statics.ChangeMemory.Changes.Last();
         return lastChangeset.AddedEdges.Contains(edge.Id);

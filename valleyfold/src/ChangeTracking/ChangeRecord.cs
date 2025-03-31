@@ -11,4 +11,5 @@ public record ChangeRecord()
     public Vector3 FoldLineB { get; init; }
     public List<Id> AddedVertices { get; init; } = new();
     public List<Id> AddedEdges { get; init; } = new();
+    public bool Unfolded { get; init; }
 }
