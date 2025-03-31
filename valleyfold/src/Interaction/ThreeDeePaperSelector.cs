@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using valleyfold.ChangeTracking;
@@ -22,7 +23,7 @@ public partial class ThreeDeePaperSelector : Node3D
     private Id _pickedVertex;
     private PreviewLine _previewLine;
 
-    private Id _hoveredEdgeId;
+    private List<Id> _hoveredEdgeIds;
 
     public override void _Ready()
     {
@@ -105,8 +106,8 @@ public partial class ThreeDeePaperSelector : Node3D
 
     private void ConfirmUnfoldInteraction()
     {
-        if(_hoveredEdgeId == -1) return;
-        var edge = Statics.Frame.Edges[_hoveredEdgeId];
+        if(_hoveredEdgeIds == null || !_hoveredEdgeIds.Any()) return;
+        var edge = Statics.Frame.Edges[_hoveredEdgeIds.First()];
         var changeContainingEdge = Statics
             .ChangeMemory
             .Changes
@@ -130,7 +131,7 @@ public partial class ThreeDeePaperSelector : Node3D
             };
             Statics.ChangeMemory.AddChange(newChange);
             EventBus.Emit(new PaperFoldedEvent());
-            _hoveredEdgeId = -1;
+            _hoveredEdgeIds = null;
         }
     }
 
@@ -187,6 +188,7 @@ public partial class ThreeDeePaperSelector : Node3D
         MouseMarker.GlobalPosition = _mouseWorldPosition;
     }
     
+    // ToDO: Select newly added edges even after edge split
     private void HoverEdgeToUnfold()
     {
         var frame = Statics.Frame;
@@ -199,8 +201,17 @@ public partial class ThreeDeePaperSelector : Node3D
         var (_, edge) = EdgeQueries.NearestPointOnEdgeToPoint(frame3d, _mouseWorldPosition, nearestEdges);
         if (!edge.IsUnfoldable()) return;
         if (!IsLastFolded(edge) || IsAlreadyUnfolded(edge)) return;
-        edge.IsSelected = true;
-        _hoveredEdgeId = edge.Id;
+        var changes = Statics
+            .ChangeMemory
+            .Changes
+            .FirstOrDefault(cr => cr.AddedEdges.Contains(edge.Id));
+        if(changes is null) return;
+        for (var i = 0; i < changes.AddedEdges.Count; i++)
+        {
+            var addedEdgeId = changes.AddedEdges[i];
+            frame.Edges[addedEdgeId].IsSelected = true;
+        }
+        _hoveredEdgeIds = changes.AddedEdges;
     }
 
     private bool IsAlreadyUnfolded(Edge edge)
@@ -210,7 +221,7 @@ public partial class ThreeDeePaperSelector : Node3D
             .Changes
             .FirstOrDefault(cr => cr.AddedEdges.Contains(edge.Id) && cr.Unfolded);
         return changeContainingEdge is not null;
-    }
+    }   
 
     private static bool IsLastFolded(Edge edge)
     {
