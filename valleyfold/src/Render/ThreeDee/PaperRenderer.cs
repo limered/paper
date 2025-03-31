@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Godot;
+using valleyfold.ChangeTracking;
 using valleyfold.Render.Edges;
 using valleyfold.Render.Faces;
 using valleyfold.Render.ThreeDee.Events;
@@ -31,6 +32,8 @@ public partial class PaperRenderer : Node3D
         var changes = Statics.ChangeMemory.Changes;
         foreach (var change in changes)
         {
+            if(change.Unfolded || change.ChangeType != ChangeType.ValleyFold) continue;
+            
             var pickedVertex = frame3d.Vertices[change.PickedVertex].Coord;
             for (var v = 0; v < frame3d.Vertices.Count; v++)
             {

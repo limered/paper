@@ -3,6 +3,7 @@ using Godot;
 using valleyfold.ChangeTracking;
 using valleyfold.Folding;
 using valleyfold.FrameModifications;
+using valleyfold.Render.ThreeDee.Events;
 using valleyfold.ThreeDeeModels;
 using valleyfold.TwoDeeModels;
 using valleyfold.Ui;
@@ -92,11 +93,44 @@ public partial class ThreeDeePaperSelector : Node3D
                 _pickingMode = PickingMode.StartPoint;
                 break;
             case PickingMode.EdgeSelect when mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed:
+                ConfirmUnfoldInteraction();
                 break;
             case PickingMode.EdgeSelect when mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed:
+                
                 break;
             default:
                 return;
+        }
+    }
+
+    private void ConfirmUnfoldInteraction()
+    {
+        if(_hoveredEdgeId == -1) return;
+        var edge = Statics.Frame.Edges[_hoveredEdgeId];
+        var changeContainingEdge = Statics
+            .ChangeMemory
+            .Changes
+            .FirstOrDefault(cr => cr.AddedEdges.Contains(edge.Id));
+        if (changeContainingEdge is not null)
+        {
+            changeContainingEdge.Unfolded = true;
+            // reset edge assignment and fold angle
+            for (var i = 0; i < changeContainingEdge.AddedEdges.Count; i++)
+            {
+                var addedEdgeId = changeContainingEdge.AddedEdges[i];
+                var edgeToChange = Statics.Frame.Edges[addedEdgeId];
+                edgeToChange.Assignment = Assignment.F;
+                edgeToChange.FoldAngle = 0f;
+            }
+
+            var newChange = new ChangeRecord
+            {
+                ChangeType = ChangeType.Unfold,
+                Unfolded = true,
+            };
+            Statics.ChangeMemory.AddChange(newChange);
+            EventBus.Emit(new PaperFoldedEvent());
+            _hoveredEdgeId = -1;
         }
     }
 
@@ -146,14 +180,14 @@ public partial class ThreeDeePaperSelector : Node3D
                 UpdateFoldPreview(frame3d, _pickedVertex, _mouseWorldPosition, _previewLine);
                 break;
             case PickingMode.EdgeSelect:
-                HoverNearestEdge();
+                HoverEdgeToUnfold();
                 break;
         }
 
         MouseMarker.GlobalPosition = _mouseWorldPosition;
     }
     
-    private void HoverNearestEdge()
+    private void HoverEdgeToUnfold()
     {
         var frame = Statics.Frame;
         var frame3d = Statics.Frame3d;
@@ -180,8 +214,9 @@ public partial class ThreeDeePaperSelector : Node3D
 
     private static bool IsLastFolded(Edge edge)
     {
-        var lastChangeset = Statics.ChangeMemory.Changes.Last();
-        return lastChangeset.AddedEdges.Contains(edge.Id);
+        var lastUnfolded = Statics.ChangeMemory.Changes
+            .LastOrDefault(cr => !cr.Unfolded);
+        return lastUnfolded?.AddedEdges.Contains(edge.Id) ?? false;
     }
 
     private static Id MarkVertexInFrame(Frame3D frame3d, Vector3 mouseWorldPosition)
