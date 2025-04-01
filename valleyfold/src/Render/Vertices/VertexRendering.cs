@@ -19,13 +19,6 @@ public partial class VertexRendering : Node3D
         _shader.Shader = ResourceLoader.Load<Shader>("res://src/Render/Vertices/vertex.gdshader");
     }
 
-    public override void _Process(double delta)
-    {
-        if (Statics.Frame == null) return;
-        var frame = Statics.Frame;
-        
-    }
-
     public void Render(List<Vertex3D> vertices)
     {
         if (GetChildCount() < vertices.Count) AddOrShowVertices(vertices);

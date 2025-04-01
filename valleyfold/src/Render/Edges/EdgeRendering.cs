@@ -7,17 +7,9 @@ namespace valleyfold.Render.Edges;
 public partial class EdgeRendering : Node3D
 {
     private const float SelectedLineWidth = 0.02f;
-    private const float DeselectedLineWidth = 0.01f;
+    private const float DeselectedLineWidth = 0.005f;
     public override void _Ready()
     {
-    }
-
-    public override void _Process(double delta)
-    {
-        if (Statics.Frame == null) return;
-        var frame = Statics.Frame;
-
-        // Render(frame.Edges, frame.Vertices.Select(v => v.Coord.Vector3XZ()).ToList());
     }
 
     public void Render(List<Edge> edges, List<Vector3> vertices)

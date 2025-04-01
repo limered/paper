@@ -10,15 +10,7 @@ namespace valleyfold.Render.Faces;
 public partial class FaceRendering : Node3D
 {
     private PackedScene _faceScene = ResourceLoader.Load<PackedScene>("res://scenes/face.tscn");
-
-    public override void _Process(double delta)
-    {
-        if (Statics.Frame == null) return;
-        var frame = Statics.Frame;
-
-        // RenderFaces(frame.Faces, frame.Vertices.Select(v => v.Coord.Vector3XZ()).ToList());
-    }
-
+    
     public void RenderFaces(List<Face> faces, List<Vector3> vertices)
     {
         var faceCount = faces.Count;
