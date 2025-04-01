@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using valleyfold.TwoDeeModels;
 
 namespace valleyfold.ChangeTracking;
 
@@ -12,5 +13,15 @@ public class ChangeMemory
     public void AddChange(ChangeRecord changeRecord)
     {
         _changes.Add(changeRecord);
+    }
+    
+    public ChangeRecord LastStillFoldedChange()
+    {
+        return _changes.FindLast(change => !change.Unfolded);
+    }
+    
+    public ChangeRecord ChangeContainingEdge(Id edgeId)
+    {
+        return _changes.Find(change => change.AddedEdges.Contains(edgeId));
     }
 }

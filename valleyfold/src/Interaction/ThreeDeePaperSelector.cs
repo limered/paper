@@ -96,9 +96,6 @@ public partial class ThreeDeePaperSelector : Node3D
             case PickingMode.EdgeSelect when mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed:
                 ConfirmUnfoldInteraction();
                 break;
-            case PickingMode.EdgeSelect when mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed:
-                
-                break;
             default:
                 return;
         }
@@ -108,31 +105,25 @@ public partial class ThreeDeePaperSelector : Node3D
     {
         if(_hoveredEdgeIds == null || !_hoveredEdgeIds.Any()) return;
         var edge = Statics.Frame.Edges[_hoveredEdgeIds.First()];
-        var changeContainingEdge = Statics
-            .ChangeMemory
-            .Changes
-            .FirstOrDefault(cr => cr.AddedEdges.Contains(edge.Id));
-        if (changeContainingEdge is not null)
+        var changeContainingEdge = Statics.ChangeMemory.ChangeContainingEdge(edge.Id);
+        if (changeContainingEdge is null) return;
+        
+        changeContainingEdge.Unfolded = true;
+        for (var i = 0; i < changeContainingEdge.AddedEdges.Count; i++)
         {
-            changeContainingEdge.Unfolded = true;
-            // reset edge assignment and fold angle
-            for (var i = 0; i < changeContainingEdge.AddedEdges.Count; i++)
-            {
-                var addedEdgeId = changeContainingEdge.AddedEdges[i];
-                var edgeToChange = Statics.Frame.Edges[addedEdgeId];
-                edgeToChange.Assignment = Assignment.F;
-                edgeToChange.FoldAngle = 0f;
-            }
-
-            var newChange = new ChangeRecord
-            {
-                ChangeType = ChangeType.Unfold,
-                Unfolded = true,
-            };
-            Statics.ChangeMemory.AddChange(newChange);
-            EventBus.Emit(new PaperFoldedEvent());
-            _hoveredEdgeIds = null;
+            var edgeToChange = Statics.Frame.Edges[changeContainingEdge.AddedEdges[i]];
+            edgeToChange.Assignment = Assignment.F;
+            edgeToChange.FoldAngle = 0f;
         }
+
+        var newChange = new ChangeRecord
+        {
+            ChangeType = ChangeType.Unfold,
+            Unfolded = true,
+        };
+        Statics.ChangeMemory.AddChange(newChange);
+        EventBus.Emit(new PaperFoldedEvent());
+        _hoveredEdgeIds = null;
     }
 
     private void ResetFoldInteraction()
@@ -188,7 +179,6 @@ public partial class ThreeDeePaperSelector : Node3D
         MouseMarker.GlobalPosition = _mouseWorldPosition;
     }
     
-    // ToDO: Select newly added edges even after edge split
     private void HoverEdgeToUnfold()
     {
         var frame = Statics.Frame;
@@ -199,34 +189,22 @@ public partial class ThreeDeePaperSelector : Node3D
         var nearestEdges = EdgeQueries.NearestEdgesToPoint3d(frame3d, _mouseWorldPosition);
         if (!nearestEdges.Any()) return;
         var (_, edge) = EdgeQueries.NearestPointOnEdgeToPoint(frame3d, _mouseWorldPosition, nearestEdges);
-        if (!edge.IsUnfoldable()) return;
-        if (!IsLastFolded(edge) || IsAlreadyUnfolded(edge)) return;
-        var changes = Statics
-            .ChangeMemory
-            .Changes
-            .FirstOrDefault(cr => cr.AddedEdges.Contains(edge.Id));
-        if(changes is null) return;
-        for (var i = 0; i < changes.AddedEdges.Count; i++)
+        if (!edge.IsUnfoldable() || !IsLastFolded(edge)) return;
+        
+        var change = Statics.ChangeMemory.ChangeContainingEdge(edge.Id);
+        if(change is null) return;
+        
+        for (var i = 0; i < change.AddedEdges.Count; i++)
         {
-            var addedEdgeId = changes.AddedEdges[i];
+            var addedEdgeId = change.AddedEdges[i];
             frame.Edges[addedEdgeId].IsSelected = true;
         }
-        _hoveredEdgeIds = changes.AddedEdges;
+        _hoveredEdgeIds = change.AddedEdges;
     }
-
-    private bool IsAlreadyUnfolded(Edge edge)
-    {
-        var changeContainingEdge = Statics
-            .ChangeMemory
-            .Changes
-            .FirstOrDefault(cr => cr.AddedEdges.Contains(edge.Id) && cr.Unfolded);
-        return changeContainingEdge is not null;
-    }   
 
     private static bool IsLastFolded(Edge edge)
     {
-        var lastUnfolded = Statics.ChangeMemory.Changes
-            .LastOrDefault(cr => !cr.Unfolded);
+        var lastUnfolded = Statics.ChangeMemory.LastStillFoldedChange();
         return lastUnfolded?.AddedEdges.Contains(edge.Id) ?? false;
     }
 
