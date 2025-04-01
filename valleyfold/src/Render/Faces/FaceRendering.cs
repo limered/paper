@@ -3,6 +3,7 @@ using System.Linq;
 using Godot;
 using Godot.Collections;
 using valleyfold.TwoDeeModels;
+using valleyfold.Ui.Events;
 using valleyfold.Utils;
 
 namespace valleyfold.Render.Faces;
@@ -10,7 +11,20 @@ namespace valleyfold.Render.Faces;
 public partial class FaceRendering : Node3D
 {
     private PackedScene _faceScene = ResourceLoader.Load<PackedScene>("res://scenes/face.tscn");
-    
+
+    public override void _Ready()
+    {
+        EventBus.Register<ResetPaperEvent>(_ => Clear());
+    }
+
+    private void Clear()
+    {
+        foreach (var child in GetChildren())
+        {
+            child.QueueFree();
+        }
+    }
+
     public void RenderFaces(List<Face> faces, List<Vector3> vertices)
     {
         var faceCount = faces.Count;

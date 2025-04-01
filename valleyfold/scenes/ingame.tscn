@@ -19,19 +19,19 @@ offset_bottom = 646.0
 
 [node name="valleyfold" type="Button" parent="Sidepane"]
 layout_mode = 0
-offset_left = 16.0
-offset_top = 586.0
-offset_right = 67.0
-offset_bottom = 628.0
+offset_left = 22.0
+offset_top = 569.0
+offset_right = 73.0
+offset_bottom = 611.0
 mouse_default_cursor_shape = 2
 text = "V"
 
 [node name="unfold" type="Button" parent="Sidepane"]
 layout_mode = 0
-offset_left = 80.0
-offset_top = 584.0
-offset_right = 134.0
-offset_bottom = 627.0
+offset_left = 84.0
+offset_top = 569.0
+offset_right = 138.0
+offset_bottom = 611.0
 mouse_default_cursor_shape = 2
 text = "F"
 
@@ -43,6 +43,14 @@ offset_right = 114.0
 offset_bottom = 79.0
 mouse_default_cursor_shape = 2
 text = "Animate"
+
+[node name="reset" type="Button" parent="Sidepane"]
+offset_left = 23.0
+offset_top = 94.0
+offset_right = 114.0
+offset_bottom = 153.0
+mouse_default_cursor_shape = 2
+text = "Reset"
 
 [node name="active_fold_mode" type="Label" parent="Sidepane"]
 layout_mode = 0

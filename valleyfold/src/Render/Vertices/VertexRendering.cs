@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Godot;
 using valleyfold.ThreeDeeModels;
-using valleyfold.TwoDeeModels;
+using valleyfold.Ui.Events;
 using valleyfold.Utils;
 
 namespace valleyfold.Render.Vertices;
@@ -17,6 +17,16 @@ public partial class VertexRendering : Node3D
 
         _shader = new ShaderMaterial();
         _shader.Shader = ResourceLoader.Load<Shader>("res://src/Render/Vertices/vertex.gdshader");
+        
+        EventBus.Register<ResetPaperEvent>(_ => Clear());
+    }
+    
+    private void Clear()
+    {
+        foreach (var child in GetChildren())
+        {
+            child.QueueFree();
+        }
     }
 
     public void Render(List<Vertex3D> vertices)

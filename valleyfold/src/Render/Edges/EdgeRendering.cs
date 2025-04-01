@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Godot;
 using valleyfold.TwoDeeModels;
+using valleyfold.Ui.Events;
+using valleyfold.Utils;
 
 namespace valleyfold.Render.Edges;
 
@@ -10,6 +12,15 @@ public partial class EdgeRendering : Node3D
     private const float DeselectedLineWidth = 0.005f;
     public override void _Ready()
     {
+        EventBus.Register<ResetPaperEvent>(_ => Clear());
+    }
+
+    private void Clear()
+    {
+        foreach (var child in GetChildren())
+        {
+            child.QueueFree();
+        }
     }
 
     public void Render(List<Edge> edges, List<Vector3> vertices)

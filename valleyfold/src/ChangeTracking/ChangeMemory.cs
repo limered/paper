@@ -30,4 +30,9 @@ public class ChangeMemory
         var change = ChangeContainingEdge(existingEdge);
         change?.AddedEdges.Add(newEdgeId);
     }
+
+    public void Clear()
+    {
+        _changes.Clear();
+    }
 }
