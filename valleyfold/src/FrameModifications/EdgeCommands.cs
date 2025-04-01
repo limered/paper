@@ -32,7 +32,14 @@ public static class EdgeCommands
             Id = frame.Edges.Count
         };
         edge.Vertices[1] = id;
-        frame.AddEdge(secondEdge);
+        if(edge.Assignment == Assignment.B)
+        {
+            frame.AddEdge(secondEdge);
+        }
+        else
+        {
+            frame.AddEdgeAfterSplit(edge, secondEdge);
+        }
 
         return id;
     }

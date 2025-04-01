@@ -24,4 +24,10 @@ public class ChangeMemory
     {
         return _changes.Find(change => change.AddedEdges.Contains(edgeId));
     }
+    
+    public void AddEdgeToExistingChange(Id existingEdge, Id newEdgeId)
+    {
+        var change = ChangeContainingEdge(existingEdge);
+        change?.AddedEdges.Add(newEdgeId);
+    }
 }

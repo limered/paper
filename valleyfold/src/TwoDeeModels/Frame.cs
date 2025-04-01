@@ -79,4 +79,10 @@ public class Frame
     {
         for (var i = 0; i < Vertices.Count; i++) Vertices[i].IsSelected = false;
     }
+
+    public void AddEdgeAfterSplit(Edge edge, Edge secondEdge)
+    {
+        Statics.ChangeMemory.AddEdgeToExistingChange(edge.Id, secondEdge.Id);
+        AddEdge(secondEdge);
+    }
 }
