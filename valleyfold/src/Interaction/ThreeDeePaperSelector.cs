@@ -172,19 +172,31 @@ public partial class ThreeDeePaperSelector : Node3D
                 UpdateFoldPreview(frame3d, _pickedVertex, _mouseWorldPosition, _previewLine);
                 break;
             case PickingMode.EdgeSelect:
+                ShowLastFoldedEdges();
                 HoverEdgeToUnfold();
                 break;
         }
 
         MouseMarker.GlobalPosition = _mouseWorldPosition;
     }
-    
-    private void HoverEdgeToUnfold()
+
+    private void ShowLastFoldedEdges()
     {
         var frame = Statics.Frame;
-        var frame3d = Statics.Frame3d;
-        
         frame.UnmarkEdges();
+        
+        var lastFolded = Statics.ChangeMemory.LastStillFoldedChange();
+        if (lastFolded is null) return;
+        for (var i = 0; i < lastFolded.AddedEdges.Count; i++)
+        {
+            var addedEdgeId = lastFolded.AddedEdges[i];
+            frame.Edges[addedEdgeId].IsSelected = true;
+        }
+    }
+
+    private void HoverEdgeToUnfold()
+    {
+        var frame3d = Statics.Frame3d;
         
         var nearestEdges = EdgeQueries.NearestEdgesToPoint3d(frame3d, _mouseWorldPosition);
         if (!nearestEdges.Any()) return;
@@ -193,12 +205,7 @@ public partial class ThreeDeePaperSelector : Node3D
         
         var change = Statics.ChangeMemory.ChangeContainingEdge(edge.Id);
         if(change is null) return;
-        
-        for (var i = 0; i < change.AddedEdges.Count; i++)
-        {
-            var addedEdgeId = change.AddedEdges[i];
-            frame.Edges[addedEdgeId].IsSelected = true;
-        }
+
         _hoveredEdgeIds = change.AddedEdges;
     }
 
