@@ -45,6 +45,7 @@ mouse_default_cursor_shape = 2
 text = "Animate"
 
 [node name="reset" type="Button" parent="Sidepane"]
+layout_mode = 0
 offset_left = 23.0
 offset_top = 94.0
 offset_right = 114.0
