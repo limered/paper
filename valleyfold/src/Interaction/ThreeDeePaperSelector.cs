@@ -4,7 +4,6 @@ using Godot;
 using valleyfold.ChangeTracking;
 using valleyfold.Folding;
 using valleyfold.FrameModifications;
-using valleyfold.Interaction.Events;
 using valleyfold.Render.ThreeDee.Events;
 using valleyfold.ThreeDeeModels;
 using valleyfold.TwoDeeModels;
@@ -15,11 +14,11 @@ namespace valleyfold.Interaction;
 
 public partial class ThreeDeePaperSelector : Node3D
 {
-    private PickingMode _lastPickingMode = PickingMode.StartPoint;
+    private readonly InteractionState _interactionState = new();
     private readonly MousePosition _mousePosition = new();
-    private PickingMode _pickingMode = PickingMode.StartPoint;
     [Export] public Area3D MouseCollisionArea;
     [Export] public Node3D MouseMarker;
+    [Export] public float PickingThreshold = 0.25f;
 
     private Id _pickedVertex;
     private PreviewLine _previewLine;
@@ -31,43 +30,15 @@ public partial class ThreeDeePaperSelector : Node3D
         _mousePosition.Init(MouseCollisionArea);
         
         EventBus.Register<FoldModeChange>(OnFoldModeChange);
-        EventBus.Register<HoverAreaChangedEvent>(OnHoverAreaChanged);
-    }
-
-    private void OnHoverAreaChanged(HoverAreaChangedEvent msg)
-    {
-        if (msg.IsHovered)
-        {
-            ChangeToLastPaperPicking();
-            return;
-        }
-        ChangeToButtonsPicking();
     }
     
-    private void ChangeToLastPaperPicking()
-    {
-        _pickingMode = _lastPickingMode;
-    }
-
-    private void ChangeToButtonsPicking()
-    {
-        _lastPickingMode = _pickingMode;
-        _pickingMode = PickingMode.Buttons;
-    }
-
     private void OnFoldModeChange(FoldModeChange msg)
     {
-        if (msg.NextFoldMode == Assignment.F)
-        {
-            _pickingMode = PickingMode.EdgeSelect;
-            _lastPickingMode = PickingMode.EdgeSelect;
-        }
-        else
-        {
-            _pickingMode = PickingMode.StartPoint;
-            _lastPickingMode = PickingMode.StartPoint;
-        }
-        
+        _interactionState.GoToState(
+            msg.NextFoldMode == Assignment.F 
+            ? PickingMode.EdgeSelect 
+            : PickingMode.StartPoint);
+
         Statics.Frame?.UnmarkEdges();
         Statics.Frame?.UnmarkVertices();
     }
@@ -76,21 +47,21 @@ public partial class ThreeDeePaperSelector : Node3D
     {
         if (@event is not InputEventMouseButton mouseEvent) return;
 
-        switch (_pickingMode)
+        switch (_interactionState.Current)
         {
             case PickingMode.Buttons:
                 return;
             case PickingMode.StartPoint when mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed:
                 StartFoldInteraction();
-                _pickingMode = PickingMode.EndPoint;
+                _interactionState.GoToState(PickingMode.EndPoint);
                 return;
             case PickingMode.EndPoint when mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed:
                 ConfirmFoldInteraction();
-                _pickingMode = PickingMode.StartPoint;
+                _interactionState.GoToState(PickingMode.StartPoint);
                 break;
             case PickingMode.EndPoint when mouseEvent.ButtonIndex == MouseButton.Right && mouseEvent.Pressed:
                 ResetFoldInteraction();
-                _pickingMode = PickingMode.StartPoint;
+                _interactionState.GoToState(PickingMode.StartPoint);
                 break;
             case PickingMode.EdgeSelect when mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed:
                 ConfirmUnfoldInteraction();
@@ -133,6 +104,7 @@ public partial class ThreeDeePaperSelector : Node3D
 
     private void ConfirmFoldInteraction()
     {
+        if (_pickedVertex == -1) return;
         FoldInteractionApplier.ApplyVertexValleyFold(_pickedVertex, _mousePosition.Current);
         _previewLine?.ChangeVisibility(false);
         _previewLine?.Draw();
@@ -140,6 +112,7 @@ public partial class ThreeDeePaperSelector : Node3D
 
     private void StartFoldInteraction()
     {
+        if (_pickedVertex == -1) return;
         if (_previewLine is null)
         {
             _previewLine = new PreviewLine();
@@ -159,7 +132,7 @@ public partial class ThreeDeePaperSelector : Node3D
 
         frame.UnmarkVertices();
 
-        switch (_pickingMode)
+        switch (_interactionState.Current)
         {
             case PickingMode.Buttons:
                 return;
@@ -214,7 +187,7 @@ public partial class ThreeDeePaperSelector : Node3D
         return lastUnfolded?.AddedEdges.Contains(edge.Id) ?? false;
     }
 
-    private static Id MarkVertexInFrame(Frame3D frame3d, Vector3 mouseWorldPosition)
+    private Id MarkVertexInFrame(Frame3D frame3d, Vector3 mouseWorldPosition)
     {
         if (frame3d.Vertices is null || !frame3d.Vertices.Any()) return -1;
         var closestId = 0;
@@ -229,7 +202,9 @@ public partial class ThreeDeePaperSelector : Node3D
                 closestId = i;
             }
         }
-
+        
+        if(closestDistance > PickingThreshold) return -1;
+        
         Statics.Frame.Vertices[closestId].IsSelected = true;
         return closestId;
     }
@@ -240,6 +215,7 @@ public partial class ThreeDeePaperSelector : Node3D
         Vector3 mouseWorldPosition,
         PreviewLine previewLine)
     {
+        if (pickedVertex == -1) return;
         var centerPoint = frame3d.Vertices[pickedVertex].Coord.Lerp(mouseWorldPosition, 0.5f);
         var direction = (mouseWorldPosition - frame3d.Vertices[pickedVertex].Coord).Normalized();
         var perpendicular = new Vector3(-direction.Z, 0, direction.X);
