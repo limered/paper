@@ -4,6 +4,7 @@ using Godot;
 using valleyfold.ChangeTracking;
 using valleyfold.Folding;
 using valleyfold.FrameModifications;
+using valleyfold.Interaction.Events;
 using valleyfold.Render.ThreeDee.Events;
 using valleyfold.ThreeDeeModels;
 using valleyfold.TwoDeeModels;
@@ -15,7 +16,7 @@ namespace valleyfold.Interaction;
 public partial class ThreeDeePaperSelector : Node3D
 {
     private PickingMode _lastPickingMode = PickingMode.StartPoint;
-    private Vector3 _mouseWorldPosition;
+    private readonly MousePosition _mousePosition = new();
     private PickingMode _pickingMode = PickingMode.StartPoint;
     [Export] public Area3D MouseCollisionArea;
     [Export] public Node3D MouseMarker;
@@ -27,11 +28,31 @@ public partial class ThreeDeePaperSelector : Node3D
 
     public override void _Ready()
     {
-        MouseCollisionArea.InputEvent += MouseCollisionAreaOnInputEvent;
-        MouseCollisionArea.MouseExited += ChangeToButtonsPicking;
-        MouseCollisionArea.MouseEntered += ChangeToLastPaperPicking;
+        _mousePosition.Init(MouseCollisionArea);
         
         EventBus.Register<FoldModeChange>(OnFoldModeChange);
+        EventBus.Register<HoverAreaChangedEvent>(OnHoverAreaChanged);
+    }
+
+    private void OnHoverAreaChanged(HoverAreaChangedEvent msg)
+    {
+        if (msg.IsHovered)
+        {
+            ChangeToLastPaperPicking();
+            return;
+        }
+        ChangeToButtonsPicking();
+    }
+    
+    private void ChangeToLastPaperPicking()
+    {
+        _pickingMode = _lastPickingMode;
+    }
+
+    private void ChangeToButtonsPicking()
+    {
+        _lastPickingMode = _pickingMode;
+        _pickingMode = PickingMode.Buttons;
     }
 
     private void OnFoldModeChange(FoldModeChange msg)
@@ -49,28 +70,6 @@ public partial class ThreeDeePaperSelector : Node3D
         
         Statics.Frame?.UnmarkEdges();
         Statics.Frame?.UnmarkVertices();
-    }
-
-    private void ChangeToLastPaperPicking()
-    {
-        _pickingMode = _lastPickingMode;
-    }
-
-    private void ChangeToButtonsPicking()
-    {
-        _lastPickingMode = _pickingMode;
-        _pickingMode = PickingMode.Buttons;
-    }
-
-    private void MouseCollisionAreaOnInputEvent(
-        Node camera,
-        InputEvent @event,
-        Vector3 eventPosition,
-        Vector3 normal,
-        long shapeIdx)
-    {
-        _mouseWorldPosition = eventPosition;
-        _mouseWorldPosition.Y = 0;
     }
 
     public override void _Input(InputEvent @event)
@@ -134,7 +133,7 @@ public partial class ThreeDeePaperSelector : Node3D
 
     private void ConfirmFoldInteraction()
     {
-        FoldInteractionApplier.ApplyVertexValleyFold(_pickedVertex, _mouseWorldPosition);
+        FoldInteractionApplier.ApplyVertexValleyFold(_pickedVertex, _mousePosition.Current);
         _previewLine?.ChangeVisibility(false);
         _previewLine?.Draw();
     }
@@ -165,11 +164,11 @@ public partial class ThreeDeePaperSelector : Node3D
             case PickingMode.Buttons:
                 return;
             case PickingMode.StartPoint:
-                _pickedVertex = MarkVertexInFrame(frame3d, _mouseWorldPosition);
+                _pickedVertex = MarkVertexInFrame(frame3d, _mousePosition.Current);
                 frame3d.ImportMetadataFromFrame(frame);
                 break;
             case PickingMode.EndPoint:
-                UpdateFoldPreview(frame3d, _pickedVertex, _mouseWorldPosition, _previewLine);
+                UpdateFoldPreview(frame3d, _pickedVertex, _mousePosition.Current, _previewLine);
                 break;
             case PickingMode.EdgeSelect:
                 ShowLastFoldedEdges();
@@ -177,7 +176,7 @@ public partial class ThreeDeePaperSelector : Node3D
                 break;
         }
 
-        MouseMarker.GlobalPosition = _mouseWorldPosition;
+        MouseMarker.GlobalPosition = _mousePosition.Current;
     }
 
     private void ShowLastFoldedEdges()
@@ -198,9 +197,9 @@ public partial class ThreeDeePaperSelector : Node3D
     {
         var frame3d = Statics.Frame3d;
         
-        var nearestEdges = EdgeQueries.NearestEdgesToPoint3d(frame3d, _mouseWorldPosition);
+        var nearestEdges = EdgeQueries.NearestEdgesToPoint3d(frame3d, _mousePosition.Current);
         if (!nearestEdges.Any()) return;
-        var (_, edge) = EdgeQueries.NearestPointOnEdgeToPoint(frame3d, _mouseWorldPosition, nearestEdges);
+        var (_, edge) = EdgeQueries.NearestPointOnEdgeToPoint(frame3d, _mousePosition.Current, nearestEdges);
         if (!edge.IsUnfoldable() || !IsLastFolded(edge)) return;
         
         var change = Statics.ChangeMemory.ChangeContainingEdge(edge.Id);
