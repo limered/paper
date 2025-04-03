@@ -51,7 +51,7 @@ public class EndPointSelectionState : ISelectionState
     {
         var nearestVertexId = VertexQueries.NearestVertexIdTo(
             Statics.Frame3d, ctx.MousePosition.Current, ctx.Parent.SnapThreshold);
-        if (nearestVertexId == -1)
+        if (nearestVertexId == -1 || Input.IsKeyPressed(Key.Shift))
         {
             ctx.TargetPosition = ctx.MousePosition.Current;
         }
