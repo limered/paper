@@ -52,6 +52,7 @@ public class FoldInteractionApplier
             var addedVertexId = EdgeCommands.AddVertexToEdge(frame, new Vertex { Coord = pointOn2dEdge }, edge);
             addedVertices.Add(addedVertexId);
         }
+        if (addedVertices.Count == 0) return;
         
         var addedEdges = new List<Id>();
         for (var v = 0; v < addedVertices.Count; v++)
