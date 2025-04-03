@@ -14,6 +14,7 @@ public partial class ThreeDeePaperSelector : Node3D
     [Export] public Area3D MouseCollisionArea;
     [Export] public Node3D MouseMarker;
     [Export] public float PickingThreshold = 0.25f;
+    [Export] public float SnapThreshold = 0.1f;
 
     public override void _Ready()
     {
@@ -49,6 +50,6 @@ public partial class ThreeDeePaperSelector : Node3D
         _currentSelectionState = _currentSelectionState
             .OnProcess(_selectionContext);
 
-        MouseMarker.GlobalPosition = _selectionContext.MousePosition.Current;
+        MouseMarker.GlobalPosition = _selectionContext.TargetPosition;
     }
 }

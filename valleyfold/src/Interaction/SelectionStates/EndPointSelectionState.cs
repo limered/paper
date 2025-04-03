@@ -1,5 +1,6 @@
 using Godot;
 using valleyfold.Folding;
+using valleyfold.FrameModifications;
 using valleyfold.ThreeDeeModels;
 
 namespace valleyfold.Interaction.SelectionStates;
@@ -21,7 +22,17 @@ public class EndPointSelectionState : ISelectionState
                 return this;
         }
     }
-    
+
+    public ISelectionState OnProcess(SelectionContext ctx)
+    {
+        var frame3d = Statics.Frame3d;
+
+        SnapToVertex(frame3d, ctx);
+        UpdateFoldPreview(frame3d, ctx);
+
+        return this;
+    }
+
     private static void ResetFoldInteraction(SelectionContext ctx)
     {
         ctx.PreviewLine?.ChangeVisibility(false);
@@ -31,18 +42,24 @@ public class EndPointSelectionState : ISelectionState
     private static void ConfirmFoldInteraction(SelectionContext ctx)
     {
         if (ctx.PickedVertex == -1) return;
-        FoldInteractionApplier.ApplyVertexValleyFold(ctx.PickedVertex, ctx.MousePosition.Current);
+        FoldInteractionApplier.ApplyVertexValleyFold(ctx.PickedVertex, ctx.TargetPosition);
         ctx.PreviewLine?.ChangeVisibility(false);
         ctx.PreviewLine?.Draw();
     }
 
-    public ISelectionState OnProcess(SelectionContext ctx)
+    private void SnapToVertex(Frame3D frame3d, SelectionContext ctx)
     {
-        var frame3d = Statics.Frame3d;
-
-        UpdateFoldPreview(frame3d, ctx);
-
-        return this;
+        var nearestVertexId = VertexQueries.NearestVertexIdTo(
+            Statics.Frame3d, ctx.MousePosition.Current, ctx.Parent.SnapThreshold);
+        if (nearestVertexId == -1)
+        {
+            ctx.TargetPosition = ctx.MousePosition.Current;
+        }
+        else
+        {
+            var nearestVertex = frame3d.Vertices[nearestVertexId].Coord;
+            ctx.TargetPosition = nearestVertex;
+        }
     }
 
     private static void UpdateFoldPreview(
@@ -51,9 +68,9 @@ public class EndPointSelectionState : ISelectionState
     {
         if (ctx.PickedVertex == -1) return;
 
-        var mousePosition = ctx.MousePosition.Current;
-        var centerPoint = frame3d.Vertices[ctx.PickedVertex].Coord.Lerp(mousePosition, 0.5f);
-        var direction = (mousePosition - frame3d.Vertices[ctx.PickedVertex].Coord).Normalized();
+        var targetPosition = ctx.TargetPosition;
+        var centerPoint = frame3d.Vertices[ctx.PickedVertex].Coord.Lerp(targetPosition, 0.5f);
+        var direction = (targetPosition - frame3d.Vertices[ctx.PickedVertex].Coord).Normalized();
         var perpendicular = new Vector3(-direction.Z, 0, direction.X);
         ctx.PreviewLine.UpdatePosition(centerPoint, perpendicular);
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
+using valleyfold.ThreeDeeModels;
 using valleyfold.TwoDeeModels;
 
 namespace valleyfold.FrameModifications;
@@ -8,6 +9,21 @@ namespace valleyfold.FrameModifications;
 public static class VertexQueries
 {
     public static Id NearestVertexIdTo(Frame frame, Vector2 point, float threshold = float.MaxValue)
+    {
+        var nearest = -1;
+        var minDist = float.MaxValue;
+        for (var i = 0; i < frame.Vertices.Count; i++)
+        {
+            var dist = point.DistanceSquaredTo(frame.Vertices[i].Coord);
+            if (dist > threshold * threshold || dist >= minDist) continue;
+            nearest = i;
+            minDist = dist;
+        }
+
+        return nearest;
+    }
+    
+    public static Id NearestVertexIdTo(Frame3D frame, Vector3 point, float threshold = float.MaxValue)
     {
         var nearest = -1;
         var minDist = float.MaxValue;
