@@ -78,10 +78,8 @@ public class VertexToVertexFold : IFold
                 frame.Vertices[_vertexIdB],
                 frame.Vertices[crossedEdge.Vertices[0]],
                 frame.Vertices[crossedEdge.Vertices[1]]);
-
-            var intersectionVertex = new Vertex
-                { Coord = new Vector2(intersectionPoint.X, intersectionPoint.Y) };
-            var intersectionVertexId = EdgeCommands.AddVertexToEdge(frame, intersectionVertex, crossedEdge);
+            
+            var intersectionVertexId = EdgeCommands.AddVertexToEdge(frame, intersectionPoint, crossedEdge);
             crossedEdgesWithVerticesIds.Add((crossedEdge, intersectionVertexId));
         }
 

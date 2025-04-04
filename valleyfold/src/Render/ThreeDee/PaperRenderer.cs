@@ -48,7 +48,7 @@ public partial class PaperRenderer : Node3D
                         vertex.Vector2XZ(), 
                         pickedVertex.Vector2XZ()))
                 {
-                    frame3d.Vertices[v] = new Vertex3D { Coord = ReflectedAroundLine(start, end, vertex) };
+                    frame3d.Vertices[v].Coord = ReflectedAroundLine(start, end, vertex);
                 }
             }
         }

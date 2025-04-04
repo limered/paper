@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using valleyfold.TwoDeeModels;
-using valleyfold.Utils;
 
 namespace valleyfold.ThreeDeeModels;
 
@@ -14,11 +13,7 @@ public class Frame3D
     public void ImportFromFrame(Frame frame)
     {
         Vertices.Clear();
-        foreach (var vertex in frame.Vertices)
-            Vertices.Add(new Vertex3D
-            {
-                Coord = vertex.Coord.Vector3XZ()
-            });
+        foreach (var vertex in frame.Vertices) Vertices.Add(vertex.To3D());
     }
 
     public void ImportMetadataFromFrame(Frame frame)

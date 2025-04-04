@@ -24,7 +24,7 @@ public class VertexToEdgeFold : IFold
     {
         if (AreOnSameEdge()) return default;
 
-        var newVertexId = EdgeCommands.AddVertexToEdge(frame, new Vertex { Coord = _point }, _edge);
+        var newVertexId = EdgeCommands.AddVertexToEdge(frame, _point, _edge);
 
         return new VertexToVertexFold(_vertexId, newVertexId, _assignment).Apply(frame);
     }

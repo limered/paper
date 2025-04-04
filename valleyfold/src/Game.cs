@@ -1,6 +1,4 @@
-using System.Linq;
 using Godot;
-using valleyfold.Folding;
 using valleyfold.Render.ThreeDee.Events;
 using valleyfold.TwoDeeModels;
 using valleyfold.Ui;
@@ -20,7 +18,6 @@ public partial class Game : Node
         Statics.Frame = new Frame();
         Statics.Frame.InitializePaper();
         Statics.Frame3d.ImportFromFrame(Statics.Frame);
-        // FoldFrame();
 
         EventBus.Register<FoldModeChange>(OnFoldModeChange);
         EventBus.Register<AnimationModeChange>(OnAnimationModeChanged);
@@ -37,17 +34,6 @@ public partial class Game : Node
         Statics.ChangeMemory.Clear();
         
         EventBus.Emit(new PaperFoldedEvent());
-    }
-
-    private static void FoldFrame()
-    {
-        var vertexA = new Vertex { Coord = new Vector2(0, 0.2f) };
-        var vertexB = new Vertex { Coord = new Vector2(1f, 0.5f) };
-        var edgeA = Statics.Frame.Edges.ElementAt(3);
-        var edgeB = Statics.Frame.Edges.ElementAt(1);
-
-        new EdgeToEdgeFold(edgeA, edgeB, vertexA.Coord, vertexB.Coord, Assignment.V)
-            .Apply(Statics.Frame);
     }
 
     private void OnAnimationModeChanged(AnimationModeChange _)

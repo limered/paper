@@ -8,15 +8,22 @@ public class Frame
     public List<Face> Faces { get; } = new();
     public List<Edge> Edges { get; } = new();
     public List<Vertex> Vertices { get; } = new();
+    
+    public Id AddVertex(Vector2 coord)
+    {
+        var vertex = new Vertex { Coord = coord, Id = Vertices.Count };
+        Vertices.Add(vertex);
+        return vertex.Id;
+    }
 
     public void InitializePaper()
     {
         Vertices.AddRange(new[]
         {
-            new Vertex { Coord = new Vector2(0, 0) },
-            new Vertex { Coord = new Vector2(1, 0) },
-            new Vertex { Coord = new Vector2(1, 1) },
-            new Vertex { Coord = new Vector2(0, 1) }
+            new Vertex { Coord = new Vector2(0, 0), Id = 0 },
+            new Vertex { Coord = new Vector2(1, 0), Id = 1 },
+            new Vertex { Coord = new Vector2(1, 1), Id = 2 },
+            new Vertex { Coord = new Vector2(0, 1), Id = 3 }
         });
 
         Edges.AddRange(new[]

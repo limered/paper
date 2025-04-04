@@ -28,8 +28,8 @@ public class EdgeToEdgeFold : IFold
 
         var vertexIds = new List<Id>
         {
-            EdgeCommands.AddVertexToEdge(frame, new Vertex { Coord = _pointA }, _edgeA),
-            EdgeCommands.AddVertexToEdge(frame, new Vertex { Coord = _pointB }, _edgeB)
+            EdgeCommands.AddVertexToEdge(frame, _pointA, _edgeA),
+            EdgeCommands.AddVertexToEdge(frame, _pointB, _edgeB)
         };
 
         return new VertexToVertexFold(vertexIds[0], vertexIds[1], _assignment).Apply(frame);
