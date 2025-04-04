@@ -19,4 +19,5 @@ public record ChangeRecord
     public List<Id> AddedVertices { get; init; } = new();
     public List<Id> AddedEdges { get; init; } = new();
     public bool Unfolded { get; set; }
+    public HashSet<Id> WasSplitBy { get; } = new();
 }

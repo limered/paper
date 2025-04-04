@@ -69,8 +69,8 @@ public class EdgeSelectionState : ISelectionState
     
     private static bool IsLastFolded(Edge edge)
     {
-        var lastUnfolded = Statics.ChangeMemory.LastStillFoldedChange();
-        return lastUnfolded?.AddedEdges.Contains(edge.Id) ?? false;
+        var lastUnfolded = Statics.ChangeMemory.ChangesToUnfold();
+        return lastUnfolded?.FirstOrDefault(cr => cr.AddedEdges.Contains(edge.Id)) is not null;
     }
     
     private static void ShowLastFoldedEdges()
@@ -78,12 +78,15 @@ public class EdgeSelectionState : ISelectionState
         var frame = Statics.Frame;
         frame.UnmarkEdges();
         
-        var lastFolded = Statics.ChangeMemory.LastStillFoldedChange();
-        if (lastFolded is null) return;
-        for (var i = 0; i < lastFolded.AddedEdges.Count; i++)
+        var lastFolded = Statics.ChangeMemory.ChangesToUnfold();
+        if (lastFolded is null || lastFolded.Length == 0) return;
+        foreach (var changeRecord in lastFolded)
         {
-            var addedEdgeId = lastFolded.AddedEdges[i];
-            frame.Edges[addedEdgeId].IsSelected = true;
+            for (var i = 0; i < changeRecord.AddedEdges.Count; i++)
+            {
+                var addedEdgeId = changeRecord.AddedEdges[i];
+                frame.Edges[addedEdgeId].IsSelected = true;
+            }
         }
     }
 }
