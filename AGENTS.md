@@ -29,3 +29,17 @@ Godot 4.3 origami simulator written in C#. Two projects in one solution: the gam
 - Namespaces mirror folders under `valleyfold.*` and `Testing.*`. File-scoped namespaces are used throughout.
 - Test classes follow nested-class-per-scenario style (`class SimpleFold : VertexToVertexFoldTests { [Fact] ... }`) — match it when adding tests.
 - `.gitignore` excludes `.godot/`, `Testing/bin`, `Testing/obj`. Generated Godot import files (`*.import`) are committed; don't delete them.
+
+## Agent skills
+
+### Issue tracker
+
+Local markdown — issues live under `.scratch/<feature>/` in this repo (no external tracker). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Standard role names; AFK-ready issues are labelled `ready-for-afk`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context — `CONTEXT.md` at the repo root, ADRs under `docs/adr/`. See `docs/agents/domain.md`.
