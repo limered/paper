@@ -7,14 +7,10 @@ namespace valleyfold.Ui;
 
 public partial class GameInterface : Control
 {
-    private Button _animateButton;
     private Label _activeFoldLabel;
 
     public override void _Ready()
     {
-        _animateButton = GetNode<Button>("Sidepane/animate");
-        _animateButton.Pressed += AnimateButtonOnPressed;
-        
         var resetButton = GetNode<Button>("Sidepane/reset");
         resetButton.Pressed += () => EventBus.Emit(new ResetPaperEvent());
 
@@ -56,10 +52,5 @@ public partial class GameInterface : Control
     private static void ValleyfoldButtonOnPressed()
     {
         EventBus.Emit(new FoldModeChange { NextFoldMode = Assignment.V });
-    }
-
-    private static void AnimateButtonOnPressed()
-    {
-        EventBus.Emit(new AnimationModeChange());
     }
 }

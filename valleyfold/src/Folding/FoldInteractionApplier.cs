@@ -4,7 +4,6 @@ using System.Linq;
 using Godot;
 using valleyfold.ChangeTracking;
 using valleyfold.FrameModifications;
-using valleyfold.Render.ThreeDee.Events;
 using valleyfold.TwoDeeModels;
 using valleyfold.Utils;
 
@@ -15,6 +14,7 @@ public class FoldInteractionApplier
     public static void ApplyVertexValleyFold(Id startVertex, Vector3 endPoint)
     {
         if (Statics.Frame == null) return;
+        if (Statics.FoldAnimator.IsAnimating) return;
         var frame = Statics.Frame;
         var frame3d = Statics.Frame3d;
 
@@ -86,6 +86,6 @@ public class FoldInteractionApplier
         };
         Statics.ChangeMemory.AddChange(changeRecord);
 
-        EventBus.Emit(new PaperFoldedEvent());
+        Statics.FoldAnimator.Start(changeRecord);
     }
 }

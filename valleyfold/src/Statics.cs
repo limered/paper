@@ -13,4 +13,5 @@ public static class Statics
     public static ChangeMemory ChangeMemory { get; } = new();
     public static Frame3D Frame3d { get; } = new();
     public static FoldInteractionApplier FoldInteractionApplier { get; } = new();
+    public static FoldAnimator FoldAnimator { get; } = new();
 } 

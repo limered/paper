@@ -1,6 +1,6 @@
 # 02 — Animate fold over time
 
-Status: ready-for-afk
+Status: done
 
 ## Parent
 
