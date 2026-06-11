@@ -15,7 +15,7 @@ namespace valleyfold.Folding;
 /// </summary>
 public class FoldAnimator
 {
-    public const float DefaultDurationSeconds = 0.4f;
+    public const float DefaultDurationSeconds = 0.6f;
 
     private ChangeRecord _change;
     private float _elapsed;
