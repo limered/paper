@@ -59,4 +59,18 @@ public static class FoldMath
 
         return (crossC * crossD) >= 0;
     }
+
+    /// <summary>
+    /// Rotates <paramref name="vertex"/> around the axis defined by the directed
+    /// edge from <paramref name="edgeA"/> to <paramref name="edgeB"/> by
+    /// <paramref name="angle"/> radians. The right-hand rule applies relative to
+    /// the edge direction.
+    /// </summary>
+    public static Vector3 RotatedAroundEdge(Vector3 edgeA, Vector3 edgeB, Vector3 vertex, float angle)
+    {
+        var foldAxis = (edgeB - edgeA).Normalized();
+        var relative = vertex - edgeA;
+        var rotated = relative.Rotated(foldAxis, angle);
+        return edgeA + rotated;
+    }
 }

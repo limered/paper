@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Godot;
 using valleyfold.ChangeTracking;
@@ -48,7 +47,7 @@ public partial class PaperRenderer : Node3D
                         vertex.Vector2XZ(), 
                         pickedVertex.Vector2XZ()))
                 {
-                    frame3d.Vertices[v].Coord = ReflectedAroundLine(start, end, vertex);
+                    frame3d.Vertices[v].Coord = FoldMath.RotatedAroundEdge(start, end, vertex, change.TargetAngle);
                 }
             }
         }
@@ -69,15 +68,5 @@ public partial class PaperRenderer : Node3D
             EdgeRendering.Render(frame.Edges, vertexPoints);
             VertexRendering.Render(frame3d.Vertices);
         }
-    }
-
-    private Vector3 ReflectedAroundLine(Vector3 foldLineStart, Vector3 foldLineEnd, Vector3 vertex)
-    {
-        var foldAxis = (foldLineEnd - foldLineStart).Normalized();
-        const double foldAngle = Math.PI;
-        var vertexPositionRelativeToEdge = vertex - foldLineStart;
-        var vertexPositionRelativeToEdgeRotated = vertexPositionRelativeToEdge
-            .Rotated(foldAxis, (float)foldAngle);
-        return foldLineStart + vertexPositionRelativeToEdgeRotated;
     }
 }

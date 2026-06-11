@@ -20,4 +20,11 @@ public static class AssertUtils
         EquivalentWithEpsilon(actual.X, expected.X, epsilon);
         EquivalentWithEpsilon(actual.Y, expected.Y, epsilon);
     }
+
+    public static void EquivalentWithEpsilonVector3(Vector3 actual, Vector3 expected, float epsilon = 0.0001f)
+    {
+        EquivalentWithEpsilon(actual.X, expected.X, epsilon);
+        EquivalentWithEpsilon(actual.Y, expected.Y, epsilon);
+        EquivalentWithEpsilon(actual.Z, expected.Z, epsilon);
+    }
 }

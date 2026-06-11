@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
@@ -80,7 +81,8 @@ public class FoldInteractionApplier
             FoldLineA = lineA,
             FoldLineB = lineB,
             AddedVertices = addedVertices,
-            AddedEdges = addedEdges
+            AddedEdges = addedEdges,
+            TargetAngle = (float)Math.PI
         };
         Statics.ChangeMemory.AddChange(changeRecord);
 
