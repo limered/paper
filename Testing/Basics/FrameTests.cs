@@ -141,7 +141,7 @@ public class FrameTests
 
             var id = EdgeCommands.AddVertexToEdge(_frame, point, edge);
 
-            Assert.Equivalent(new Vertex { Coord = point }, _frame.Vertices[id]);
+            Assert.Equal(point, _frame.Vertices[id].Coord);
         }
 
         [Fact]

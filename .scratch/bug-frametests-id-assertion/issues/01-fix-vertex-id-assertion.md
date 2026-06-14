@@ -1,6 +1,6 @@
 # 01 — Fix AddVertexOnBorderEdge.AddsTheVertexToFrame Id mismatch
 
-Status: ready-for-afk
+Status: done
 
 ## Parent
 
