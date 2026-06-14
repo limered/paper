@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Godot;
+using valleyfold.ThreeDeeModels;
 using valleyfold.TwoDeeModels;
 using valleyfold.Ui.Events;
 using valleyfold.Utils;
@@ -23,7 +24,7 @@ public partial class EdgeRendering : Node3D
         }
     }
 
-    public void Render(List<Edge> edges, List<Vector3> vertices)
+    public void Render(List<Edge> edges, List<Vector3> vertices, Frame3D frame3d)
     {
         var edgeCount = edges.Count;
         if(GetChildCount() < edgeCount) AddOrShowLines(edges);
@@ -32,8 +33,11 @@ public partial class EdgeRendering : Node3D
         for (var i = 0; i < edgeCount; i++)
         {
             var edge = edges[i];
-            var start = vertices[edge.Vertices[0]];
-            var end = vertices[edge.Vertices[1]];
+            // Edge nudges to the max layer of its incident faces, so the
+            // crease between two layers renders attached to the topmost.
+            var nudge = Vector3.Up * (frame3d.LayerOfEdge(edge) * Frame3D.LayerEpsilon);
+            var start = vertices[edge.Vertices[0]] + nudge;
+            var end = vertices[edge.Vertices[1]] + nudge;
 
             var child = GetChild<EdgeLine>(i);
             child.LinePositions(start, end);

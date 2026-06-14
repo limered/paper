@@ -23,6 +23,57 @@ public class Frame3D
     public int LayerOf(Face face) => _layers.TryGetValue(face.Id, out var l) ? l : 0;
 
     /// <summary>
+    /// Per-layer Z-nudge for coplanar disambiguation. Single source of truth
+    /// for face / edge / vertex renderers so the whole frame moves together.
+    /// Per ADR-0002 §"Consequences": small enough to be invisible, large enough
+    /// to win against float-precision z-fighting between stacked elements.
+    /// </summary>
+    public const float LayerEpsilon = 1e-4f;
+
+    /// <summary>
+    /// Max layer over all faces incident to <paramref name="edge"/>. Edges on
+    /// the crease between two layers (top and bottom face of a fold) snap to
+    /// the higher layer so they render visually attached to the topmost face.
+    /// O(faces); cache externally if it becomes a hot path.
+    /// </summary>
+    public int LayerOfEdge(Edge edge)
+    {
+        var max = 0;
+        var faces = Faces;
+        for (var i = 0; i < faces.Count; i++)
+        {
+            var f = faces[i];
+            if (f.Vertices.Contains(edge.Vertices[0]) && f.Vertices.Contains(edge.Vertices[1]))
+            {
+                var l = LayerOf(f);
+                if (l > max) max = l;
+            }
+        }
+        return max;
+    }
+
+    /// <summary>
+    /// Max layer over all faces containing <paramref name="vertexId"/>. Shared
+    /// crease vertices snap to the highest incident face so the vertex marker
+    /// renders attached to the topmost layer.
+    /// </summary>
+    public int LayerOfVertex(Id vertexId)
+    {
+        var max = 0;
+        var faces = Faces;
+        for (var i = 0; i < faces.Count; i++)
+        {
+            var f = faces[i];
+            if (f.Vertices.Contains(vertexId))
+            {
+                var l = LayerOf(f);
+                if (l > max) max = l;
+            }
+        }
+        return max;
+    }
+
+    /// <summary>
     /// Clears the layer map and seeds every face in <paramref name="frame"/>
     /// at layer 0. Called once at the start of every <c>RebuildFrame3D</c>.
     /// </summary>

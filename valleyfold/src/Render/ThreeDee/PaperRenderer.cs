@@ -35,8 +35,8 @@ public partial class PaperRenderer : Node3D
         {
             var vertexPoints = frame3d.Vertices.Select(v => v.Coord).ToList();
             FaceRendering.RenderFaces(frame.Faces, vertexPoints, frame3d);
-            EdgeRendering.Render(frame.Edges, vertexPoints);
-            VertexRendering.Render(frame3d.Vertices);
+            EdgeRendering.Render(frame.Edges, vertexPoints, frame3d);
+            VertexRendering.Render(frame3d.Vertices, frame3d);
         }
     }
 

@@ -29,7 +29,7 @@ public partial class VertexRendering : Node3D
         }
     }
 
-    public void Render(List<Vertex3D> vertices)
+    public void Render(List<Vertex3D> vertices, Frame3D frame3d)
     {
         if (GetChildCount() < vertices.Count) AddOrShowVertices(vertices);
         else if (GetChildCount() > vertices.Count) HideVertices(vertices);
@@ -37,7 +37,10 @@ public partial class VertexRendering : Node3D
         for (var i = 0; i < vertices.Count; i++)
         {
             var child = GetChild<MeshInstance3D>(i);
-            child.Position = vertices[i].Coord;
+            // Vertex nudges to the max layer of its incident faces, so shared
+            // crease vertices render attached to the topmost layer.
+            var nudge = Vector3.Up * (frame3d.LayerOfVertex(i) * Frame3D.LayerEpsilon);
+            child.Position = vertices[i].Coord + nudge;
             child.Scale = vertices[i].IsSelected ? 
                 new Vector3(1.5f, 1.5f, 1.5f) : 
                 new Vector3(1, 1, 1);

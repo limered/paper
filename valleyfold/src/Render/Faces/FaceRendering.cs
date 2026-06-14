@@ -11,13 +11,6 @@ namespace valleyfold.Render.Faces;
 
 public partial class FaceRendering : Node3D
 {
-    /// <summary>
-    /// Per-layer Z-nudge for coplanar disambiguation. Per ADR-0002
-    /// §"Consequences": small enough to be invisible, large enough to win
-    /// against float-precision z-fighting between stacked faces.
-    /// </summary>
-    private const float LayerEpsilon = 1e-4f;
-
     private PackedScene _faceScene = ResourceLoader.Load<PackedScene>("res://scenes/face.tscn");
 
     public override void _Ready()
@@ -43,7 +36,7 @@ public partial class FaceRendering : Node3D
         {
             var face = faces[i];
 
-            var nudge = Vector3.Up * (frame3d.LayerOf(face) * LayerEpsilon);
+            var nudge = Vector3.Up * (frame3d.LayerOf(face) * Frame3D.LayerEpsilon);
             var faceVertexes = new List<Vector3>();
             faceVertexes.AddRange(face.Vertices.Select(v => vertices[v] + nudge));
 
