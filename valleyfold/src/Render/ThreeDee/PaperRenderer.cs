@@ -1,10 +1,13 @@
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using valleyfold.ChangeTracking;
+using valleyfold.FrameModifications;
 using valleyfold.Render.Edges;
 using valleyfold.Render.Faces;
 using valleyfold.Render.Vertices;
 using valleyfold.ThreeDeeModels;
+using valleyfold.TwoDeeModels;
 using valleyfold.Utils;
 
 namespace valleyfold.Render.ThreeDee;
@@ -68,22 +71,36 @@ public partial class PaperRenderer : Node3D
 
     private static void ApplyFoldRotation(ChangeRecord change, float angle)
     {
+        var frame = Statics.Frame;
         var frame3d = Statics.Frame3d;
-        var pickedVertex = frame3d.Vertices[change.PickedVertex].Coord;
         var start = change.FoldLineA;
         var end = change.FoldLineB;
 
-        for (var v = 0; v < frame3d.Vertices.Count; v++)
+        // Anchor: any face containing the picked vertex. Per ADR-0001, all
+        // faces incident to the picked vertex lie on the same side of the new
+        // crease, so the choice of anchor among them does not affect the
+        // reachable set.
+        var anchor = frame.Faces.FirstOrDefault(f => f.Vertices.Contains(change.PickedVertex));
+        if (anchor is null) return;
+
+        // The participating face set is everything reachable from the anchor
+        // without crossing one of this fold's crease edges. A vertex rotates
+        // iff it belongs to at least one participating face.
+        var blockingEdges = new HashSet<Id>(change.AddedEdges);
+        var participatingFaces = FaceQueries.FacesReachableFrom(frame, anchor, blockingEdges);
+
+        var rotatingVertices = new HashSet<Id>();
+        for (var f = 0; f < participatingFaces.Length; f++)
         {
-            var vertex = frame3d.Vertices[v].Coord;
-            if (FoldMath.AreOnSameSideOfLine(
-                    start.Vector2XZ(),
-                    end.Vector2XZ(),
-                    vertex.Vector2XZ(),
-                    pickedVertex.Vector2XZ()))
-            {
-                frame3d.Vertices[v].Coord = FoldMath.RotatedAroundEdge(start, end, vertex, angle);
-            }
+            var face = participatingFaces[f];
+            for (var i = 0; i < face.Vertices.Count; i++)
+                rotatingVertices.Add(face.Vertices[i]);
+        }
+
+        foreach (var vertexId in rotatingVertices)
+        {
+            var vertex = frame3d.Vertices[vertexId].Coord;
+            frame3d.Vertices[vertexId].Coord = FoldMath.RotatedAroundEdge(start, end, vertex, angle);
         }
     }
 }

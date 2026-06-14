@@ -14,6 +14,46 @@ public static class FaceQueries
             .ToArray();
     }
 
+    /// <summary>
+    /// BFS over the 2D face graph of <paramref name="frame"/> starting from
+    /// <paramref name="anchor"/>. An edge between two faces is traversable iff
+    /// its <see cref="Edge.Id"/> is NOT in <paramref name="blockingEdgeIds"/>.
+    /// Returns every face reachable from the anchor under that rule
+    /// (the anchor itself is always included).
+    /// </summary>
+    /// <remarks>
+    /// Pure over <see cref="Frame"/>: no <c>Statics</c> reads, no Godot runtime
+    /// dependencies. See ADR-0001 for the role this plays in selecting the
+    /// participating face set during multi-layer fold replay.
+    /// </remarks>
+    public static Face[] FacesReachableFrom(Frame frame, Face anchor, ISet<Id> blockingEdgeIds)
+    {
+        var visited = new HashSet<Face> { anchor };
+        var queue = new Queue<Face>();
+        queue.Enqueue(anchor);
+
+        while (queue.Count > 0)
+        {
+            var face = queue.Dequeue();
+            for (var i = 0; i < frame.Edges.Count; i++)
+            {
+                var edge = frame.Edges[i];
+                if (!face.Vertices.Contains(edge.Vertices[0]) ||
+                    !face.Vertices.Contains(edge.Vertices[1])) continue;
+                if (blockingEdgeIds.Contains(edge.Id)) continue;
+
+                var adjacent = FacesAdjacentToEdge(frame, edge);
+                for (var a = 0; a < adjacent.Length; a++)
+                {
+                    if (visited.Add(adjacent[a]))
+                        queue.Enqueue(adjacent[a]);
+                }
+            }
+        }
+
+        return visited.ToArray();
+    }
+
     public static Face FacesContainingVertexIds(Frame frame, List<Id> vertexIds)
     {
         return frame.Faces
