@@ -8,12 +8,26 @@ public class Frame
     public List<Face> Faces { get; } = new();
     public List<Edge> Edges { get; } = new();
     public List<Vertex> Vertices { get; } = new();
-    
+
+    private int _nextFaceId;
+
     public Id AddVertex(Vector2 coord)
     {
         var vertex = new Vertex { Coord = coord, Id = Vertices.Count };
         Vertices.Add(vertex);
         return vertex.Id;
+    }
+
+    /// <summary>
+    /// Assigns the next monotonic <see cref="Face.Id"/> and appends.
+    /// All production face creation should funnel through here so face IDs are
+    /// unique within a <see cref="Frame"/>'s lifetime.
+    /// </summary>
+    public Id AddFace(Face face)
+    {
+        face.Id = _nextFaceId++;
+        Faces.Add(face);
+        return face.Id;
     }
 
     public void InitializePaper()
@@ -58,17 +72,14 @@ public class Frame
             }
         });
 
-        Faces.AddRange(new[]
-        {
-            new Face { Vertices = new List<Id> { 0, 1, 2, 3 } }
-        });
+        AddFace(new Face { Vertices = new List<Id> { 0, 1, 2, 3 } });
     }
 
     public void SplitFace(Face face, Face faceL, Face faceR)
     {
         Faces.Remove(face);
-        Faces.Add(faceL);
-        Faces.Add(faceR);
+        AddFace(faceL);
+        AddFace(faceR);
     }
 
     public void AddEdge(Edge edge)

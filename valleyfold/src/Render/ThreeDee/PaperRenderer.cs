@@ -34,7 +34,7 @@ public partial class PaperRenderer : Node3D
             frame3d.Vertices.Count == frame.Vertices.Count)
         {
             var vertexPoints = frame3d.Vertices.Select(v => v.Coord).ToList();
-            FaceRendering.RenderFaces(frame.Faces, vertexPoints);
+            FaceRendering.RenderFaces(frame.Faces, vertexPoints, frame3d);
             EdgeRendering.Render(frame.Edges, vertexPoints);
             VertexRendering.Render(frame3d.Vertices);
         }
@@ -45,6 +45,8 @@ public partial class PaperRenderer : Node3D
     /// full <see cref="ChangeRecord.TargetAngle"/>, plus the in-flight fold (if
     /// any) at <see cref="FoldAnimator.EasedProgress"/> times its target angle.
     /// Replay model — see GDD decision Q12 (kept for M-1, replaced at M0).
+    /// Per ADR-0002, also resets the per-face layer map at the start and bumps
+    /// layers per replayed fold (via <see cref="LayerUpdater.ApplyLayerUpdate"/>).
     /// </summary>
     private static void RebuildFrame3D()
     {
@@ -54,6 +56,7 @@ public partial class PaperRenderer : Node3D
         var inFlight = animator.InFlightChange;
 
         frame3d.ImportFromFrame(frame);
+        frame3d.ResetLayers(frame);
 
         var changes = Statics.ChangeMemory.Changes;
         foreach (var change in changes)
@@ -76,11 +79,11 @@ public partial class PaperRenderer : Node3D
         var start = change.FoldLineA;
         var end = change.FoldLineB;
 
-        // Anchor: any face containing the picked vertex. Per ADR-0001, all
-        // faces incident to the picked vertex lie on the same side of the new
-        // crease, so the choice of anchor among them does not affect the
-        // reachable set.
-        var anchor = frame.Faces.FirstOrDefault(f => f.Vertices.Contains(change.PickedVertex));
+        // Anchor: per ADR-0002 prefer the picked face when set; fall back to
+        // ADR-0001's "any face containing PickedVertex" rule for legacy
+        // records (PickedFace == -1) and for the case where the picked face
+        // has since been split out of existence.
+        var anchor = FoldAnchorResolver.Resolve(frame, change);
         if (anchor is null) return;
 
         // The participating face set is everything reachable from the anchor
@@ -102,5 +105,9 @@ public partial class PaperRenderer : Node3D
             var vertex = frame3d.Vertices[vertexId].Coord;
             frame3d.Vertices[vertexId].Coord = FoldMath.RotatedAroundEdge(start, end, vertex, angle);
         }
+
+        // Layer-update rule (ADR-0002 §"Layer-update rule on fold"). Runs
+        // post-rotation against the freshly-rotated frame3d.Vertices.
+        LayerUpdater.ApplyLayerUpdate(frame, frame3d, participatingFaces);
     }
 }

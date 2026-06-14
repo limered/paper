@@ -120,10 +120,10 @@ public class FaceQueriesTests
                 new Edge { Vertices = new Id[] { 8, 5 }, Id = 11, Assignment = Assignment.V }
             });
 
-            _bottomLeft = new Face { Vertices = new List<Id> { 0, 4, 8, 7 } };
-            _bottomRight = new Face { Vertices = new List<Id> { 4, 1, 5, 8 } };
-            _topRight = new Face { Vertices = new List<Id> { 8, 5, 2, 6 } };
-            _topLeft = new Face { Vertices = new List<Id> { 7, 8, 6, 3 } };
+            _bottomLeft = new Face { Id = 0, Vertices = new List<Id> { 0, 4, 8, 7 } };
+            _bottomRight = new Face { Id = 1, Vertices = new List<Id> { 4, 1, 5, 8 } };
+            _topRight = new Face { Id = 2, Vertices = new List<Id> { 8, 5, 2, 6 } };
+            _topLeft = new Face { Id = 3, Vertices = new List<Id> { 7, 8, 6, 3 } };
 
             _frame.Faces.AddRange(new[] { _bottomLeft, _bottomRight, _topRight, _topLeft });
         }
@@ -188,6 +188,90 @@ public class FaceQueriesTests
                 Assert.True(fromFirst.SetEquals(fromSecond));
                 Assert.Equal(2, fromFirst.Count);
             }
+        }
+    }
+
+    public class FacesOverlap : FaceQueriesTests
+    {
+        // ADR-0002 requires positive-area intersection — edge- and vertex-
+        // touches must NOT count as overlap. These tests pin that contract.
+
+        private static Frame EmptyFrame() => new();
+
+        private static IReadOnlyList<Vector3> Positions(params (float x, float z)[] xs)
+        {
+            var list = new List<Vector3>(xs.Length);
+            foreach (var (x, z) in xs)
+                list.Add(new Vector3(x, 0f, z));
+            return list;
+        }
+
+        [Fact]
+        public void TwoOverlappingSquares_ReturnsTrue()
+        {
+            // Square (0,0)..(1,1) and square (0.5,0.5)..(1.5,1.5) share a
+            // 0.5x0.5 area in their interiors.
+            var positions = Positions(
+                (0, 0), (1, 0), (1, 1), (0, 1),
+                (0.5f, 0.5f), (1.5f, 0.5f), (1.5f, 1.5f), (0.5f, 1.5f));
+            var a = new Face { Id = 0, Vertices = new List<Id> { 0, 1, 2, 3 } };
+            var b = new Face { Id = 1, Vertices = new List<Id> { 4, 5, 6, 7 } };
+
+            Assert.True(FaceQueries.FacesOverlap(EmptyFrame(), a, b, positions));
+        }
+
+        [Fact]
+        public void TouchingAlongAnEdge_ReturnsFalse()
+        {
+            // Squares (0,0)..(1,1) and (1,0)..(2,1) share the edge x=1 but
+            // no positive-area interior.
+            var positions = Positions(
+                (0, 0), (1, 0), (1, 1), (0, 1),
+                (1, 0), (2, 0), (2, 1), (1, 1));
+            var a = new Face { Id = 0, Vertices = new List<Id> { 0, 1, 2, 3 } };
+            var b = new Face { Id = 1, Vertices = new List<Id> { 4, 5, 6, 7 } };
+
+            Assert.False(FaceQueries.FacesOverlap(EmptyFrame(), a, b, positions));
+        }
+
+        [Fact]
+        public void TouchingAtASingleVertex_ReturnsFalse()
+        {
+            // Squares (0,0)..(1,1) and (1,1)..(2,2) share only the corner
+            // (1,1).
+            var positions = Positions(
+                (0, 0), (1, 0), (1, 1), (0, 1),
+                (1, 1), (2, 1), (2, 2), (1, 2));
+            var a = new Face { Id = 0, Vertices = new List<Id> { 0, 1, 2, 3 } };
+            var b = new Face { Id = 1, Vertices = new List<Id> { 4, 5, 6, 7 } };
+
+            Assert.False(FaceQueries.FacesOverlap(EmptyFrame(), a, b, positions));
+        }
+
+        [Fact]
+        public void DisjointSquares_ReturnsFalse()
+        {
+            // Squares (0,0)..(1,1) and (2,2)..(3,3) — fully separated.
+            var positions = Positions(
+                (0, 0), (1, 0), (1, 1), (0, 1),
+                (2, 2), (3, 2), (3, 3), (2, 3));
+            var a = new Face { Id = 0, Vertices = new List<Id> { 0, 1, 2, 3 } };
+            var b = new Face { Id = 1, Vertices = new List<Id> { 4, 5, 6, 7 } };
+
+            Assert.False(FaceQueries.FacesOverlap(EmptyFrame(), a, b, positions));
+        }
+
+        [Fact]
+        public void FullContainment_ReturnsTrue()
+        {
+            // Square (0.25,0.25)..(0.75,0.75) is fully inside (0,0)..(1,1).
+            var positions = Positions(
+                (0, 0), (1, 0), (1, 1), (0, 1),
+                (0.25f, 0.25f), (0.75f, 0.25f), (0.75f, 0.75f), (0.25f, 0.75f));
+            var outer = new Face { Id = 0, Vertices = new List<Id> { 0, 1, 2, 3 } };
+            var inner = new Face { Id = 1, Vertices = new List<Id> { 4, 5, 6, 7 } };
+
+            Assert.True(FaceQueries.FacesOverlap(EmptyFrame(), outer, inner, positions));
         }
     }
 }

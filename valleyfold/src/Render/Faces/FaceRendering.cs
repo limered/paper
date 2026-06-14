@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Godot.Collections;
+using valleyfold.ThreeDeeModels;
 using valleyfold.TwoDeeModels;
 using valleyfold.Ui.Events;
 using valleyfold.Utils;
@@ -10,6 +11,13 @@ namespace valleyfold.Render.Faces;
 
 public partial class FaceRendering : Node3D
 {
+    /// <summary>
+    /// Per-layer Z-nudge for coplanar disambiguation. Per ADR-0002
+    /// §"Consequences": small enough to be invisible, large enough to win
+    /// against float-precision z-fighting between stacked faces.
+    /// </summary>
+    private const float LayerEpsilon = 1e-4f;
+
     private PackedScene _faceScene = ResourceLoader.Load<PackedScene>("res://scenes/face.tscn");
 
     public override void _Ready()
@@ -25,7 +33,7 @@ public partial class FaceRendering : Node3D
         }
     }
 
-    public void RenderFaces(List<Face> faces, List<Vector3> vertices)
+    public void RenderFaces(List<Face> faces, List<Vector3> vertices, Frame3D frame3d)
     {
         var faceCount = faces.Count;
         if (GetChildCount() < faceCount) AddOrShowFaces(faces);
@@ -35,8 +43,9 @@ public partial class FaceRendering : Node3D
         {
             var face = faces[i];
 
+            var nudge = Vector3.Up * (frame3d.LayerOf(face) * LayerEpsilon);
             var faceVertexes = new List<Vector3>();
-            faceVertexes.AddRange(face.Vertices.Select(v => vertices[v]));
+            faceVertexes.AddRange(face.Vertices.Select(v => vertices[v] + nudge));
 
             var faceNormals = faceVertexes
                 .Select(_ => Vector3.Up)
