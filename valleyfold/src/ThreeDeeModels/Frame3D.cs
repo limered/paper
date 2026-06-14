@@ -94,6 +94,13 @@ public class Frame3D
             _layers[face.Id] = LayerOf(face) + bump;
     }
 
+    /// <summary>
+    /// Writes <paramref name="layer"/> to <paramref name="face"/>'s entry in
+    /// the layer map. Used by <c>LayerUpdater</c> (ADR-0003) where each moved
+    /// face gets a per-face new layer (not a uniform bump).
+    /// </summary>
+    public void SetLayer(Face face, int layer) => _layers[face.Id] = layer;
+
     public void ImportFromFrame(Frame frame)
     {
         Vertices.Clear();

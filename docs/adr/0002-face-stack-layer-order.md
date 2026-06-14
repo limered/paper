@@ -1,6 +1,6 @@
 # ADR-0002 — Face-stack layer order and face-based picking
 
-Status: Accepted
+Status: Accepted (§"Layer-update rule on fold" superseded by ADR-0003)
 Date: 2026-06-14
 
 ## Context

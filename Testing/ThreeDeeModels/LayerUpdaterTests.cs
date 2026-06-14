@@ -7,12 +7,12 @@ namespace Testing.ThreeDeeModels;
 
 public class LayerUpdaterTests
 {
-    // ADR-0002 §"Layer-update rule on fold":
-    //   bump = max(layer of any stationary face that overlaps any moved face) + 1
-    //          - min(layer of any moved face)
+    // ADR-0003 (supersedes ADR-0002 §"Layer-update rule on fold"):
+    //   newLayer(f) = maxStationary + 1 + (maxMoved - layers[f])
     //
-    // No overlap → no-op. Empty moved set → no-op. Relative ordering within
-    // the moved set is preserved (we add the same bump to every moved layer).
+    // Inverts the relative ordering within the moving stack — what a 180°
+    // valley fold physically does. No overlap → no-op. Empty moved set →
+    // no-op.
 
     private static Vertex3D V(float x, float z) =>
         new Vertex3D { Coord = new Vector3(x, 0f, z) };
@@ -138,12 +138,17 @@ public class LayerUpdaterTests
     }
 
     [Fact]
-    public void MovingSetPreservesRelativeOrdering()
+    public void MovingSetInvertsRelativeOrdering()
     {
-        // Two moving faces, M1 at layer 0 and M2 at layer 1 (M2 on top of M1),
-        // both overlapping a stationary S at layer 0. bump = 0 + 1 - 0 = 1.
-        // M1 → 1, M2 → 2: the moved stack stays in the same internal order,
-        // just shifted above the stationary face.
+        // Per ADR-0003 (supersedes ADR-0002's preserve-order rule): a
+        // valley fold's 180° rotation flips up/down within the moving
+        // stack. Two moving faces M1 (layer 0) and M2 (layer 1, on top
+        // of M1) overlap one stationary S at layer 0. Per the rule
+        // newLayer(f) = maxStationary + 1 + (maxMoved - layers[f]),
+        // with maxStationary=0 and maxMoved=1:
+        //   M1: 0 + 1 + (1 - 0) = 2  (was on bottom of M, now on top)
+        //   M2: 0 + 1 + (1 - 1) = 1  (was on top of M, now just above S)
+        // This is the fix for the poke_through_bug screenshots.
         var (frame, frame3d, faces) = BuildScene(
             new List<Vertex3D>
             {
@@ -163,8 +168,8 @@ public class LayerUpdaterTests
         LayerUpdater.ApplyLayerUpdate(frame, frame3d, new[] { faces[1], faces[2] });
 
         Assert.Equal(0, frame3d.LayerOf(faces[0]));
-        Assert.Equal(1, frame3d.LayerOf(faces[1]));
-        Assert.Equal(2, frame3d.LayerOf(faces[2]));
+        Assert.Equal(2, frame3d.LayerOf(faces[1])); // M1 inverted to top
+        Assert.Equal(1, frame3d.LayerOf(faces[2])); // M2 inverted to just above S
     }
 
     [Fact]
