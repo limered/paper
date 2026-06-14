@@ -8,7 +8,8 @@ namespace valleyfold.ChangeTracking;
 public enum ChangeType
 {
     ValleyFold,
-    Unfold
+    Unfold,
+    MountainFold
 }
 
 public record ChangeRecord

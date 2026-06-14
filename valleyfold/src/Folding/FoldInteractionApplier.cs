@@ -20,6 +20,18 @@ public class FoldInteractionApplier
     /// </summary>
     [Obsolete("Use ApplyValleyFold(Face, Edge) instead — see ADR-0002. Removal tracked by issue 05-ghost-crease-click.")]
     public static void ApplyVertexValleyFold(Id startVertex, Vector3 endPoint)
+        => ApplyVertexFold(startVertex, endPoint, ChangeType.ValleyFold);
+
+    /// <summary>
+    /// Legacy vertex-drag entry point for mountain folds. Same caveats as
+    /// <see cref="ApplyVertexValleyFold"/> — see ADR-0002 and issue
+    /// 05-ghost-crease-click.
+    /// </summary>
+    [Obsolete("Use ApplyMountainFold(Face, Edge) instead — see ADR-0002. Removal tracked by issue 05-ghost-crease-click.")]
+    public static void ApplyVertexMountainFold(Id startVertex, Vector3 endPoint)
+        => ApplyVertexFold(startVertex, endPoint, ChangeType.MountainFold);
+
+    private static void ApplyVertexFold(Id startVertex, Vector3 endPoint, ChangeType changeType)
     {
         if (Statics.Frame == null) return;
         if (Statics.FoldAnimator.IsAnimating) return;
@@ -78,13 +90,15 @@ public class FoldInteractionApplier
                     continue; // already existing edge
 
                 // ToDo: use different assignments depending on face up direction
-                var addedEdge = new VertexToVertexFold(vertexId, otherVertexId, Assignment.V).Apply(frame);
+                var creaseAssignment = changeType == ChangeType.MountainFold ? Assignment.M : Assignment.V;
+                var addedEdge = new VertexToVertexFold(vertexId, otherVertexId, creaseAssignment).Apply(frame);
                 addedEdges.Add(addedEdge);
             }
         }
 
         var changeRecord = new ChangeRecord
         {
+            ChangeType = changeType,
             PickedVertex = startVertex,
             FoldLineA = lineA,
             FoldLineB = lineB,
@@ -112,6 +126,18 @@ public class FoldInteractionApplier
     /// the 3D fold axis (via <c>Frame3D.Vertices</c>) and the 2D crease line
     /// (its XZ projection).</param>
     public static void ApplyValleyFold(Face pickedFace, Edge ghostCrease)
+        => ApplyFaceFold(pickedFace, ghostCrease, ChangeType.ValleyFold);
+
+    /// <summary>
+    /// Mountain-fold counterpart to <see cref="ApplyValleyFold"/>. Uses the
+    /// same face-graph BFS and crease-split path; only the recorded
+    /// <see cref="ChangeRecord.ChangeType"/> differs. The renderer negates
+    /// the rotation angle internally (see <see cref="valleyfold.Render.ThreeDee.FoldRotation"/>).
+    /// </summary>
+    public static void ApplyMountainFold(Face pickedFace, Edge ghostCrease)
+        => ApplyFaceFold(pickedFace, ghostCrease, ChangeType.MountainFold);
+
+    private static void ApplyFaceFold(Face pickedFace, Edge ghostCrease, ChangeType changeType)
     {
         if (Statics.Frame == null) return;
         if (Statics.FoldAnimator.IsAnimating) return;
@@ -119,7 +145,7 @@ public class FoldInteractionApplier
         var frame = Statics.Frame;
         var frame3d = Statics.Frame3d;
 
-        var change = BuildValleyFoldChange(frame, frame3d, pickedFace, ghostCrease);
+        var change = BuildFoldChange(frame, frame3d, pickedFace, ghostCrease, changeType);
         if (change == null) return;
 
         Statics.ChangeMemory.AddChange(change);
@@ -140,6 +166,31 @@ public class FoldInteractionApplier
         Frame3D frame3d,
         Face pickedFace,
         Edge ghostCrease)
+        => BuildFoldChange(frame, frame3d, pickedFace, ghostCrease, ChangeType.ValleyFold);
+
+    /// <summary>
+    /// Mountain-fold counterpart to <see cref="BuildValleyFoldChange"/>.
+    /// Geometrically identical (same crease, same participating-face BFS,
+    /// same edge splits, same added crease edges, same <see cref="ChangeRecord.TargetAngle"/>);
+    /// only <see cref="ChangeRecord.ChangeType"/> differs. The renderer
+    /// (<see cref="valleyfold.Render.ThreeDee.PaperRenderer"/>) negates the
+    /// rotation angle internally for <see cref="ChangeType.MountainFold"/>,
+    /// so a mountain fold and a valley fold of the same crease land their
+    /// moved vertices as mirror images across the page plane.
+    /// </summary>
+    public static ChangeRecord BuildMountainFoldChange(
+        Frame frame,
+        Frame3D frame3d,
+        Face pickedFace,
+        Edge ghostCrease)
+        => BuildFoldChange(frame, frame3d, pickedFace, ghostCrease, ChangeType.MountainFold);
+
+    private static ChangeRecord BuildFoldChange(
+        Frame frame,
+        Frame3D frame3d,
+        Face pickedFace,
+        Edge ghostCrease,
+        ChangeType changeType)
     {
         var lineA = frame3d.Vertices[ghostCrease.Vertices[0]].Coord;
         var lineB = frame3d.Vertices[ghostCrease.Vertices[1]].Coord;
@@ -219,7 +270,8 @@ public class FoldInteractionApplier
                 if (frame.Edges.Any(e =>
                         e.Vertices.Contains(vertexId) && e.Vertices.Contains(otherVertexId)))
                     continue;
-                var addedEdge = new VertexToVertexFold(vertexId, otherVertexId, Assignment.V).Apply(frame);
+                var creaseAssignment = changeType == ChangeType.MountainFold ? Assignment.M : Assignment.V;
+                var addedEdge = new VertexToVertexFold(vertexId, otherVertexId, creaseAssignment).Apply(frame);
                 addedEdges.Add(addedEdge);
             }
         }
@@ -233,6 +285,7 @@ public class FoldInteractionApplier
 
         return new ChangeRecord
         {
+            ChangeType = changeType,
             PickedFace = pickedFace.Id,
             PickedVertex = pickedVertex,
             FoldLineA = lineA,

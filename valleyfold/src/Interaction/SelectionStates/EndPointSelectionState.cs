@@ -2,6 +2,7 @@ using Godot;
 using valleyfold.Folding;
 using valleyfold.FrameModifications;
 using valleyfold.ThreeDeeModels;
+using valleyfold.TwoDeeModels;
 
 namespace valleyfold.Interaction.SelectionStates;
 
@@ -42,7 +43,10 @@ public class EndPointSelectionState : ISelectionState
     private static void ConfirmFoldInteraction(SelectionContext ctx)
     {
         if (ctx.PickedVertex == -1) return;
-        FoldInteractionApplier.ApplyVertexValleyFold(ctx.PickedVertex, ctx.TargetPosition);
+        if (ctx.FoldMode == Assignment.M)
+            FoldInteractionApplier.ApplyVertexMountainFold(ctx.PickedVertex, ctx.TargetPosition);
+        else
+            FoldInteractionApplier.ApplyVertexValleyFold(ctx.PickedVertex, ctx.TargetPosition);
         ctx.PreviewLine?.ChangeVisibility(false);
         ctx.PreviewLine?.Draw();
     }

@@ -17,6 +17,9 @@ public partial class GameInterface : Control
         var valleyfoldButton = GetNode<Button>("Sidepane/valleyfold");
         valleyfoldButton.Pressed += ValleyfoldButtonOnPressed;
 
+        var mountainfoldButton = GetNode<Button>("Sidepane/mountainfold");
+        mountainfoldButton.Pressed += MountainfoldButtonOnPressed;
+
         var unspecifiedButton = GetNode<Button>("Sidepane/unfold");
         unspecifiedButton.Pressed += UnspecifiedButtonOnPressed;
 
@@ -52,5 +55,10 @@ public partial class GameInterface : Control
     private static void ValleyfoldButtonOnPressed()
     {
         EventBus.Emit(new FoldModeChange { NextFoldMode = Assignment.V });
+    }
+
+    private static void MountainfoldButtonOnPressed()
+    {
+        EventBus.Emit(new FoldModeChange { NextFoldMode = Assignment.M });
     }
 }

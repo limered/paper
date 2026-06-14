@@ -62,11 +62,12 @@ public partial class PaperRenderer : Node3D
         foreach (var change in changes)
         {
             if (change.Unfolded ||
-                change.ChangeType != ChangeType.ValleyFold) continue;
+                change.ChangeType is not (ChangeType.ValleyFold or ChangeType.MountainFold)) continue;
 
-            var angle = ReferenceEquals(change, inFlight)
+            var baseAngle = ReferenceEquals(change, inFlight)
                 ? animator.EasedProgress * change.TargetAngle
                 : change.TargetAngle;
+            var angle = FoldRotation.SignedAngle(change, baseAngle);
 
             ApplyFoldRotation(change, angle);
         }

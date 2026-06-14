@@ -28,6 +28,7 @@ public partial class ThreeDeePaperSelector : Node3D
     
     private void OnFoldModeChange(FoldModeChange msg)
     {
+        _selectionContext.FoldMode = msg.NextFoldMode;
         _currentSelectionState =
             msg.NextFoldMode == Assignment.F 
             ? new EdgeSelectionState() 
