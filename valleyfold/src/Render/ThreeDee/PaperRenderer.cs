@@ -107,8 +107,9 @@ public partial class PaperRenderer : Node3D
             frame3d.Vertices[vertexId].Coord = FoldMath.RotatedAroundEdge(start, end, vertex, angle);
         }
 
-        // Layer-update rule (ADR-0002 §"Layer-update rule on fold"). Runs
-        // post-rotation against the freshly-rotated frame3d.Vertices.
-        LayerUpdater.ApplyLayerUpdate(frame, frame3d, participatingFaces);
+        // Layer-update rule (ADR-0002 §"Layer-update rule on fold", extended
+        // for mountain folds per ADR-0004). Runs post-rotation against the
+        // freshly-rotated frame3d.Vertices.
+        LayerUpdater.ApplyLayerUpdate(frame, frame3d, participatingFaces, change.ChangeType);
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Godot;
+using valleyfold.ChangeTracking;
 using valleyfold.ThreeDeeModels;
 using valleyfold.TwoDeeModels;
 
@@ -198,5 +199,69 @@ public class LayerUpdaterTests
         Assert.Equal(0, frame3d.LayerOf(faces[0]));
         Assert.Equal(0, frame3d.LayerOf(faces[1]));
         Assert.Equal(0, frame3d.LayerOf(faces[2]));
+    }
+
+    // Mountain folds rotate in the opposite direction to valley folds, so
+    // the moved stack lands BELOW the lowest overlapping stationary face
+    // instead of above the highest. The 180° rotation still inverts the
+    // moved-stack ordering internally — that's a pure geometric
+    // consequence of any half-turn, independent of direction. Rule
+    // (mirror of ADR-0003):
+    //   minStationary = min(layers[s] for s in overlaps)
+    //   minMoved      = min(layers[f] for f in M)
+    //   newLayer(f)   = minStationary - 1 - (layers[f] - minMoved)
+    // See .scratch/m0-boat-in-windowsill/issues/10-mountain-fold-layer-ordering.md.
+
+    [Fact]
+    public void MountainFold_SingleOverlap_DropsMovingBelowStationary()
+    {
+        var (frame, frame3d, faces) = BuildScene(
+            new List<Vertex3D>
+            {
+                V(0, 0), V(1, 0), V(1, 1), V(0, 1),
+                V(0.25f, 0.25f), V(0.75f, 0.25f), V(0.75f, 0.75f), V(0.25f, 0.75f)
+            },
+            new List<List<Id>>
+            {
+                new List<Id> { 0, 1, 2, 3 },
+                new List<Id> { 4, 5, 6, 7 }
+            });
+
+        LayerUpdater.ApplyLayerUpdate(frame, frame3d, new[] { faces[1] }, ChangeType.MountainFold);
+
+        Assert.Equal(0, frame3d.LayerOf(faces[0]));
+        Assert.Equal(-1, frame3d.LayerOf(faces[1]));
+    }
+
+    [Fact]
+    public void MountainFold_MovingSetInverts_AndLandsBelowStationary()
+    {
+        // Mirror of MovingSetInvertsRelativeOrdering. Stationary S at 0,
+        // M1 at 0 (bottom of moving stack), M2 at 1 (top of moving stack).
+        // After the mountain rule (minStationary=0, minMoved=0):
+        //   M1: 0 - 1 - (0 - 0) = -1   (was on bottom, now just below S)
+        //   M2: 0 - 1 - (1 - 0) = -2   (was on top, now on bottom)
+        var (frame, frame3d, faces) = BuildScene(
+            new List<Vertex3D>
+            {
+                V(0, 0), V(1, 0), V(1, 1), V(0, 1),       // stationary
+                V(0, 0), V(1, 0), V(1, 1), V(0, 1),       // M1
+                V(0.25f, 0.25f), V(0.75f, 0.25f),         // M2 (small, inside)
+                V(0.75f, 0.75f), V(0.25f, 0.75f)
+            },
+            new List<List<Id>>
+            {
+                new List<Id> { 0, 1, 2, 3 },
+                new List<Id> { 4, 5, 6, 7 },
+                new List<Id> { 8, 9, 10, 11 }
+            });
+        frame3d.BumpLayers(new[] { faces[2] }, 1); // M2 starts at layer 1
+
+        LayerUpdater.ApplyLayerUpdate(
+            frame, frame3d, new[] { faces[1], faces[2] }, ChangeType.MountainFold);
+
+        Assert.Equal(0, frame3d.LayerOf(faces[0]));
+        Assert.Equal(-1, frame3d.LayerOf(faces[1])); // M1 inverted to just below S
+        Assert.Equal(-2, frame3d.LayerOf(faces[2])); // M2 inverted to bottom
     }
 }
