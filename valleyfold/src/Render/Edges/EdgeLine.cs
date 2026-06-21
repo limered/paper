@@ -9,24 +9,27 @@ public partial class EdgeLine : MeshInstance3D
     private readonly List<Vector3> _start = new();
 
     private ImmediateMesh _lineMesh;
-    private ShaderMaterial _shaderMaterial;
+    // Front: depth_test enabled — gets occluded by paper. Back: depth_test
+    // disabled, render_priority -1 — drawn first, peeks through where front
+    // got occluded. Selected: always-on-top single pass, bypasses the
+    // two-pass occlusion cue (Q4.1).
+    private ShaderMaterial _frontMaterial;
+    private ShaderMaterial _backMaterial;
+    private ShaderMaterial _selectedMaterial;
     private float _width = 0.01f;
-
+    private bool _selected;
 
     public override void _Ready()
     {
         _lineMesh = new ImmediateMesh();
         Mesh = _lineMesh;
 
-        _shaderMaterial = new ShaderMaterial();
-        _shaderMaterial.Shader = ResourceLoader.Load<Shader>("res://src/Render/Edges/edgeline.gdshader");
-        MaterialOverride = _shaderMaterial;
-    }
+        var front = ResourceLoader.Load<Shader>("res://src/Render/Edges/edgeline.gdshader");
+        var back = ResourceLoader.Load<Shader>("res://src/Render/Edges/edgeline_back.gdshader");
 
-    public void LinePositions(Vector3 start, Vector3 end)
-    {
-        ClearPositions();
-        AddPositions(start, end);
+        _frontMaterial = new ShaderMaterial { Shader = front };
+        _backMaterial = new ShaderMaterial { Shader = back, RenderPriority = -1 };
+        _selectedMaterial = new ShaderMaterial { Shader = back, RenderPriority = 1 };
     }
 
     public void AddPositions(Vector3 start, Vector3 end)
@@ -46,20 +49,38 @@ public partial class EdgeLine : MeshInstance3D
         _width = width;
     }
 
-    public void LineColor(Color color)
+    public void LineColors(Color front, Color back)
     {
-        _shaderMaterial.SetShaderParameter("line_color", color);
+        _frontMaterial.SetShaderParameter("line_color", front);
+        _backMaterial.SetShaderParameter("line_color", back);
+        _selectedMaterial.SetShaderParameter("line_color", front);
+    }
+
+    public void LineSelected(bool selected)
+    {
+        _selected = selected;
     }
 
     public void Draw()
     {
         _lineMesh.ClearSurfaces();
         // ImmediateMesh.SurfaceEnd crashes when no vertices were added.
-        // Callers may legitimately end up with zero positions (e.g. a
-        // border edge whose dash pattern produces nothing) — bail out.
         if (_start.Count == 0) return;
-        _lineMesh.SurfaceBegin(Mesh.PrimitiveType.Triangles);
 
+        if (_selected)
+        {
+            EmitSurface(_selectedMaterial);
+        }
+        else
+        {
+            EmitSurface(_frontMaterial);
+            EmitSurface(_backMaterial);
+        }
+    }
+
+    private void EmitSurface(Material material)
+    {
+        _lineMesh.SurfaceBegin(Mesh.PrimitiveType.Triangles, material);
         for (var i = 0; i < _start.Count; ++i)
         {
             var start = _start[i];

@@ -13,6 +13,7 @@ public partial class EdgeRendering : Node3D
 {
     private const float SelectedLineWidth = 0.02f;
     private const float DeselectedLineWidth = 0.005f;
+
     public override void _Ready()
     {
         EventBus.Register<ResetPaperEvent>(_ => Clear());
@@ -32,20 +33,12 @@ public partial class EdgeRendering : Node3D
         if(GetChildCount() < edgeCount) AddOrShowLines(edges);
         else if(GetChildCount() > edgeCount) HideLines(edges);
 
-        var topLayer = 0;
-        for (var i = 0; i < edgeCount; i++)
-        {
-            var l = frame3d.LayerOfEdge(edges[i]);
-            if (l > topLayer) topLayer = l;
-        }
-
         for (var i = 0; i < edgeCount; i++)
         {
             var edge = edges[i];
-            var layer = frame3d.LayerOfEdge(edge);
             // Edge nudges to the max layer of its incident faces, so the
             // crease between two layers renders attached to the topmost.
-            var nudge = Vector3.Up * (layer * Frame3D.LayerEpsilon);
+            var nudge = Vector3.Up * (frame3d.LayerOfEdge(edge) * Frame3D.LayerEpsilon);
             var start = vertices[edge.Vertices[0]] + nudge;
             var end = vertices[edge.Vertices[1]] + nudge;
 
@@ -54,7 +47,8 @@ public partial class EdgeRendering : Node3D
             foreach (var (s, e) in OrigamiDashPattern.BuildForAssignment(start, end, edge.Assignment))
                 child.AddPositions(s, e);
             child.LineWidth(edge.IsSelected ? SelectedLineWidth : DeselectedLineWidth);
-            child.LineColor(layer < topLayer ? Palette.BehindEdge : Palette.ForAssignment(edge.Assignment));
+            child.LineColors(Palette.BorderEdge, Palette.BehindEdge);
+            child.LineSelected(edge.IsSelected);
             child.Draw();
         }
     }
