@@ -21,4 +21,9 @@ public class Edge
     {
         return Assignment is Assignment.V or Assignment.M;
     }
+
+    public bool IsRefoldable()
+    {
+        return Assignment is Assignment.F;
+    }
 }

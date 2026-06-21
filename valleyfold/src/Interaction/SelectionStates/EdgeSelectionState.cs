@@ -2,7 +2,6 @@ using System.Linq;
 using Godot;
 using valleyfold.ChangeTracking;
 using valleyfold.FrameModifications;
-using valleyfold.Render.ThreeDee.Events;
 using valleyfold.TwoDeeModels;
 using valleyfold.Utils;
 
@@ -22,26 +21,30 @@ public class EdgeSelectionState : ISelectionState
     
     private static void ConfirmUnfoldInteraction(SelectionContext ctx)
     {
+        if (Statics.FoldAnimator.IsAnimating) return;
         if(ctx.HoveredEdgeIds == null || !ctx.HoveredEdgeIds.Any()) return;
         var edge = Statics.Frame.Edges[ctx.HoveredEdgeIds.First()];
-        var changeContainingEdge = Statics.ChangeMemory.ChangeContainingEdge(edge.Id);
-        if (changeContainingEdge is null) return;
-        
-        changeContainingEdge.Unfolded = true;
-        for (var i = 0; i < changeContainingEdge.AddedEdges.Count; i++)
-        {
-            var edgeToChange = Statics.Frame.Edges[changeContainingEdge.AddedEdges[i]];
-            edgeToChange.Assignment = Assignment.F;
-            edgeToChange.FoldAngle = 0f;
-        }
+        var change = Statics.ChangeMemory.ChangeContainingEdge(edge.Id);
+        if (change is null) return;
 
-        var newChange = new ChangeRecord
+        // Animate target → 0 on the in-flight change; flip Unfolded and
+        // reset edge assignments at completion so the renderer's skip
+        // condition lines up with the post-animation steady state.
+        Statics.FoldAnimator.Start(change, 1f, 0f, () =>
         {
-            ChangeType = ChangeType.Unfold,
-            Unfolded = true,
-        };
-        Statics.ChangeMemory.AddChange(newChange);
-        EventBus.Emit(new PaperFoldedEvent());
+            change.Unfolded = true;
+            for (var i = 0; i < change.AddedEdges.Count; i++)
+            {
+                var edgeToChange = Statics.Frame.Edges[change.AddedEdges[i]];
+                edgeToChange.Assignment = Assignment.F;
+                edgeToChange.FoldAngle = 0f;
+            }
+            Statics.ChangeMemory.AddChange(new ChangeRecord
+            {
+                ChangeType = ChangeType.Unfold,
+                Unfolded = true,
+            });
+        });
         ctx.HoveredEdgeIds = null;
     }
 

@@ -6,5 +6,6 @@ public enum Assignment
     M, // Mountain Fold
     V, // Valley Fold
     F, // Unfolded ( M/V than open)
-    U // Unspecified Fold
+    U, // Unspecified Fold
+    R // Refold mode sentinel — never stored on an Edge, only used as FoldModeChange.NextFoldMode
 }

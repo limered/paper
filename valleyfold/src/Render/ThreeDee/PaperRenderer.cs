@@ -67,10 +67,14 @@ public partial class PaperRenderer : Node3D
         var changes = Statics.ChangeMemory.Changes;
         foreach (var change in changes)
         {
-            if (change.Unfolded ||
+            var isInFlight = ReferenceEquals(change, inFlight);
+            // Skip unfolded changes — except the in-flight one, which is
+            // mid-animation (unfold ramping down, or refold ramping up
+            // before its Unfolded flag flips at completion).
+            if ((change.Unfolded && !isInFlight) ||
                 change.ChangeType is not (ChangeType.ValleyFold or ChangeType.MountainFold)) continue;
 
-            var baseAngle = ReferenceEquals(change, inFlight)
+            var baseAngle = isInFlight
                 ? animator.EasedProgress * change.TargetAngle
                 : change.TargetAngle;
             var angle = FoldRotation.SignedAngle(change, baseAngle);

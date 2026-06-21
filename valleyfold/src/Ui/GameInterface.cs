@@ -27,6 +27,9 @@ public partial class GameInterface : Control
         var unspecifiedButton = GetNode<Button>("Sidepane/unfold");
         unspecifiedButton.Pressed += UnspecifiedButtonOnPressed;
 
+        var refoldButton = GetNode<Button>("Sidepane/refold");
+        refoldButton.Pressed += RefoldButtonOnPressed;
+
         _activeFoldLabel = GetNode<Label>("Sidepane/active_fold_mode");
         _activeFoldLabel.Text = "Valleyfold";
         EventBus.Register<FoldModeChange>(MapFoldModeToText);
@@ -45,6 +48,9 @@ public partial class GameInterface : Control
             case Assignment.F:
                 _activeFoldLabel.Text = "Unfold";
                 break;
+            case Assignment.R:
+                _activeFoldLabel.Text = "Refold";
+                break;
             default:
                 _activeFoldLabel.Text = "Unspecified";
                 break;
@@ -54,6 +60,11 @@ public partial class GameInterface : Control
     private static void UnspecifiedButtonOnPressed()
     {
         EventBus.Emit(new FoldModeChange { NextFoldMode = Assignment.F });
+    }
+
+    private static void RefoldButtonOnPressed()
+    {
+        EventBus.Emit(new FoldModeChange { NextFoldMode = Assignment.R });
     }
 
     private static void ValleyfoldButtonOnPressed()

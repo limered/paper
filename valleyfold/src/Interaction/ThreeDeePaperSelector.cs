@@ -30,10 +30,12 @@ public partial class ThreeDeePaperSelector : Node3D
     private void OnFoldModeChange(FoldModeChange msg)
     {
         _selectionContext.FoldMode = msg.NextFoldMode;
-        _currentSelectionState =
-            msg.NextFoldMode == Assignment.F 
-            ? new EdgeSelectionState() 
-            : new StartPointSelectionState();
+        _currentSelectionState = msg.NextFoldMode switch
+        {
+            Assignment.F => new EdgeSelectionState(),
+            Assignment.R => new RefoldSelectionState(),
+            _ => new StartPointSelectionState(),
+        };
 
         Statics.Frame?.UnmarkEdges();
         Statics.Frame?.UnmarkVertices();

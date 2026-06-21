@@ -35,6 +35,15 @@ offset_bottom = 611.0
 mouse_default_cursor_shape = 2
 text = "F"
 
+[node name="refold" type="Button" parent="Sidepane"]
+layout_mode = 0
+offset_left = 84.0
+offset_top = 511.0
+offset_right = 138.0
+offset_bottom = 553.0
+mouse_default_cursor_shape = 2
+text = "R"
+
 [node name="mountainfold" type="Button" parent="Sidepane"]
 layout_mode = 0
 offset_left = 22.0

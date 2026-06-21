@@ -56,6 +56,32 @@ public class ChangeMemory
         return result.ToArray();
     }
 
+    // A change is refoldable only if every parent change it split is
+    // currently folded. Mirror of ChangesToUnfold: that one requires all
+    // children to be unfolded; this one requires all parents to still be
+    // folded, otherwise the edges this change relies on don't exist in
+    // the frame in the same shape.
+    public ChangeRecord[] ChangesToRefold()
+    {
+        var result = new List<ChangeRecord>();
+        for (var i = 0; i < _changes.Count; i++)
+        {
+            var c = _changes[i];
+            if (!c.Unfolded) continue;
+            if (c.AddedEdges.Count == 0) continue; // skip the synthetic Unfold marker
+            if (AllParentsFolded(i)) result.Add(c);
+        }
+        return result.ToArray();
+    }
+
+    private bool AllParentsFolded(int childIndex)
+    {
+        foreach (var parent in _changes)
+            if (parent.WasSplitBy.Contains(childIndex) && parent.Unfolded)
+                return false;
+        return true;
+    }
+
     private bool AllChildrenUnfolded(ChangeRecord change)
     {
         foreach (var child in change.WasSplitBy)
