@@ -31,9 +31,9 @@ transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75
 shadow_enabled = true
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=567556472]
-transform = Transform3D(-1, -8.742278e-08, -3.8213718e-15, 0, -4.37114e-08, 1, -8.742278e-08, 1, 4.37114e-08, 0.5, 1, 0.5)
+transform = Transform3D(-1, -8.742278e-08, -3.8213718e-15, 0, -4.37114e-08, 1, -8.742278e-08, 1, 4.37114e-08, 0.5, 2.397811, 0.5)
 current = true
-fov = 70.0
+fov = 35.1
 
 [node name="VertexRendering" type="Node3D" parent="." unique_id=1872846842]
 script = ExtResource("3_0tnsl")
