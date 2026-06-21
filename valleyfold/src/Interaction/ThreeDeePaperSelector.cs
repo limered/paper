@@ -22,6 +22,10 @@ public partial class ThreeDeePaperSelector : Node3D
         _selectionContext.Parent = this;
         _selectionContext.MousePosition = new MousePosition();
         _selectionContext.MousePosition.Init(MouseCollisionArea);
+        _selectionContext.Frame = Statics.Frame;
+        _selectionContext.Frame3d = Statics.Frame3d;
+        _selectionContext.FoldAnimator = Statics.FoldAnimator;
+        _selectionContext.ChangeMemory = Statics.ChangeMemory;
         _currentSelectionState = new StartPointSelectionState();
         
         EventBus.Register<FoldModeChange>(OnFoldModeChange);
@@ -46,6 +50,7 @@ public partial class ThreeDeePaperSelector : Node3D
         // While a guided template session owns input, freeform picking is
         // suppressed (issue 05).
         if (Statics.TemplateSession != null) return;
+        _selectionContext.Frame = Statics.Frame;
         _currentSelectionState = _currentSelectionState
             .OnInput(_selectionContext, @event);
     }
@@ -54,6 +59,7 @@ public partial class ThreeDeePaperSelector : Node3D
     {
         if (Statics.TemplateSession != null) return;
         if (Statics.Frame == null) return;
+        _selectionContext.Frame = Statics.Frame;
 
         // Force a Frame3D sync before reading it from the selection state.
         // Otherwise, on the tick after a fold completes, EdgeCommands.AddVertexToEdge

@@ -26,7 +26,7 @@ public class EndPointSelectionState : ISelectionState
 
     public ISelectionState OnProcess(SelectionContext ctx)
     {
-        var frame3d = Statics.Frame3d;
+        var frame3d = ctx.Frame3d;
 
         SnapToVertex(frame3d, ctx);
         UpdateFoldPreview(frame3d, ctx);
@@ -43,6 +43,8 @@ public class EndPointSelectionState : ISelectionState
     private static void ConfirmFoldInteraction(SelectionContext ctx)
     {
         if (ctx.PickedVertex == -1) return;
+        // FoldInteractionApplier still reads Statics directly — that's F1
+        // (collapse-fold-applier). Leaving it alone per the review.
         if (ctx.FoldMode == Assignment.M)
             FoldInteractionApplier.ApplyVertexMountainFold(ctx.PickedVertex, ctx.TargetPosition);
         else
@@ -54,7 +56,7 @@ public class EndPointSelectionState : ISelectionState
     private void SnapToVertex(Frame3D frame3d, SelectionContext ctx)
     {
         var nearestVertexId = VertexQueries.NearestVertexIdTo(
-            Statics.Frame3d, ctx.MousePosition.Current, ctx.Parent.SnapThreshold);
+            frame3d, ctx.MousePosition.Current, ctx.Parent.SnapThreshold);
         if (nearestVertexId == -1 || Input.IsKeyPressed(Key.Shift))
         {
             ctx.TargetPosition = ctx.MousePosition.Current;

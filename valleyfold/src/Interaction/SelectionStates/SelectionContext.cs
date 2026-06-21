@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using Godot;
+using valleyfold.ChangeTracking;
+using valleyfold.Folding;
+using valleyfold.ThreeDeeModels;
 using valleyfold.TwoDeeModels;
 
 namespace valleyfold.Interaction.SelectionStates;
@@ -12,6 +15,15 @@ public class SelectionContext
     public ThreeDeePaperSelector Parent { get; set; }
     public MousePosition MousePosition { get; set; }
     public Vector3 TargetPosition { get; set; }
+
+    // Collaborators — populated by ThreeDeePaperSelector from Statics in
+    // production; populated directly by xUnit in tests. The selection states
+    // read these instead of reaching into Statics, so the state machine is
+    // exercisable through this one seam (F6).
+    public Frame Frame { get; set; }
+    public Frame3D Frame3d { get; set; }
+    public FoldAnimator FoldAnimator { get; set; }
+    public ChangeMemory ChangeMemory { get; set; }
 
     /// <summary>
     /// Currently-selected fold direction. Driven by

@@ -21,25 +21,25 @@ public class EdgeSelectionState : ISelectionState
     
     private static void ConfirmUnfoldInteraction(SelectionContext ctx)
     {
-        if (Statics.FoldAnimator.IsAnimating) return;
+        if (ctx.FoldAnimator.IsAnimating) return;
         if(ctx.HoveredEdgeIds == null || !ctx.HoveredEdgeIds.Any()) return;
-        var edge = Statics.Frame.Edges[ctx.HoveredEdgeIds.First()];
-        var change = Statics.ChangeMemory.ChangeContainingEdge(edge.Id);
+        var edge = ctx.Frame.Edges[ctx.HoveredEdgeIds.First()];
+        var change = ctx.ChangeMemory.ChangeContainingEdge(edge.Id);
         if (change is null) return;
 
         // Animate target → 0 on the in-flight change; flip Unfolded and
         // reset edge assignments at completion so the renderer's skip
         // condition lines up with the post-animation steady state.
-        Statics.FoldAnimator.Start(change, 1f, 0f, () =>
+        ctx.FoldAnimator.Start(change, 1f, 0f, () =>
         {
             change.Unfolded = true;
             for (var i = 0; i < change.AddedEdges.Count; i++)
             {
-                var edgeToChange = Statics.Frame.Edges[change.AddedEdges[i]];
+                var edgeToChange = ctx.Frame.Edges[change.AddedEdges[i]];
                 edgeToChange.Assignment = Assignment.F;
                 edgeToChange.FoldAngle = 0f;
             }
-            Statics.ChangeMemory.AddChange(new ChangeRecord
+            ctx.ChangeMemory.AddChange(new ChangeRecord
             {
                 ChangeType = ChangeType.Unfold,
                 Unfolded = true,
@@ -50,38 +50,38 @@ public class EdgeSelectionState : ISelectionState
 
     public ISelectionState OnProcess(SelectionContext ctx)
     {
-        ShowLastFoldedEdges();
+        ShowLastFoldedEdges(ctx);
         HoverEdgeToUnfold(ctx);
         return this;
     }
     
     private static void HoverEdgeToUnfold(SelectionContext ctx)
     {
-        var frame3d = Statics.Frame3d;
+        var frame3d = ctx.Frame3d;
         
         var nearestEdges = EdgeQueries.NearestEdgesToPoint3d(frame3d, ctx.MousePosition.Current);
         if (!nearestEdges.Any()) return;
         var (_, edge) = EdgeQueries.NearestPointOnEdgeToPoint(frame3d, ctx.MousePosition.Current, nearestEdges);
-        if (!edge.IsUnfoldable() || !IsLastFolded(edge)) return;
+        if (!edge.IsUnfoldable() || !IsLastFolded(ctx, edge)) return;
         
-        var change = Statics.ChangeMemory.ChangeContainingEdge(edge.Id);
+        var change = ctx.ChangeMemory.ChangeContainingEdge(edge.Id);
         if(change is null) return;
 
         ctx.HoveredEdgeIds = change.AddedEdges;
     }
     
-    private static bool IsLastFolded(Edge edge)
+    private static bool IsLastFolded(SelectionContext ctx, Edge edge)
     {
-        var lastUnfolded = Statics.ChangeMemory.ChangesToUnfold();
+        var lastUnfolded = ctx.ChangeMemory.ChangesToUnfold();
         return lastUnfolded?.FirstOrDefault(cr => cr.AddedEdges.Contains(edge.Id)) is not null;
     }
     
-    private static void ShowLastFoldedEdges()
+    private static void ShowLastFoldedEdges(SelectionContext ctx)
     {
-        var frame = Statics.Frame;
+        var frame = ctx.Frame;
         frame.UnmarkEdges();
         
-        var lastFolded = Statics.ChangeMemory.ChangesToUnfold();
+        var lastFolded = ctx.ChangeMemory.ChangesToUnfold();
         if (lastFolded is null || lastFolded.Length == 0) return;
         foreach (var changeRecord in lastFolded)
         {

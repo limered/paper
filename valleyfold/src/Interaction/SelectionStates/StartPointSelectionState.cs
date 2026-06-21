@@ -33,8 +33,8 @@ public class StartPointSelectionState : ISelectionState
 
     public ISelectionState OnProcess(SelectionContext ctx)
     {
-        var frame = Statics.Frame;
-        var frame3d = Statics.Frame3d;
+        var frame = ctx.Frame;
+        var frame3d = ctx.Frame3d;
         
         frame.UnmarkVertices();
         
@@ -61,7 +61,7 @@ public class StartPointSelectionState : ISelectionState
         
         if(closestDistance > ctx.Parent.PickingThreshold) return -1;
         
-        Statics.Frame.Vertices[closestId].IsSelected = true;
+        ctx.Frame.Vertices[closestId].IsSelected = true;
         return closestId;
     }
 }
