@@ -1,5 +1,6 @@
 using Godot;
 using valleyfold.Render.ThreeDee.Events;
+using valleyfold.Templates;
 using valleyfold.TwoDeeModels;
 using valleyfold.Ui;
 using valleyfold.Ui.Events;
@@ -16,6 +17,9 @@ public partial class Game : Node
         Statics.Frame3d.ImportFromFrame(Statics.Frame);
 
         EventBus.Register<ResetPaperEvent>(_ => ResetPaper());
+
+        // F10 debug auto-play harness for the boat fold sequence (issue 04).
+        AddChild(new BoatAutoPlay());
     }
 
     private void ResetPaper()

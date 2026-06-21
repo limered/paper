@@ -1,12 +1,12 @@
-[gd_scene load_steps=12 format=3 uid="uid://c428s44dslmnn"]
+[gd_scene format=3 uid="uid://c428s44dslmnn"]
 
-[ext_resource type="Script" path="res://src/Game.cs" id="1_km5vh"]
-[ext_resource type="Script" path="res://src/Render/Vertices/VertexRendering.cs" id="3_0tnsl"]
-[ext_resource type="Script" path="res://src/Render/Edges/EdgeRendering.cs" id="4_u6g2v"]
-[ext_resource type="Script" path="res://src/Render/Faces/FaceRendering.cs" id="5_dvbkm"]
-[ext_resource type="Script" path="res://src/Interaction/ThreeDeePaperSelector.cs" id="5_glt47"]
+[ext_resource type="Script" uid="uid://bmb0gqo8eg4gk" path="res://src/Game.cs" id="1_km5vh"]
+[ext_resource type="Script" uid="uid://c8hc7do2od6qq" path="res://src/Render/Vertices/VertexRendering.cs" id="3_0tnsl"]
+[ext_resource type="Script" uid="uid://d1wpcojike4w6" path="res://src/Render/Edges/EdgeRendering.cs" id="4_u6g2v"]
+[ext_resource type="Script" uid="uid://nnuk26fv3rua" path="res://src/Render/Faces/FaceRendering.cs" id="5_dvbkm"]
+[ext_resource type="Script" uid="uid://b4bvrmydpwfnw" path="res://src/Interaction/ThreeDeePaperSelector.cs" id="5_glt47"]
 [ext_resource type="PackedScene" uid="uid://csalpbkhu034i" path="res://scenes/ingame.tscn" id="6_p3hbg"]
-[ext_resource type="Script" path="res://src/Render/ThreeDee/PaperRenderer.cs" id="7_j1jfc"]
+[ext_resource type="Script" uid="uid://tn15ltp8ayrt" path="res://src/Render/ThreeDee/PaperRenderer.cs" id="7_j1jfc"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_rmvhn"]
 size = Vector3(3.47156, 0.1, 3.00415)
@@ -23,53 +23,53 @@ material = SubResource("StandardMaterial3D_vpbyi")
 radius = 0.01
 height = 0.02
 
-[node name="Game" type="Node"]
+[node name="Game" type="Node" unique_id=1416393687]
 script = ExtResource("1_km5vh")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2137362917]
 transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
 shadow_enabled = true
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0.5, 1, 0.5)
+[node name="Camera3D" type="Camera3D" parent="." unique_id=567556472]
+transform = Transform3D(-1, -8.742278e-08, -3.8213718e-15, 0, -4.37114e-08, 1, -8.742278e-08, 1, 4.37114e-08, 0.5, 1, 0.5)
 current = true
 fov = 70.0
 
-[node name="VertexRendering" type="Node3D" parent="."]
+[node name="VertexRendering" type="Node3D" parent="." unique_id=1872846842]
 script = ExtResource("3_0tnsl")
 
-[node name="EdgeRendering" type="Node3D" parent="."]
+[node name="EdgeRendering" type="Node3D" parent="." unique_id=2084835605]
 script = ExtResource("4_u6g2v")
 
-[node name="FaceRendering" type="Node3D" parent="."]
+[node name="FaceRendering" type="Node3D" parent="." unique_id=1779557671]
 script = ExtResource("5_dvbkm")
 
-[node name="Interaction" type="Node3D" parent="." node_paths=PackedStringArray("MouseCollisionArea", "MouseMarker")]
+[node name="Interaction" type="Node3D" parent="." unique_id=1440449238 node_paths=PackedStringArray("MouseCollisionArea", "MouseMarker")]
 script = ExtResource("5_glt47")
 MouseCollisionArea = NodePath("Area3D")
 MouseMarker = NodePath("GhostVertex")
 PickingThreshold = 0.1
 
-[node name="Area3D" type="Area3D" parent="Interaction"]
+[node name="Area3D" type="Area3D" parent="Interaction" unique_id=1453324845]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Interaction/Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interaction/Area3D" unique_id=487633142]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25238, -0.0501204, 0.506226)
 shape = SubResource("BoxShape3D_rmvhn")
 
-[node name="GhostVertex" type="Node3D" parent="Interaction"]
+[node name="GhostVertex" type="Node3D" parent="Interaction" unique_id=2023590672]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Interaction/GhostVertex"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Interaction/GhostVertex" unique_id=273691070]
 mesh = SubResource("SphereMesh_juy70")
 
-[node name="FirstNewVertex" type="Node3D" parent="Interaction"]
+[node name="FirstNewVertex" type="Node3D" parent="Interaction" unique_id=1766669146]
 visible = false
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Interaction/FirstNewVertex"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Interaction/FirstNewVertex" unique_id=1866024038]
 mesh = SubResource("SphereMesh_u5yjp")
 
-[node name="ingame" parent="." instance=ExtResource("6_p3hbg")]
+[node name="ingame" parent="." unique_id=1160647786 instance=ExtResource("6_p3hbg")]
 
-[node name="ThreeDRenderer" type="Node3D" parent="." node_paths=PackedStringArray("EdgeRendering", "FaceRendering", "VertexRendering")]
+[node name="ThreeDRenderer" type="Node3D" parent="." unique_id=2120139468 node_paths=PackedStringArray("EdgeRendering", "FaceRendering", "VertexRendering")]
 script = ExtResource("7_j1jfc")
 EdgeRendering = NodePath("../EdgeRendering")
 FaceRendering = NodePath("../FaceRendering")
