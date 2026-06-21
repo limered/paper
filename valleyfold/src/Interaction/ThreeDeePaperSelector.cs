@@ -1,5 +1,6 @@
 using Godot;
 using valleyfold.Interaction.SelectionStates;
+using valleyfold.Render.ThreeDee;
 using valleyfold.TwoDeeModels;
 using valleyfold.Ui;
 using valleyfold.Utils;
@@ -47,7 +48,14 @@ public partial class ThreeDeePaperSelector : Node3D
     public override void _Process(double delta)
     {
         if (Statics.Frame == null) return;
-        
+
+        // Force a Frame3D sync before reading it from the selection state.
+        // Otherwise, on the tick after a fold completes, EdgeCommands.AddVertexToEdge
+        // has grown Frame.Vertices in _Input but Frame3D.Vertices is still
+        // one rebuild behind. Without this call, ordering depends on node
+        // _Process order (see refactor-frame3d-sync/01).
+        PaperRenderer.RebuildFrame3D();
+
         _currentSelectionState = _currentSelectionState
             .OnProcess(_selectionContext);
 

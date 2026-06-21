@@ -47,8 +47,14 @@ public partial class PaperRenderer : Node3D
     /// Replay model — see GDD decision Q12 (kept for M-1, replaced at M0).
     /// Per ADR-0002, also resets the per-face layer map at the start and bumps
     /// layers per replayed fold (via <see cref="LayerUpdater.ApplyLayerUpdate"/>).
+    ///
+    /// Public so pre-renderer <c>_Process</c> consumers of <see cref="Frame3D"/>
+    /// (e.g. <c>ThreeDeePaperSelector</c>) can force a sync before reading,
+    /// removing the node-order race that prompted the band-aid clamp in
+    /// <see cref="Frame3D.ImportMetadataFromFrame"/>. See
+    /// <c>.scratch/refactor-frame3d-sync/issues/01-frame3d-auto-sync.md</c>.
     /// </summary>
-    private static void RebuildFrame3D()
+    public static void RebuildFrame3D()
     {
         var frame = Statics.Frame;
         var frame3d = Statics.Frame3d;

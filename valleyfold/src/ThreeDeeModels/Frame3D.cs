@@ -111,16 +111,15 @@ public class Frame3D
     /// from <paramref name="frame"/>'s vertices into the matching entries in
     /// <see cref="Vertices"/>.
     ///
-    /// Tolerates a transient size mismatch where <c>frame.Vertices.Count &gt;
-    /// Vertices.Count</c>: this happens for one frame after a fold completes,
-    /// because <see cref="valleyfold.FrameModifications.EdgeCommands.AddVertexToEdge"/>
-    /// grows <see cref="Frame.Vertices"/> in the input handler while
-    /// <see cref="Vertices"/> is only rebuilt by
-    /// <c>PaperRenderer.RebuildFrame3D</c> on its own <c>_Process</c> tick.
-    /// If <c>ThreeDeePaperSelector._Process</c> runs first, the loop would
-    /// otherwise walk off the end of <see cref="Vertices"/>. Any new vertices
-    /// arrive with metadata already copied via <see cref="Vertex.To3D"/> on
-    /// the next renderer tick, so nothing is lost by skipping them here.
+    /// The size-mismatch clamp below is now a redundant safety net: as of
+    /// `refactor-frame3d-sync/01`, <c>ThreeDeePaperSelector._Process</c> calls
+    /// <c>PaperRenderer.RebuildFrame3D</c> before any selection state reads
+    /// <see cref="Frame3D"/>, so the prior frame-after-fold race
+    /// (<c>Frame.Vertices.Count &gt; Vertices.Count</c> for one tick) no
+    /// longer triggers in production. Kept because any future pre-renderer
+    /// consumer that forgets to sync first would otherwise reintroduce the
+    /// OOB this method was patched to tolerate
+    /// (see <c>Frame3DTests.ImportMetadataFromFrame</c>).
     /// </summary>
     public void ImportMetadataFromFrame(Frame frame)
     {
