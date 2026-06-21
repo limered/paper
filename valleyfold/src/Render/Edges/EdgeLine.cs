@@ -49,6 +49,10 @@ public partial class EdgeLine : MeshInstance3D
     public void Draw()
     {
         _lineMesh.ClearSurfaces();
+        // ImmediateMesh.SurfaceEnd crashes when no vertices were added.
+        // Callers may legitimately end up with zero positions (e.g. a
+        // border edge whose dash pattern produces nothing) — bail out.
+        if (_start.Count == 0) return;
         _lineMesh.SurfaceBegin(Mesh.PrimitiveType.Triangles);
 
         for (var i = 0; i < _start.Count; ++i)
