@@ -27,7 +27,6 @@ tonemap_mode = 2
 tonemap_exposure = 0.85
 ssao_enabled = true
 ssao_radius = 0.35
-ssao_intensity = 2.0
 ssao_detail = 1.5
 ssao_horizon = 0.2
 
@@ -53,7 +52,7 @@ script = ExtResource("1_km5vh")
 environment = SubResource("Environment_env1")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2137362917]
-transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+transform = Transform3D(-0.9975747, 0.068920486, 0.009739264, 0.007312954, -0.035369627, 0.99934757, 0.069219984, 0.99699503, 0.03477983, 0, 0, 0)
 light_energy = 1.2
 shadow_enabled = true
 shadow_blur = 1.2
@@ -62,7 +61,6 @@ shadow_blur = 1.2
 transform = Transform3D(0.866025, -0.25, -0.433013, 0, 0.866025, -0.5, 0.5, 0.433013, 0.75, 0, 0, 0)
 light_color = Color(0.78, 0.84, 0.95, 1)
 light_energy = 0.2
-shadow_enabled = false
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=567556472]
 transform = Transform3D(-1, -8.742278e-08, -3.8213718e-15, 0, -4.37114e-08, 1, -8.742278e-08, 1, 4.37114e-08, 0.5, 2.397811, 0.5)
