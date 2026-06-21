@@ -52,6 +52,17 @@ public partial class FaceRendering : Node3D
             else
                 faceIndices = new[] { 0, 1, 2 };
 
+            var child = GetChild<FaceNode>(i);
+            // TriangulatePolygon returns an empty array when the XZ
+            // projection is degenerate (e.g. a face rotated edge-on to the
+            // ground plane mid-fold). Skip the surface write — ArrayMesh
+            // rejects zero-index surfaces with index_array_len==NO_INDEX_ARRAY.
+            if (faceIndices.Length == 0)
+            {
+                child.SetEmpty();
+                continue;
+            }
+
             var surfaceArray = new Array();
             surfaceArray.Resize((int)Mesh.ArrayType.Max);
 
@@ -59,7 +70,6 @@ public partial class FaceRendering : Node3D
             surfaceArray[(int)Mesh.ArrayType.Normal] = faceNormals;
             surfaceArray[(int)Mesh.ArrayType.Index] = faceIndices;
 
-            var child = GetChild<FaceNode>(i);
             child.SetMesh(surfaceArray);
         }
     }
