@@ -41,12 +41,16 @@ public partial class ThreeDeePaperSelector : Node3D
 
     public override void _Input(InputEvent @event)
     {
+        // While a guided template session owns input, freeform picking is
+        // suppressed (issue 05).
+        if (Statics.TemplateSession != null) return;
         _currentSelectionState = _currentSelectionState
             .OnInput(_selectionContext, @event);
     }
 
     public override void _Process(double delta)
     {
+        if (Statics.TemplateSession != null) return;
         if (Statics.Frame == null) return;
 
         // Force a Frame3D sync before reading it from the selection state.

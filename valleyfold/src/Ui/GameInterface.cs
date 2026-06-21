@@ -1,4 +1,5 @@
 using Godot;
+using valleyfold.Templates.Events;
 using valleyfold.TwoDeeModels;
 using valleyfold.Ui.Events;
 using valleyfold.Utils;
@@ -13,6 +14,9 @@ public partial class GameInterface : Control
     {
         var resetButton = GetNode<Button>("Sidepane/reset");
         resetButton.Pressed += () => EventBus.Emit(new ResetPaperEvent());
+
+        var startButton = GetNode<Button>("Sidepane/start_template");
+        startButton.Pressed += () => EventBus.Emit(new StartTemplateSessionEvent());
 
         var valleyfoldButton = GetNode<Button>("Sidepane/valleyfold");
         valleyfoldButton.Pressed += ValleyfoldButtonOnPressed;
