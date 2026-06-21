@@ -46,6 +46,11 @@ public partial class EdgeLine : MeshInstance3D
         _width = width;
     }
 
+    public void LineColor(Color color)
+    {
+        _shaderMaterial.SetShaderParameter("line_color", color);
+    }
+
     public void Draw()
     {
         _lineMesh.ClearSurfaces();
