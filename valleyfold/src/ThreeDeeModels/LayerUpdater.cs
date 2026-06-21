@@ -9,7 +9,7 @@ namespace valleyfold.ThreeDeeModels;
 
 /// <summary>
 /// Implements the layer-update rule for replayed valley and mountain folds.
-/// Used by <c>PaperRenderer.RebuildFrame3D</c> once per replayed
+/// Used by <c>PaperRenderer.EnsureFresh</c> once per replayed
 /// <c>ChangeRecord</c>, after the rotation has been applied to
 /// <see cref="Frame3D.Vertices"/>.
 ///

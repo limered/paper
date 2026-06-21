@@ -90,9 +90,7 @@ public partial class TemplateSessionController : Node3D
 
     public override void _Process(double delta)
     {
-        // Keep Frame3D up to date so the ghost reads current 3D coords for
-        // recently-folded vertices (same race as ThreeDeePaperSelector).
-        if (Statics.TemplateSession != null) PaperRenderer.RebuildFrame3D();
+        if (Statics.TemplateSession != null) PaperRenderer.EnsureFresh();
         UpdateGhost();
     }
 

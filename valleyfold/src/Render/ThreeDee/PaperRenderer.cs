@@ -24,7 +24,7 @@ public partial class PaperRenderer : Node3D
 
         Statics.FoldAnimator.Tick(delta);
 
-        RebuildFrame3D();
+        EnsureFresh();
 
         var frame = Statics.Frame;
         var frame3d = Statics.Frame3d;
@@ -41,20 +41,21 @@ public partial class PaperRenderer : Node3D
     }
 
     /// <summary>
-    /// Rebuilds <see cref="Frame3D"/> by replaying all completed folds at their
-    /// full <see cref="ChangeRecord.TargetAngle"/>, plus the in-flight fold (if
-    /// any) at <see cref="FoldAnimator.EasedProgress"/> times its target angle.
-    /// Replay model — see GDD decision Q12 (kept for M-1, replaced at M0).
-    /// Per ADR-0002, also resets the per-face layer map at the start and bumps
-    /// layers per replayed fold (via <see cref="LayerUpdater.ApplyLayerUpdate"/>).
+    /// Brings <see cref="Frame3D"/> in sync with <see cref="Statics.Frame"/> +
+    /// <see cref="Statics.ChangeMemory"/> at the current animator progress:
+    /// imports vertex positions, resets layers, then replays every completed
+    /// fold at its <see cref="ChangeRecord.TargetAngle"/> plus the in-flight
+    /// fold at <see cref="FoldAnimator.EasedProgress"/>. Replay model — see
+    /// GDD decision Q12 (kept for M-1, replaced at M0). Per ADR-0002, also
+    /// runs <see cref="LayerUpdater.ApplyLayerUpdate"/> per replayed fold.
     ///
-    /// Public so pre-renderer <c>_Process</c> consumers of <see cref="Frame3D"/>
-    /// (e.g. <c>ThreeDeePaperSelector</c>) can force a sync before reading,
-    /// removing the node-order race that prompted the band-aid clamp in
-    /// <see cref="Frame3D.ImportMetadataFromFrame"/>. See
-    /// <c>.scratch/refactor-frame3d-sync/issues/01-frame3d-auto-sync.md</c>.
+    /// Owned by the renderer (called every <c>_Process</c>), but exposed for
+    /// callers that need a Frame3D read before the renderer ticks
+    /// (selection state, template controllers). Safe to call multiple times
+    /// per frame — it's a pure recompute, no accumulating state.
+    /// See <c>.scratch/refactor-frame3d-sync/issues/01-frame3d-auto-sync.md</c>.
     /// </summary>
-    public static void RebuildFrame3D()
+    public static void EnsureFresh()
     {
         var frame = Statics.Frame;
         var frame3d = Statics.Frame3d;

@@ -39,10 +39,7 @@ public partial class BoatAutoPlay : Node
             return;
         }
 
-        // Force a frame3d sync so the fold step reads up-to-date 3D coords
-        // for the previous fold (see ThreeDeePaperSelector for the same
-        // node-order race).
-        PaperRenderer.RebuildFrame3D();
+        PaperRenderer.EnsureFresh();
 
         if (Statics.FoldAnimator.IsAnimating) return;
 

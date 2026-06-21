@@ -61,12 +61,7 @@ public partial class ThreeDeePaperSelector : Node3D
         if (Statics.Frame == null) return;
         _selectionContext.Frame = Statics.Frame;
 
-        // Force a Frame3D sync before reading it from the selection state.
-        // Otherwise, on the tick after a fold completes, EdgeCommands.AddVertexToEdge
-        // has grown Frame.Vertices in _Input but Frame3D.Vertices is still
-        // one rebuild behind. Without this call, ordering depends on node
-        // _Process order (see refactor-frame3d-sync/01).
-        PaperRenderer.RebuildFrame3D();
+        PaperRenderer.EnsureFresh();
 
         _currentSelectionState = _currentSelectionState
             .OnProcess(_selectionContext);

@@ -12,7 +12,7 @@ public class Frame3D
     /// <summary>
     /// Per-face stacking order. Higher = higher in the stack.
     /// Rebuilt fresh on every <see cref="ResetLayers"/> (called once per
-    /// <c>PaperRenderer.RebuildFrame3D</c>), then bumped per replayed fold
+    /// <c>PaperRenderer.EnsureFresh</c>), then bumped per replayed fold
     /// per the rule in ADR-0002 §"Layer-update rule on fold". Keyed by
     /// <see cref="Face.Id"/> so face references can come and go (splits)
     /// without invalidating in-flight lookups within a single replay pass.
@@ -74,7 +74,7 @@ public class Frame3D
 
     /// <summary>
     /// Clears the layer map and seeds every face in <paramref name="frame"/>
-    /// at layer 0. Called once at the start of every <c>RebuildFrame3D</c>.
+    /// at layer 0. Called once at the start of every <c>EnsureFresh</c>.
     /// </summary>
     public void ResetLayers(Frame frame)
     {
@@ -113,7 +113,7 @@ public class Frame3D
     ///
     /// The size-mismatch clamp below is now a redundant safety net: as of
     /// `refactor-frame3d-sync/01`, <c>ThreeDeePaperSelector._Process</c> calls
-    /// <c>PaperRenderer.RebuildFrame3D</c> before any selection state reads
+    /// <c>PaperRenderer.EnsureFresh</c> before any selection state reads
     /// <see cref="Frame3D"/>, so the prior frame-after-fold race
     /// (<c>Frame.Vertices.Count &gt; Vertices.Count</c> for one tick) no
     /// longer triggers in production. Kept because any future pre-renderer

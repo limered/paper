@@ -91,7 +91,7 @@ public static class BoatTemplate
 
         // Sync Frame3D so the new vertices (and their 3D coords, which
         // reflect all prior folds in the change log) are addressable.
-        PaperRenderer.RebuildFrame3D();
+        PaperRenderer.EnsureFresh();
         if (aId >= frame3d.Vertices.Count || bId >= frame3d.Vertices.Count) return false;
 
         var change = new ChangeRecord

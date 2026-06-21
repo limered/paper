@@ -19,7 +19,7 @@ public class Frame3DTests
             //
             // After a fold, EdgeCommands.AddVertexToEdge grows
             // frame.Vertices in the input handler. Frame3D.Vertices is
-            // only rebuilt by PaperRenderer.RebuildFrame3D each frame.
+            // only rebuilt by PaperRenderer.EnsureFresh each frame.
             // If the selector's _Process runs before the renderer's in
             // the same frame, frame.Vertices.Count > frame3d.Vertices.Count
             // and the metadata copy walks off the end of frame3d.Vertices.
