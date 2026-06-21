@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Godot;
+using valleyfold.Templates;
 using valleyfold.ThreeDeeModels;
 using valleyfold.TwoDeeModels;
 using valleyfold.Ui.Events;
@@ -40,7 +41,9 @@ public partial class EdgeRendering : Node3D
             var end = vertices[edge.Vertices[1]] + nudge;
 
             var child = GetChild<EdgeLine>(i);
-            child.LinePositions(start, end);
+            child.ClearPositions();
+            foreach (var (s, e) in OrigamiDashPattern.BuildForAssignment(start, end, edge.Assignment))
+                child.AddPositions(s, e);
             child.LineWidth(edge.IsSelected ? SelectedLineWidth : DeselectedLineWidth);
             child.Draw();
         }
