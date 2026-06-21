@@ -1,6 +1,7 @@
 using Godot;
 using valleyfold.ChangeTracking;
 using valleyfold.Templates;
+using valleyfold.TwoDeeModels;
 using Xunit;
 
 namespace Testing.Templates;
@@ -66,5 +67,39 @@ public class OrigamiDashPatternTests
     {
         var dashes = OrigamiDashPattern.Build(A, A, ChangeType.ValleyFold);
         Assert.Empty(dashes);
+    }
+
+    [Fact]
+    public void BorderAssignmentRendersAsSolidLine()
+    {
+        var dashes = OrigamiDashPattern.BuildForAssignment(A, B, Assignment.B, 0.1f);
+        Assert.Single(dashes);
+        Assert.Equal(A, dashes[0].Start);
+        Assert.Equal(B, dashes[0].End);
+    }
+
+    [Fact]
+    public void ValleyAssignmentMatchesValleyChangeTypeDashes()
+    {
+        var byAssignment = OrigamiDashPattern.BuildForAssignment(A, B, Assignment.V, 0.1f);
+        var byChange = OrigamiDashPattern.Build(A, B, ChangeType.ValleyFold, 0.1f);
+        Assert.Equal(byChange.Count, byAssignment.Count);
+    }
+
+    [Fact]
+    public void MountainAssignmentMatchesMountainChangeTypeDashes()
+    {
+        var byAssignment = OrigamiDashPattern.BuildForAssignment(A, B, Assignment.M, 0.1f);
+        var byChange = OrigamiDashPattern.Build(A, B, ChangeType.MountainFold, 0.1f);
+        Assert.Equal(byChange.Count, byAssignment.Count);
+    }
+
+    [Fact]
+    public void UnspecifiedAssignmentsRenderSolid()
+    {
+        // F (unfolded) and U (unspecified) have no current mountain/valley
+        // semantics — render solid rather than guessing a pattern.
+        Assert.Single(OrigamiDashPattern.BuildForAssignment(A, B, Assignment.F, 0.1f));
+        Assert.Single(OrigamiDashPattern.BuildForAssignment(A, B, Assignment.U, 0.1f));
     }
 }

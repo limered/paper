@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Godot;
 using valleyfold.ChangeTracking;
+using valleyfold.TwoDeeModels;
 
 namespace valleyfold.Templates;
 
@@ -61,4 +62,20 @@ public static class OrigamiDashPattern
         ChangeType.MountainFold => MountainPattern,
         _ => null,
     };
+
+    /// <summary>
+    /// Build dashes for an edge by its <see cref="Assignment"/>:
+    /// V → valley, M → mountain, everything else → solid (paper border
+    /// and undecorated creases).
+    /// </summary>
+    public static List<(Vector3 Start, Vector3 End)> BuildForAssignment(
+        Vector3 a, Vector3 b, Assignment assignment, float unitLength = DefaultUnitLength)
+    {
+        return assignment switch
+        {
+            Assignment.V => Build(a, b, ChangeType.ValleyFold, unitLength),
+            Assignment.M => Build(a, b, ChangeType.MountainFold, unitLength),
+            _ => Build(a, b, ChangeType.Unfold, unitLength),
+        };
+    }
 }
