@@ -8,7 +8,6 @@ public class Frame3D
     public List<Vertex3D> Vertices { get; } = new();
     public List<Face> Faces => Statics.Frame.Faces;
     public List<Edge> Edges => Statics.Frame.Edges;
-    public List<Vertex> Vertices2D => Statics.Frame.Vertices;
 
     /// <summary>
     /// Per-face stacking order. Higher = higher in the stack.
@@ -128,11 +127,5 @@ public class Frame3D
         var count = System.Math.Min(frame.Vertices.Count, Vertices.Count);
         for (var i = 0; i < count; i++)
             Vertices[i].IsSelected = frame.Vertices[i].IsSelected;
-    }
-
-    public void UnmarkVertices()
-    {
-        foreach (var vertex in Vertices)
-            vertex.IsSelected = false;
     }
 }

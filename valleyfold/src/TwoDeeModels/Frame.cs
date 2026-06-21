@@ -84,7 +84,6 @@ public class Frame
 
     public void AddEdge(Edge edge)
     {
-        if (Edges.Contains(edge)) return;
         Edges.Add(edge);
     }
 

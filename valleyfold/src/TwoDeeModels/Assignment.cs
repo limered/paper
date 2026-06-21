@@ -6,7 +6,5 @@ public enum Assignment
     M, // Mountain Fold
     V, // Valley Fold
     F, // Unfolded ( M/V than open)
-    U, // Unspecified Fold
-    C, // Cut Fold
-    J // Join (Flat triangulated polygon edge)
+    U // Unspecified Fold
 }

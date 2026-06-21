@@ -8,16 +8,12 @@ namespace valleyfold.Render.Vertices;
 
 public partial class VertexRendering : Node3D
 {
-    private ShaderMaterial _shader;
     private PackedScene _vertexMesh;
 
     public override void _Ready()
     {
         _vertexMesh = ResourceLoader.Load<PackedScene>("res://scenes/vertex.tscn");
 
-        _shader = new ShaderMaterial();
-        _shader.Shader = ResourceLoader.Load<Shader>("res://src/Render/Vertices/vertex.gdshader");
-        
         EventBus.Register<ResetPaperEvent>(_ => Clear());
     }
     
@@ -64,7 +60,6 @@ public partial class VertexRendering : Node3D
             if (child == null)
             {
                 var instance = (MeshInstance3D)_vertexMesh.Instantiate();
-                // instance.MaterialOverride = _shader;
                 AddChild(instance);
             }
             else

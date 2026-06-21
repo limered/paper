@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using valleyfold.TwoDeeModels;
 
@@ -9,7 +8,7 @@ public class ChangeMemory
 {
     private readonly List<ChangeRecord> _changes = new();
 
-    public ReadOnlyCollection<ChangeRecord> Changes => new(_changes);
+    public IReadOnlyList<ChangeRecord> Changes => _changes;
 
     public void AddChange(ChangeRecord changeRecord)
     {

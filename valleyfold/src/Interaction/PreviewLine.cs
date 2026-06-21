@@ -34,11 +34,6 @@ public partial class PreviewLine : MeshInstance3D
         _isVisible = visible;
     }
 
-    public void LineWidth(float width)
-    {
-        _width = width;
-    }
-
     public void LineColor(Color color)
     {
         _shaderMaterial?.SetShaderParameter("line_color", color);

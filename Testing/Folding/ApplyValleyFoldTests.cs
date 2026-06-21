@@ -89,8 +89,7 @@ public class ApplyValleyFoldTests
                 var v2d = _frame.Vertices[i].Coord;
                 _frame3d.Vertices.Add(new Vertex3D
                 {
-                    Coord = new Vector3(v2d.X, 0f, v2d.Y),
-                    Id = (Id)i
+                    Coord = new Vector3(v2d.X, 0f, v2d.Y)
                 });
             }
         }
@@ -229,8 +228,7 @@ public class ApplyValleyFoldTests
                 var v2d = frame.Vertices[i].Coord;
                 frame3d.Vertices.Add(new Vertex3D
                 {
-                    Coord = new Vector3(v2d.X, 0f, v2d.Y),
-                    Id = (Id)i
+                    Coord = new Vector3(v2d.X, 0f, v2d.Y)
                 });
             }
 

@@ -15,8 +15,7 @@ public class Vertex
         return new Vertex3D
         {
             Coord = Coord.Vector3XZ(),
-            IsSelected = IsSelected,
-            Id = Id
+            IsSelected = IsSelected
         };
     }
 }

@@ -15,7 +15,4 @@ public class Face
     public Id Id;
 
     public List<Id> Vertices = new();
-
-    public bool IsBased = true;
-    public bool IsUp = true;
 }
