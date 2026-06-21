@@ -14,6 +14,8 @@ public partial class EdgeRendering : Node3D
     private const float SelectedLineWidth = 0.02f;
     private const float DeselectedLineWidth = 0.005f;
 
+    [Export] public bool DebugDump = false;
+
     public override void _Ready()
     {
         EventBus.Register<ResetPaperEvent>(_ => Clear());
@@ -33,14 +35,23 @@ public partial class EdgeRendering : Node3D
         if(GetChildCount() < edgeCount) AddOrShowLines(edges);
         else if(GetChildCount() > edgeCount) HideLines(edges);
 
+        if (DebugDump) GD.Print($"[EdgeRendering] {edgeCount} edges:");
+
         for (var i = 0; i < edgeCount; i++)
         {
             var edge = edges[i];
+            var layer = frame3d.LayerOfEdge(edge);
             // Edge nudges to the max layer of its incident faces, so the
             // crease between two layers renders attached to the topmost.
-            var nudge = Vector3.Up * (frame3d.LayerOfEdge(edge) * Frame3D.LayerEpsilon);
+            var nudge = Vector3.Up * (layer * Frame3D.LayerEpsilon);
             var start = vertices[edge.Vertices[0]] + nudge;
             var end = vertices[edge.Vertices[1]] + nudge;
+
+            if (DebugDump)
+                GD.Print(
+                    $"  [{i}] v{edge.Vertices[0]}->v{edge.Vertices[1]} " +
+                    $"assign={edge.Assignment} layer={layer} sel={edge.IsSelected} " +
+                    $"start={start} end={end}");
 
             var child = GetChild<EdgeLine>(i);
             child.ClearPositions();
