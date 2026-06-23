@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Godot;
 using valleyfold.ChangeTracking;
@@ -27,9 +28,13 @@ public class RefoldSelectionState : ISelectionState
         var change = ctx.ChangeMemory.ChangeContainingEdge(edge.Id);
         if (change is null || !change.Unfolded) return;
 
-        var restored = change.ChangeType == ChangeType.MountainFold
-            ? Assignment.M
-            : Assignment.V;
+        var restored = change.ChangeType switch
+        {
+            ChangeType.MountainFold => Assignment.M,
+            ChangeType.ValleyFold => Assignment.V,
+            _ => throw new InvalidOperationException(
+                $"Cannot refold change of type {change.ChangeType}"),
+        };
 
         // Animate 0 → target on the in-flight change; flip Unfolded false
         // and restore edge assignments at completion. PaperRenderer makes
@@ -74,7 +79,11 @@ public class RefoldSelectionState : ISelectionState
         frame.UnmarkEdges();
         var refoldable = ctx.ChangeMemory.ChangesToRefold();
         foreach (var cr in refoldable)
-            for (var i = 0; i < cr.AddedEdges.Count; i++)
-                frame.Edges[cr.AddedEdges[i]].IsSelected = true;
+        {
+            foreach (var t in cr.AddedEdges)
+            {
+                frame.Edges[t].IsSelected = true;
+            }
+        }
     }
 }

@@ -34,9 +34,9 @@ var restored = change.ChangeType switch
 
 ## Acceptance criteria
 
-- [ ] `RefoldSelectionState.ConfirmRefoldInteraction` uses an exhaustive `switch` expression with explicit `MountainFold` and `ValleyFold` arms and a throwing default.
-- [ ] All existing tests still pass.
-- [ ] Manual editor check: a valley fold can still be refolded; a mountain fold can still be refolded; both restore the correct dash style.
+- [x] `RefoldSelectionState.ConfirmRefoldInteraction` uses an exhaustive `switch` expression with explicit `MountainFold` and `ValleyFold` arms and a throwing default.
+- [x] All existing tests still pass.
+- [x] Manual editor check: a valley fold can still be refolded; a mountain fold can still be refolded; both restore the correct dash style.
 
 ## Blocked by
 
