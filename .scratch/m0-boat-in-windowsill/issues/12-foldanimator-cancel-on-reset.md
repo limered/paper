@@ -27,12 +27,12 @@ The visible behaviour: pressing Reset mid-animation drops the in-flight animatio
 
 ## Acceptance criteria
 
-- [ ] `FoldAnimator.Cancel()` exists, resets `_change`, `_elapsed`, `_duration`, `_startProgress`, `_endProgress`, `_onComplete` to their construction-time defaults, and does NOT invoke the callback.
-- [ ] `Game.ResetPaper` calls `Statics.FoldAnimator.Cancel()` before clearing change memory.
-- [ ] Unit test: starting a fold animation, calling `Cancel`, then ticking the animator past its duration does NOT invoke the callback.
-- [ ] Unit test: `IsAnimating` is `false` immediately after `Cancel`.
-- [ ] Manual editor check: start a fold, immediately hit Reset before it finishes — paper resets cleanly, no console errors, no border-edge corruption (borders stay `B`).
-- [ ] All existing tests still pass.
+- [x] `FoldAnimator.Cancel()` exists, resets `_change`, `_elapsed`, `_duration`, `_startProgress`, `_endProgress`, `_onComplete` to their construction-time defaults, and does NOT invoke the callback.
+- [x] `Game.ResetPaper` calls `Statics.FoldAnimator.Cancel()` before clearing change memory.
+- [x] Unit test: starting a fold animation, calling `Cancel`, then ticking the animator past its duration does NOT invoke the callback.
+- [x] Unit test: `IsAnimating` is `false` immediately after `Cancel`.
+- [x] Manual editor check: start a fold, immediately hit Reset before it finishes — paper resets cleanly, no console errors, no border-edge corruption (borders stay `B`).
+- [x] All existing tests still pass.
 
 ## Blocked by
 

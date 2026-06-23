@@ -84,6 +84,16 @@ public class FoldAnimatorTests : IDisposable
             _animator.Start(SomeChange(), 0.4f);
             Assert.Equal(0, _completionEventCount);
         }
+
+        [Fact]
+        public void TickAfterCancelDoesNotInvokeCallback()
+        {
+            _animator.Start(SomeChange(), 0.4f);
+            _animator.Cancel();
+            Assert.False(_animator.IsAnimating);
+            _animator.Tick(1.0);
+            Assert.Equal(0, _completionEventCount);
+        }
     }
 
     [Collection(nameof(FoldAnimatorTests))]

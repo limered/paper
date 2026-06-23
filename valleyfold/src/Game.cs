@@ -35,7 +35,9 @@ public partial class Game : Node
         Statics.Frame = new Frame();
         Statics.Frame.InitializePaper();
         Statics.Frame3d.ImportFromFrame(Statics.Frame);
-
+        
+        Statics.FoldAnimator.Cancel();
+        
         Statics.ChangeMemory.Clear();
         Statics.TemplateSession = null;
 
