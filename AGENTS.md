@@ -34,7 +34,7 @@ Godot 4.3 origami simulator written in C#. Two projects in one solution: the gam
 
 ### Issue tracker
 
-Local markdown — issues live under `.scratch/<feature>/` in this repo (no external tracker). See `docs/agents/issue-tracker.md`.
+GitHub Issues — `https://github.com/limered/paper/issues`. The legacy local markdown tracker under `.scratch/` is archived. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
