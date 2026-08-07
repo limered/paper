@@ -17,7 +17,7 @@ public class TemplateSessionCollection { }
 public class TemplateSessionTests : IDisposable
 {
     private readonly Action<TemplateCompletedEvent> _handler;
-    private TemplateCompletedEvent _lastCompletion;
+    private TemplateCompletedEvent? _lastCompletion;
     private int _completionCount;
 
     protected TemplateSessionTests()
@@ -121,7 +121,7 @@ public class TemplateSessionTests : IDisposable
             var session = new TemplateSession("boat", "blue", TwoSteps());
             session.Advance();
             session.Advance();
-            Assert.Equal("boat", _lastCompletion.TemplateId);
+            Assert.Equal("boat", _lastCompletion!.TemplateId);
             Assert.Equal("blue", _lastCompletion.PaperId);
         }
 

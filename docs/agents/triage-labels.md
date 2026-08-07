@@ -9,6 +9,7 @@ The skills speak in terms of five canonical triage roles. This file maps those r
 | `ready-for-agent`  | `ready-for-afk`    | Fully specified, ready for an AFK agent  |
 | `ready-for-human`  | `ready-for-human`  | Requires human implementation            |
 | `wontfix`          | `wontfix`          | Will not be actioned                     |
+| `done`             | `done`             | Implemented and verified                 |
 
 When a skill mentions a canonical role (e.g. "apply the AFK-ready triage label"), use the corresponding label string from this table.
 

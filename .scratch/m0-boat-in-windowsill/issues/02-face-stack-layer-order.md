@@ -1,6 +1,6 @@
 # 02 — Face-stack layer order and face-based picking
 
-Status: ready-for-afk
+Status: done
 
 ## Parent
 

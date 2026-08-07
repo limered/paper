@@ -1,6 +1,6 @@
-# 04 — Ghost crease renderer + click to advance
+# 05 — Ghost crease renderer + click to advance
 
-Status: ready-for-afk
+Status: done
 
 ## Parent
 
@@ -34,3 +34,8 @@ The existing freeform interaction (`ThreeDeePaperSelector`, `StartPointSelection
 ## Blocked by
 
 - #03 — needs the boat sequence and feature resolver.
+
+## Comments
+
+2026-08-07 — Verified against current code. Acceptance criteria are met:
+`TemplateSession` tracks template/step/paper; `TemplateSessionController` renders one ghost crease at a time, ignores clicks off the ghost and during animation, applies steps via `BoatTemplate.ApplyStep`, and advances; `TemplateSession.Advance` emits `TemplateCompletedEvent` with template and paper ids on the final step. Hit-tests are covered by `Testing/Templates/GhostCreaseHitTests.cs` and session state by `Testing/Templates/TemplateSessionTests.cs`. Also added `Testing` back to `valleyfold/valleyfold.sln` so the documented `dotnet test valleyfold/valleyfold.sln` command runs the suite; all 116 tests pass.

@@ -1,6 +1,6 @@
-# 03 — Boat as scripted fold sequence + auto-play debug
+# 04 — Boat as scripted fold sequence + auto-play debug
 
-Status: ready-for-afk
+Status: done
 
 ## Parent
 
