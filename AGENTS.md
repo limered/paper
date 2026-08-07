@@ -4,7 +4,7 @@ Godot 4.3 origami simulator written in C#. Two projects in one solution: the gam
 
 ## Layout
 
-- `valleyfold/` — Godot project. SDK `Godot.NET.Sdk/4.3.0`, `net6.0`. Main scene `res://scenes/main.tscn`. Source under `valleyfold/src/`.
+- `valleyfold/` — Godot project. SDK `Godot.NET.Sdk/4.7.1`, `net8.0`. Main scene `res://scenes/main.tscn` (Hub entry point). Source under `valleyfold/src/`.
 - `Testing/` — xUnit + NSubstitute test project on `net8.0`. References `valleyfold.csproj`, so tests can import Godot types but must not touch the engine runtime (no `_Ready`, no scene tree).
 - `valleyfold/valleyfold.sln` is the solution file for both projects.
 

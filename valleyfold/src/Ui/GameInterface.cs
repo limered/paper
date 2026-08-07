@@ -16,7 +16,11 @@ public partial class GameInterface : Control
         resetButton.Pressed += () => EventBus.Emit(new ResetPaperEvent());
 
         var startButton = GetNode<Button>("Sidepane/start_template");
-        startButton.Pressed += () => EventBus.Emit(new StartTemplateSessionEvent());
+        startButton.Pressed += () => EventBus.Emit(new StartTemplateSessionEvent
+        {
+            TemplateId = "boat",
+            PaperId = "default",
+        });
 
         var valleyfoldButton = GetNode<Button>("Sidepane/valleyfold");
         valleyfoldButton.Pressed += ValleyfoldButtonOnPressed;

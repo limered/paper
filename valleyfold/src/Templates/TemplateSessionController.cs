@@ -11,7 +11,7 @@ namespace valleyfold.Templates;
 /// Player-facing template flow (issue 05).
 ///
 /// A <see cref="StartTemplateSessionEvent"/> on the bus (emitted by the
-/// Start button in <see cref="Ui.GameInterface"/>) begins a
+/// Begin button in <see cref="Ui.DeskScreen"/>) begins a
 /// <see cref="TemplateSession"/> over <see cref="BoatTemplate.Steps"/>
 /// on the default paper, and assigns <see cref="Statics.TemplateSession"/>
 /// — which suppresses the freeform
@@ -35,7 +35,6 @@ public partial class TemplateSessionController : Node3D
     [Export] public float IdleLineWidth = 0.006f;
     [Export] public float HoverLineWidth = 0.018f;
 
-    private const string DefaultPaperId = "default";
     private const string BoatTemplateId = "boat";
 
     private EdgeLine _ghostLine;
@@ -49,19 +48,20 @@ public partial class TemplateSessionController : Node3D
         _mouse = new MousePosition();
         if (MouseCollisionArea != null) _mouse.Init(MouseCollisionArea);
 
-        EventBus.Register<StartTemplateSessionEvent>(_ => StartBoatSession());
+        EventBus.Register<StartTemplateSessionEvent>(StartBoatSession);
     }
 
-    private static void StartBoatSession()
+    private static void StartBoatSession(StartTemplateSessionEvent evt)
     {
         if (Statics.TemplateSession != null) return;
+        if (evt.TemplateId != BoatTemplateId) return;
         if (!BoatTemplate.IsValidStartingFrame(Statics.Frame))
         {
             GD.PrintErr("[TemplateSessionController] frame is not the unfolded square; reset before starting a session.");
             return;
         }
         Statics.TemplateSession = new TemplateSession(
-            BoatTemplateId, DefaultPaperId, BoatTemplate.Steps);
+            evt.TemplateId, evt.PaperId, BoatTemplate.Steps);
     }
 
     public override void _Input(InputEvent @event)
