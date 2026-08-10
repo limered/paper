@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Godot 4.3 origami simulator written in C#. Two projects in one solution: the game (`valleyfold/`) and xUnit tests (`Testing/`).
+Godot 4.7.1 origami simulator written in C#. Two projects in one solution: the game (`valleyfold/`) and xUnit tests (`Testing/`).
 
 ## Layout
 
@@ -13,7 +13,7 @@ Godot 4.3 origami simulator written in C#. Two projects in one solution: the gam
 - Build C#: `dotnet build valleyfold/valleyfold.sln`. The Godot editor also regenerates this on save — avoid editing `.csproj`/`.sln` by hand if a Godot session is open.
 - Run tests: `dotnet test valleyfold/valleyfold.sln`. Single test: `dotnet test --filter "FullyQualifiedName~VertexToVertexFoldTests"`.
 - There is no lint/format config and no CI. Don't invent commands.
-- Running the game itself requires the Godot 4.3 .NET editor; don't try to launch it headlessly from an agent session.
+- Running the game itself requires the Godot 4.7.1 .NET editor; don't try to launch it headlessly from an agent session.
 
 ## Architecture quirks an agent will miss
 
