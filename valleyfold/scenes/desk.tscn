@@ -53,6 +53,23 @@ material = SubResource("StandardMaterial3D_vpbyi")
 radius = 0.01
 height = 0.02
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wood"]
+bg_color = Color(0.68, 0.45, 0.29, 1)
+border_color = Color(0.42, 0.25, 0.14, 1)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+corner_detail = 8
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_size = 14
+shadow_offset = Vector2(0, 6)
+border_blend = true
+
 [node name="Desk" type="Node" unique_id=1237683582]
 script = ExtResource("1_km5vh")
 
@@ -169,6 +186,7 @@ offset_right = 150.0
 offset_bottom = 150.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_wood")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/DeskScreen/Drawer" unique_id=1471019555]
 layout_mode = 1

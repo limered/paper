@@ -4,48 +4,85 @@ namespace valleyfold.Ui;
 
 public partial class DeskScreen : Control
 {
-    private readonly DeskSelection _selection = new();
+	private readonly DeskSelection _selection = new();
 
-    public override void _Ready()
-    {
-        var drawer = GetNode<Control>("Drawer");
-        var openDrawer = GetNode<Button>("OpenDrawer");
-        var closeDrawer = GetNode<Button>("Drawer/VBoxContainer/CloseButton");
-        var beginButton = GetNode<Button>("Drawer/VBoxContainer/BeginButton");
-        var backButton = GetNode<Button>("BackButton");
-        var defaultPaper = GetNode<Button>("Drawer/Papers/DefaultPaper");
-        var lockedPaper = GetNode<Button>("Drawer/Papers/LockedPaper");
+	private Control _drawer;
+	private Vector2 _drawerRestPosition;
+	private Tween _tween;
 
-        openDrawer.Pressed += () => drawer.Visible = true;
-        closeDrawer.Pressed += () => drawer.Visible = false;
-        backButton.Pressed += () => GetTree().ChangeSceneToFile("res://scenes/main.tscn");
+	public override void _Ready()
+	{
+		_drawer = GetNode<Control>("Drawer");
+		_drawerRestPosition = _drawer.Position;
 
-        defaultPaper.Pressed += () =>
-        {
-            _selection.SelectPaper(DeskSelection.DefaultPaperId);
-            UpdateSelectionVisuals();
-        };
+		var openDrawer = GetNode<Button>("OpenDrawer");
+		var closeDrawer = GetNode<Button>("Drawer/VBoxContainer/CloseButton");
+		var beginButton = GetNode<Button>("Drawer/VBoxContainer/BeginButton");
+		var backButton = GetNode<Button>("BackButton");
+		var defaultPaper = GetNode<Button>("Drawer/VBoxContainer/Papers/DefaultPaper");
+		var lockedPaper = GetNode<Button>("Drawer/VBoxContainer/Papers/LockedPaper");
 
-        lockedPaper.Disabled = true;
-        lockedPaper.Modulate = new Color(0.5f, 0.5f, 0.5f);
+		openDrawer.Pressed += SlideOpen;
+		closeDrawer.Pressed += SlideClose;
+		backButton.Pressed += () => SceneTransition.To("res://scenes/main.tscn", SceneTransition.TransitionDirection.Down);
 
-        beginButton.Pressed += () =>
-        {
-            if (!_selection.CanBegin) return;
-            drawer.Visible = false;
-            _selection.Begin();
-        };
+		defaultPaper.Pressed += () =>
+		{
+			_selection.SelectPaper(DeskSelection.DefaultPaperId);
+			UpdateSelectionVisuals();
+		};
 
-        // Boat is the only template in M0.
-        _selection.SelectTemplate(DeskSelection.BoatTemplateId);
-        UpdateSelectionVisuals();
-    }
+		lockedPaper.Disabled = true;
+		lockedPaper.Modulate = new Color(0.5f, 0.5f, 0.5f);
 
-    private void UpdateSelectionVisuals()
-    {
-        var defaultPaper = GetNode<Button>("Drawer/Papers/DefaultPaper");
-        defaultPaper.Modulate = _selection.SelectedPaperId == DeskSelection.DefaultPaperId
-            ? new Color(1, 1, 1)
-            : new Color(0.7f, 0.7f, 0.7f);
-    }
+		beginButton.Pressed += () =>
+		{
+			if (!_selection.CanBegin) return;
+			SlideClose();
+			_selection.Begin();
+		};
+
+		// Boat is the only template in M0.
+		_selection.SelectTemplate(DeskSelection.BoatTemplateId);
+		UpdateSelectionVisuals();
+	}
+
+	private void SlideOpen()
+	{
+		_tween?.Kill();
+
+		var offScreen = new Vector2(_drawerRestPosition.X, _drawerRestPosition.Y + GetViewportRect().Size.Y);
+		if (!_drawer.Visible)
+		{
+			_drawer.Position = offScreen;
+			_drawer.Visible = true;
+		}
+
+		_tween = CreateTween()
+			.SetTrans(Tween.TransitionType.Cubic)
+			.SetEase(Tween.EaseType.Out);
+		_tween.TweenProperty(_drawer, "position", _drawerRestPosition, 0.45f);
+	}
+
+	private void SlideClose()
+	{
+		if (!_drawer.Visible) return;
+
+		_tween?.Kill();
+
+		var offScreen = new Vector2(_drawerRestPosition.X, _drawerRestPosition.Y + GetViewportRect().Size.Y);
+		_tween = CreateTween()
+			.SetTrans(Tween.TransitionType.Cubic)
+			.SetEase(Tween.EaseType.InOut);
+		_tween.TweenProperty(_drawer, "position", offScreen, 0.4f);
+		_tween.Finished += () => _drawer.Visible = false;
+	}
+
+	private void UpdateSelectionVisuals()
+	{
+		var defaultPaper = GetNode<Button>("Drawer/VBoxContainer/Papers/DefaultPaper");
+		defaultPaper.Modulate = _selection.SelectedPaperId == DeskSelection.DefaultPaperId
+			? new Color(1, 1, 1)
+			: new Color(0.7f, 0.7f, 0.7f);
+	}
 }

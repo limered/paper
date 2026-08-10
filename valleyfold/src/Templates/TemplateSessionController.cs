@@ -3,6 +3,7 @@ using valleyfold.Interaction;
 using valleyfold.Render.Edges;
 using valleyfold.Render.ThreeDee;
 using valleyfold.Templates.Events;
+using valleyfold.Ui.Events;
 using valleyfold.Utils;
 
 namespace valleyfold.Templates;
@@ -16,6 +17,8 @@ namespace valleyfold.Templates;
 /// on the default paper, and assigns <see cref="Statics.TemplateSession"/>
 /// — which suppresses the freeform
 /// <see cref="Interaction.ThreeDeePaperSelector"/> for the duration.
+/// If the paper is not the unfolded square, a <see cref="ResetPaperEvent"/>
+/// is emitted first so <see cref="Game.ResetPaper"/> resets it automatically.
 ///
 /// While the session is active, a single ghost crease (the next step's
 /// fold line) is drawn on top of the paper as an <see cref="EdgeLine"/>.
@@ -51,14 +54,13 @@ public partial class TemplateSessionController : Node3D
         EventBus.Register<StartTemplateSessionEvent>(StartBoatSession);
     }
 
-    private static void StartBoatSession(StartTemplateSessionEvent evt)
+    public static void StartBoatSession(StartTemplateSessionEvent evt)
     {
         if (Statics.TemplateSession != null) return;
         if (evt.TemplateId != BoatTemplateId) return;
         if (!BoatTemplate.IsValidStartingFrame(Statics.Frame))
         {
-            GD.PrintErr("[TemplateSessionController] frame is not the unfolded square; reset before starting a session.");
-            return;
+            EventBus.Emit(new ResetPaperEvent());
         }
         Statics.TemplateSession = new TemplateSession(
             evt.TemplateId, evt.PaperId, BoatTemplate.Steps);

@@ -7,9 +7,9 @@ public partial class HubScreen : Control
     public override void _Ready()
     {
         GetNode<Button>("VBoxContainer/DeskButton").Pressed +=
-            () => GetTree().ChangeSceneToFile("res://scenes/desk.tscn");
+            () => SceneTransition.To("res://scenes/desk.tscn", SceneTransition.TransitionDirection.Up);
         GetNode<Button>("VBoxContainer/DioramaButton").Pressed +=
-            () => GetTree().ChangeSceneToFile("res://scenes/diorama.tscn");
+            () => SceneTransition.To("res://scenes/diorama.tscn", SceneTransition.TransitionDirection.Right);
         GetNode<Button>("VBoxContainer/SettingsButton").Pressed +=
             () => GD.Print("[Hub] Settings not implemented yet.");
     }
