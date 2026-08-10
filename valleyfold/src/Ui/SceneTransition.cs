@@ -15,8 +15,11 @@ public partial class SceneTransition : CanvasLayer
     private Tween _tween;
     private bool _isTransitioning;
 
+    private static SceneTransition Instance { get; set; }
+
     public override void _Ready()
     {
+        Instance = this;
         Layer = 100;
 
         _panel = new Panel();
@@ -35,8 +38,7 @@ public partial class SceneTransition : CanvasLayer
 
     public static void To(string scenePath, TransitionDirection direction)
     {
-        var instance = Engine.GetSingleton("SceneTransition") as SceneTransition;
-        instance?.TransitionTo(scenePath, direction);
+        Instance?.TransitionTo(scenePath, direction);
     }
 
     private void TransitionTo(string scenePath, TransitionDirection direction)
