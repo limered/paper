@@ -81,5 +81,15 @@ public class FoldAnimator
         EventBus.Emit(new PaperFoldedEvent());
     }
 
+    public void Cancel()
+    {
+        _change = null;
+        _elapsed = 0f;
+        _duration = 0f;
+        _startProgress = 0f;
+        _endProgress = 1f;
+        _onComplete = null;
+    }
+
     private static float EaseOut(float t) => 1f - (1f - t) * (1f - t);
 }

@@ -3,6 +3,7 @@ using valleyfold.Interaction;
 using valleyfold.Render.Edges;
 using valleyfold.Render.ThreeDee;
 using valleyfold.Templates.Events;
+using valleyfold.Ui.Events;
 using valleyfold.Utils;
 
 namespace valleyfold.Templates;
@@ -11,11 +12,13 @@ namespace valleyfold.Templates;
 /// Player-facing template flow (issue 05).
 ///
 /// A <see cref="StartTemplateSessionEvent"/> on the bus (emitted by the
-/// Start button in <see cref="Ui.GameInterface"/>) begins a
+/// Begin button in <see cref="Ui.DeskScreen"/>) begins a
 /// <see cref="TemplateSession"/> over <see cref="BoatTemplate.Steps"/>
 /// on the default paper, and assigns <see cref="Statics.TemplateSession"/>
 /// — which suppresses the freeform
 /// <see cref="Interaction.ThreeDeePaperSelector"/> for the duration.
+/// If the paper is not the unfolded square, a <see cref="ResetPaperEvent"/>
+/// is emitted first so <see cref="Game.ResetPaper"/> resets it automatically.
 ///
 /// While the session is active, a single ghost crease (the next step's
 /// fold line) is drawn on top of the paper as an <see cref="EdgeLine"/>.
@@ -35,7 +38,6 @@ public partial class TemplateSessionController : Node3D
     [Export] public float IdleLineWidth = 0.006f;
     [Export] public float HoverLineWidth = 0.018f;
 
-    private const string DefaultPaperId = "default";
     private const string BoatTemplateId = "boat";
 
     private EdgeLine _ghostLine;
@@ -49,19 +51,19 @@ public partial class TemplateSessionController : Node3D
         _mouse = new MousePosition();
         if (MouseCollisionArea != null) _mouse.Init(MouseCollisionArea);
 
-        EventBus.Register<StartTemplateSessionEvent>(_ => StartBoatSession());
+        EventBus.Register<StartTemplateSessionEvent>(StartBoatSession);
     }
 
-    private static void StartBoatSession()
+    public static void StartBoatSession(StartTemplateSessionEvent evt)
     {
         if (Statics.TemplateSession != null) return;
+        if (evt.TemplateId != BoatTemplateId) return;
         if (!BoatTemplate.IsValidStartingFrame(Statics.Frame))
         {
-            GD.PrintErr("[TemplateSessionController] frame is not the unfolded square; reset before starting a session.");
-            return;
+            EventBus.Emit(new ResetPaperEvent());
         }
         Statics.TemplateSession = new TemplateSession(
-            BoatTemplateId, DefaultPaperId, BoatTemplate.Steps);
+            evt.TemplateId, evt.PaperId, BoatTemplate.Steps);
     }
 
     public override void _Input(InputEvent @event)

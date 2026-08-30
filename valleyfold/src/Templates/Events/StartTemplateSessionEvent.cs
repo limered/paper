@@ -6,4 +6,6 @@ namespace valleyfold.Templates.Events;
 /// </summary>
 public class StartTemplateSessionEvent
 {
+    public string TemplateId { get; set; } = string.Empty;
+    public string PaperId { get; set; } = string.Empty;
 }

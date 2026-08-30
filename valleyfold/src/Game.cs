@@ -18,10 +18,7 @@ public partial class Game : Node
 
         EventBus.Register<ResetPaperEvent>(_ => ResetPaper());
 
-        // F10 debug auto-play harness for the boat fold sequence (issue 04).
-        AddChild(new BoatAutoPlay());
-
-        // F9 ghost-click flow for the boat template (issue 05). Reuses the
+        // Ghost-click flow for the boat template (issue 05). Reuses the
         // existing paper Area3D so we don't need to edit the scene.
         var controller = new TemplateSessionController
         {
@@ -35,7 +32,9 @@ public partial class Game : Node
         Statics.Frame = new Frame();
         Statics.Frame.InitializePaper();
         Statics.Frame3d.ImportFromFrame(Statics.Frame);
-
+        
+        Statics.FoldAnimator.Cancel();
+        
         Statics.ChangeMemory.Clear();
         Statics.TemplateSession = null;
 

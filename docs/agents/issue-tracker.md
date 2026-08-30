@@ -1,19 +1,17 @@
-# Issue tracker: Local Markdown
+# Issue tracker: GitHub Issues
 
-Issues and PRDs for this repo live as markdown files in `.scratch/`. There is no GitHub Issues / Jira / Linear in play; do not call `gh issue create` or similar.
+Issues for this repo live on GitHub at `https://github.com/limered/paper/issues`. The legacy local markdown tracker under `.scratch/` is kept as read-only history.
 
 ## Conventions
 
-- One feature per directory: `.scratch/<feature-slug>/`
-- The PRD is `.scratch/<feature-slug>/PRD.md`
-- Implementation issues are `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01`
-- Triage state is recorded as a `Status:` line near the top of each issue file (see `triage-labels.md` for the role strings)
-- Comments and conversation history append to the bottom of the file under a `## Comments` heading
+- Use GitHub Issues for bugs, features, and task breakdowns.
+- Triage state is expressed through GitHub labels. The label vocabulary is in [`triage-labels.md`](triage-labels.md).
+- Comments and conversation history live on the GitHub issue.
 
 ## When a skill says "publish to the issue tracker"
 
-Create a new file under `.scratch/<feature-slug>/` (creating the directory if needed).
+Create a new GitHub issue with `gh issue create` and apply the appropriate label(s).
 
 ## When a skill says "fetch the relevant ticket"
 
-Read the file at the referenced path. The user will normally pass the path or the issue number directly.
+Use `gh issue view <number>` or read the issue on GitHub. The user will normally pass the issue number directly.

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bxy2us0h4qk2v"]
+
+[ext_resource type="Script" uid="uid://cp6u1k5kthtjg" path="res://src/Ui/SceneTransition.cs" id="1_tran"]
+
+[node name="SceneTransition" type="CanvasLayer"]
+script = ExtResource("1_tran")

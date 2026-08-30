@@ -31,7 +31,7 @@ public class RefoldSelectionState : ISelectionState
         var restored = change.ChangeType switch
         {
             ChangeType.MountainFold => Assignment.M,
-            ChangeType.ValleyFold   => Assignment.V,
+            ChangeType.ValleyFold => Assignment.V,
             _ => throw new InvalidOperationException(
                 $"Cannot refold change of type {change.ChangeType}"),
         };
@@ -79,7 +79,11 @@ public class RefoldSelectionState : ISelectionState
         frame.UnmarkEdges();
         var refoldable = ctx.ChangeMemory.ChangesToRefold();
         foreach (var cr in refoldable)
-            for (var i = 0; i < cr.AddedEdges.Count; i++)
-                frame.Edges[cr.AddedEdges[i]].IsSelected = true;
+        {
+            foreach (var t in cr.AddedEdges)
+            {
+                frame.Edges[t].IsSelected = true;
+            }
+        }
     }
 }
