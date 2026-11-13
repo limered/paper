@@ -1,0 +1,26 @@
+{
+  "stages": {
+    "implementation": {
+      "type": "sequential",
+      "agents": ["feature-builder", "test-runner"]
+    },
+    "review-loop": {
+      "type": "loop",
+      "agents": ["code-review", "feature-builder"],
+      "iterations": 2
+    },
+    "test-rerun": {
+      "type": "sequential",
+      "agents": ["test-runner"]
+    },
+    "pr-author": {
+      "type": "sequential",
+      "agents": ["pr-author"]
+    }
+  },
+  "workflows": {
+    "build": ["implementation", "test-rerun", "pr-author"],
+    "reviewed": ["implementation", "review-loop", "test-rerun", "pr-author"]
+  },
+  "defaultWorkflow": "build"
+}
