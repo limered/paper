@@ -1,19 +1,26 @@
 # AGENTS.md
 
-Godot 4.7.1 origami simulator written in C#. Two projects in one solution: the game (`valleyfold/`) and xUnit tests (`Testing/`).
+Godot 4.7.0 origami simulator written in C#. Two projects in one solution: the game (`valleyfold/`) and xUnit tests (`Testing/`).
 
 ## Layout
 
-- `valleyfold/` — Godot project. SDK `Godot.NET.Sdk/4.7.1`, `net8.0`. Main scene `res://scenes/main.tscn` (Hub entry point). Source under `valleyfold/src/`.
+- `valleyfold/` — Godot project. SDK `Godot.NET.Sdk/4.7.0`, `net8.0`. Main scene `res://scenes/main.tscn` (Hub entry point). Source under `valleyfold/src/`.
 - `Testing/` — xUnit + NSubstitute test project on `net8.0`. References `valleyfold.csproj`, so tests can import Godot types but must not touch the engine runtime (no `_Ready`, no scene tree).
 - `valleyfold/valleyfold.sln` is the solution file for both projects.
 
 ## Build & test
 
 - Build C#: `dotnet build valleyfold/valleyfold.sln`. The Godot editor also regenerates this on save — avoid editing `.csproj`/`.sln` by hand if a Godot session is open.
-- Run tests: `dotnet test valleyfold/valleyfold.sln`. Single test: `dotnet test --filter "FullyQualifiedName~VertexToVertexFoldTests"`.
 - There is no lint/format config and no CI. Don't invent commands.
-- Running the game itself requires the Godot 4.7.1 .NET editor; don't try to launch it headlessly from an agent session.
+- Running the game itself requires the Godot 4.7.0 .NET editor; don't try to launch it headlessly from an agent session.
+
+## Test harness
+
+The factory test phase runs every `test-harness.<name>` command declared here. Any failure fails the run.
+
+test-harness.tests: dotnet test valleyfold/valleyfold.sln
+
+Single test: `dotnet test --filter "FullyQualifiedName~VertexToVertexFoldTests"`.
 
 ## Architecture quirks an agent will miss
 
@@ -34,12 +41,12 @@ Godot 4.7.1 origami simulator written in C#. Two projects in one solution: the g
 
 ### Issue tracker
 
-GitHub Issues — `https://github.com/limered/paper/issues`. The legacy local markdown tracker under `.scratch/` is archived. See `docs/agents/issue-tracker.md`.
+GitHub Issues — `https://github.com/limered/paper/issues`.
 
 ### Triage labels
 
-Standard role names; AFK-ready issues are labelled `ready-for-afk`. See `docs/agents/triage-labels.md`.
+AFK-ready issues are labelled `ready-for-agent`; human-only work is `ready-for-human`.
 
 ### Domain docs
 
-Single-context — `CONTEXT.md` at the repo root, ADRs under `docs/adr/`. See `docs/agents/domain.md`.
+ADRs under `docs/adr/`.
